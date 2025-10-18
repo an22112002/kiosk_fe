@@ -21,15 +21,12 @@ export default function CheckInfo() {
         if (patientInfo?.personalInfo) {
             toggleStatus(0);
             toggleStatus(1);
-            toggleStatus(2);
-            toggleStatus(3);
-            toggleStatus(4);
         }
         if (patientInfo?.patientHISInfo) {
-            toggleStatus(5);
+            toggleStatus(2);
         }
         if (patientInfo?.insuranceInfo) {
-            toggleStatus(6);
+            toggleStatus(3);
         }
     }, [setStateStep])
 
@@ -38,17 +35,11 @@ export default function CheckInfo() {
         flow === "insur" ?
     [
         { label: "Thông tin thẻ", status: false },
-        { label: "DSCert", status: false },
-        { label: "Thẩm quyền chip", status: false },
-        { label: "Xác thực SOD", status: false },
         { label: "Ảnh thẻ", status: false },
         { label: "Thông tin bệnh nhân", status: false },
         { label: "Thông tin bảo hiểm", status: false },
     ] : [
         { label: "Thông tin thẻ", status: false },
-        { label: "DSCert", status: false },
-        { label: "Thẩm quyền chip", status: false },
-        { label: "Xác thực SOD", status: false },
         { label: "Ảnh thẻ", status: false },
         { label: "Thông tin bệnh nhân", status: false }
     ]);
@@ -81,36 +72,9 @@ export default function CheckInfo() {
 							personalInfo: receivedData,
 						};
 					});
-				} else if ("DSCert" in receivedData) {
-                    console.log(receivedData);
-                    toggleStatus(1)
-					setPatientInfo((prev) => {
-						return {
-							...prev,
-							dsCert: receivedData.DSCert,
-						};
-					});
-				} else if ("ChipAuthen" in receivedData) {
-                    console.log(receivedData);
-                    toggleStatus(2)
-					setPatientInfo((prev) => {
-						return {
-							...prev,
-							chipAuthen: receivedData.ChipAuthen,
-						};
-					});
-				} else if ("VerifySOD" in receivedData) {
-                    console.log(receivedData);
-                    toggleStatus(3)
-					setPatientInfo((prev) => {
-						return {
-							...prev,
-							verifySOD: receivedData.VerifySOD,
-						};
-					});
 				} else if (receivedData.id === "4") {
                     console.log(receivedData);
-                    toggleStatus(4)
+                    toggleStatus(1)
 					setPatientInfo((prev) => {
 						return {
 							...prev,
@@ -156,9 +120,11 @@ export default function CheckInfo() {
                                 patientHISInfo: respone.data,
                             };
                         });
-                        toggleStatus(5)
+                        toggleStatus(2)
                     }
-                } 
+                } else {
+                    navigate("/mer/new-patient")
+                }
             } catch (error) {
                 console.log(error);
                 openNotificationWithIcon("Lỗi", "Lỗi lấy dữ liệu bệnh nhân");
@@ -185,7 +151,7 @@ export default function CheckInfo() {
                                 insuranceInfo: respone.data,
                             };
                         });
-                        toggleStatus(6)
+                        toggleStatus(3)
                     }
                 }
             } catch (error) {
