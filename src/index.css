@@ -1,13 +1,71 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-gradient-to-r from-gray-200 to-stone-200 pt-16 md:pt-20
+    }
+
+    /* .ant-table-column-sorter-tooltip:hover {
+        display: none !important;
+    } */
+
+    /* Ẩn scrollbar trên Chrome, Edge, Safari */
+    .scroll-hidden::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Ẩn trên Firefox */
+    .scroll-hidden {
+        scrollbar-width: none;
+    }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer components {
+    .loading-dots::after {
+        content: "";
+        animation: dots 1s steps(3, end) infinite;
+    }
+
+    @keyframes dots {
+        0% {
+            content: "";
+        }
+
+        33% {
+            content: ".";
+        }
+
+        66% {
+            content: "..";
+        }
+
+        100% {
+            content: "...";
+        }
+    }
+
+    .print-pdf {
+        @apply text-sm p-4 w-[148mm] h-[210mm] bg-white text-black;
+    }
+
+    @keyframes wiggle {
+
+        0%,
+        100% {
+            transform: rotate(-40deg);
+        }
+
+        50% {
+            transform: rotate(40deg);
+        }
+    }
+
+    .animate-wiggle {
+        display: inline-block;
+        animation: wiggle 3s infinite;
+    }
 }
