@@ -1,7 +1,7 @@
 import { HIS_API_URL, HIS_API_URL_1, HIS_MERCHANT_ID } from "./config";
 import { convertDateFormat } from "../utils/helpers/index";
 import { encodeHMACSHA265 } from "../utils/helpers/encrypt";
-import { get } from "./request"
+import { get, post } from "./request"
 
 export async function getProvince() {
 	const timestamp = Date.now().toString();
@@ -148,3 +148,20 @@ export async function getCheckStatusPayment(soPhieu, maHoSo) {
 	return await respone.json()
 }
 
+export async function postMedicalRegister(data) {
+	const timestamp = Date.now().toString();
+	const sign = await encodeHMACSHA265(
+		`${HIS_MERCHANT_ID}|${timestamp}|${data.THONG_TIN_BENH_NHAN.MA_BN}`
+	);
+    const respone = await post(HIS_API_URL_1, 
+        "/dangky-kcb", 
+        {
+			"Content-Type": "application/json",
+			"x-sign": sign,
+			"x-merchant-id": HIS_MERCHANT_ID,
+			"x-timestamp": timestamp,
+		},
+		data
+    );
+	return await respone.json()
+}

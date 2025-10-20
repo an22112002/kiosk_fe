@@ -1,23 +1,25 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Select, Input } from "antd";
-import Keyboard from "react-simple-keyboard";
+import { useGlobal } from "../../context/GlobalContext";
 import {
   getProvince,
   getNationality,
   getEthnic,
   getOccupations,
-} from "../api/call_API";
+} from "../../api/call_API";
 import "react-simple-keyboard/build/css/index.css";
 
 export default function InputForm() {
-  const [activeField, setActiveField] = useState("");
-  const [phone, setPhone] = useState("");
+  const navigate = useNavigate()
+  const { setNpInfo, flow } = useGlobal()
   const [formData, setFormData] = useState({
     province: "",
     commune: "",
     job: "",
     ethnic: "",
     national: "",
+    phone: ""
   });
 
   const [TINH, setTINH] = useState(null);
@@ -26,7 +28,6 @@ export default function InputForm() {
   const [NAL, setNAL] = useState(null);
   const [JOB, setJOB] = useState(null);
 
-  const [keyboardInput, setKeyboardInput] = useState("");
 
   // Load dữ liệu từ API
   useEffect(() => {
@@ -98,22 +99,23 @@ export default function InputForm() {
   };
 
   // Xử lý thay đổi Select
-  const handleSelectChange = (key, value) => {
+  const handleInputChange = (key, value) => {
     setFormData((prev) => ({
       ...prev,
       [key]: value,
-      ...(key === "province" ? { commune: "" } : {}), // reset xã nếu đổi tỉnh
+      ...(key === "province" ? { commune: "" } : {}
+      ), // reset xã nếu đổi tỉnh
     }));
   };
 
-  // Xử lý bàn phím ảo
-  const handleKeyboardInput = (input) => {
-    setKeyboardInput(input);
-    if (activeField) {
-      setFormData((prev) => ({ ...prev, [activeField]: input }));
-      if (activeField === "phone") setPhone(input);
+  //
+  const handleNextStep = () => {
+    setNpInfo(formData)
+    if (flow === "insur") {
+      navigate("/mer/insur/register")
     }
-  };
+    navigate("/mer/non-insur/register")
+  }
 
   const fields = [
     { label: "Tỉnh / Thành phố (*)", key: "province" },
@@ -132,15 +134,12 @@ export default function InputForm() {
             Số điện thoại (*):
           </label>
           <Input
-            value={phone}
             maxLength={10}
-            onFocus={() => {
-              setActiveField("phone");
-              setKeyboardInput(phone || "");
-            }}
             onChange={(e) => {
               const value = e.target.value;
-              if (/^[0-9]*$/.test(value)) setPhone(value);
+              if (/^[0-9]*$/.test(value)) {
+                handleInputChange("phone", value)
+              }
             }}
             placeholder="Nhập số điện thoại"
             className="w-[65%]"
@@ -191,11 +190,8 @@ export default function InputForm() {
                 showSearch
                 value={formData[field.key]}
                 placeholder={`Chọn hoặc nhập ${field.label.toLowerCase()}`}
-                onFocus={() => {
-                  setActiveField(field.key);
-                  setKeyboardInput(formData[field.key] || "");
-                }}
-                onChange={(value) => handleSelectChange(field.key, value)}
+                onFocus={null}
+                onChange={(value) => handleInputChange(field.key, value)}
                 className="w-[65%]"
                 options={options}
                 filterOption={(input, option) =>
@@ -209,7 +205,7 @@ export default function InputForm() {
       </div>
 
       {/* Bàn phím ảo */}
-      {activeField && (
+      {/* {activeField && (
         <div className="mt-6 w-full max-w-[600px]">
           <p className="text-gray-600 text-center mb-2">
             Đang nhập cho trường:{" "}
@@ -244,7 +240,23 @@ export default function InputForm() {
             input={keyboardInput}
           />
         </div>
-      )}
+      )} */}
+        {/* Nút dưới cùng */}
+          <div className="fixed left-1/2 -translate-x-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl 
+                            hover:from-green-500 hover:to-emerald-600 transition-all duration-500 ease-in-out 
+                            font-semibold text-[14px] sm:text-[18px] lg:text-[22px]"
+            >Trở lại</button>
+
+            <button
+              onClick={handleNextStep}
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl 
+                            hover:from-green-500 hover:to-emerald-600 transition-all duration-500 ease-in-out 
+                            font-semibold text-[14px] sm:text-[18px] lg:text-[22px]"
+            >Tiếp tục</button>
+            </div>
     </div>
   );
 }

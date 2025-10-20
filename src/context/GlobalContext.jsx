@@ -1,5 +1,5 @@
 import { createContext, useState, useContext } from "react";
-import { INITIAL_INFO } from "../utils/constants/default" ;
+import { INITIAL_INFO, NEW_PATIENT_INFO } from "../utils/constants/default" ;
 
 // Tạo context
 const GlobalContext = createContext();
@@ -9,14 +9,18 @@ export const GlobalProvider = ({ children }) => {
  // Các state
   const [stateStep, setStateStep] = useState(1);
   const [flow, setFlow] = useState("");
-  const [selectedService, setSelectedService] = useState("");
+  const [selectedService, setSelectedService] = useState(null);
   const [patientInfo, setPatientInfo] = useState(INITIAL_INFO);
+  const [npInfo, setNpInfo] = useState(NEW_PATIENT_INFO);
+  const [paymentInfo, setPaymentInfo] = useState(null);
 
   const resetGlobal = () => {
     setStateStep(1);
     setFlow("");
     setSelectedService("");
     setPatientInfo(INITIAL_INFO);
+    setNpInfo(INITIAL_INFO);
+    setPaymentInfo(null);
   };
 
   return (
@@ -30,6 +34,10 @@ export const GlobalProvider = ({ children }) => {
         setFlow,
         selectedService,
         setSelectedService,
+        npInfo, 
+        setNpInfo,
+        paymentInfo,
+        setPaymentInfo,
         resetGlobal
       }}
     >

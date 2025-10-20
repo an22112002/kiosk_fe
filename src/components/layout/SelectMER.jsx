@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Helmet } from "react-helmet-async"
 import { Modal } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { useGlobal } from '../context/GlobalContext';
+import { useGlobal } from '../../context/GlobalContext';
 
 export default function SelectMER() {
     const button = ['Bảo hiểm y tế', 'Dịch vụ']

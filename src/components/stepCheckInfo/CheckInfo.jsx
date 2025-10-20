@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import { BsX, BsCheck } from "react-icons/bs";
 import { Helmet } from "react-helmet-async"
 import { Modal } from 'antd'
-import { useGlobal } from '../context/GlobalContext';
+import { useGlobal } from '../../context/GlobalContext';
 import { LoadingOutlined } from '@ant-design/icons'
-import { CAMERA_WS_URL } from '../api/config'
-import { openNotificationWithIcon } from '../utils/helpers';
-import { getPatientInfo, getPatientInsurance } from '../api/call_API';
+import { CAMERA_WS_URL } from '../../api/config'
+import { openNotification } from '../../utils/helpers';
+import { getPatientInfo, getPatientInsurance } from '../../api/call_API';
 
 export default function CheckInfo() {
     const [localLoading, setLocalLoading] = useState(true)
@@ -84,7 +84,7 @@ export default function CheckInfo() {
 				}
 			} catch (err) {
 				console.log("Error parsing WebSocket message:", err);
-                openNotificationWithIcon("Lỗi kết nối", "Lỗi kết nối với đầu đọc thẻ")
+                openNotification("Lỗi kết nối", "Lỗi kết nối với đầu đọc thẻ")
 			}
 		};
 
@@ -124,10 +124,11 @@ export default function CheckInfo() {
                     }
                 } else {
                     navigate("/mer/new-patient")
+                    openNotification("Không có dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu")
                 }
             } catch (error) {
                 console.log(error);
-                openNotificationWithIcon("Lỗi", "Lỗi lấy dữ liệu bệnh nhân");
+                openNotification("Lỗi", "Lỗi lấy dữ liệu bệnh nhân");
             }
         }
         fetchPatientInfo()
@@ -153,10 +154,12 @@ export default function CheckInfo() {
                         });
                         toggleStatus(3)
                     }
+                } else {
+                    setNonInserCase(true)
                 }
             } catch (error) {
                 console.log(error);
-                openNotificationWithIcon("Lỗi", "Lỗi lấy dữ liệu bhyt");
+                openNotification("Lỗi", "Lỗi lấy dữ liệu bhyt");
             }
         }
         if (flow === "insur") fetchPatientInsur()
@@ -185,6 +188,7 @@ export default function CheckInfo() {
             <Helmet>
                 <title>Kiểm tra thông tin</title>
             </Helmet>
+
             {/* Kiểm tra thông tin */}
             <Modal
                 open={localLoading}
@@ -294,7 +298,7 @@ export default function CheckInfo() {
                 </div>
             </div>
             {/* Nút dưới cùng */}
-            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
+            <div className="fixed left-1/2 -translate-x-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
                 <button
                     onClick={() => navigate(-1)}
                     className="flex-1 px-6 py-3 bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl 

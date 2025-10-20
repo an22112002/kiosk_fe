@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Modal, Spin } from "antd"
-import { useGlobal } from "../context/GlobalContext"
+import { useGlobal } from "../../context/GlobalContext"
 import { LoadingOutlined } from '@ant-design/icons'
-import { getClinicServices } from "../api/call_API"
+import { getClinicServices } from "../../api/call_API"
+import RegisterInfo from "./RegisterInfo"
+import { splitName, convertDateFormat, openNotification } from "../../utils/helpers";
+import { postMedicalRegister } from "../../api/call_API";
 
-function ClinicRoom() {
+export default function ClinicRoom() {
     const [selectedClinic, setSelectedClinic] = useState(null)
     const [clinicRooms, setClinicRooms] = useState([])
     const navigate = useNavigate()
-    const { setStateStep, flow, selectedService, setSelectedService } = useGlobal()
+    const { setStateStep, flow, selectedService, setSelectedService, patientInfo, npInfo, setPaymentInfo } = useGlobal()
+    const [confirm, setConfirm] = useState(false)
     const [booking, setBooking] = useState(true)
     const [loading, setLoading] = useState(true)
+
+    const dataInfo = patientInfo.personalInfo
+    const insuranceInfo = patientInfo.insuranceInfo
 
     useEffect(() => {
         // bước 2
@@ -31,6 +38,7 @@ function ClinicRoom() {
                         (khoa.PHONG_KHAM || []).map((phong) => ({
                             code: phong.ID_PHONG_KHAM || phong.MA_PHONG_KHAM,
                             name: phong.TEN_PHONG_KHAM,
+                            departmentCode: khoa.ID_KHOA,
                             services: (phong.DICH_VU || []).map((dichVu) => ({
                                 code: dichVu.MA_DICH_VU,
                                 label: dichVu.TEN_DICH_VU,
@@ -59,11 +67,7 @@ function ClinicRoom() {
                         return acc;
                     }, {})
                 );
-
-                // Sắp xếp hoặc giới hạn số lượng nếu cần
-                const finalRooms = mergedRooms.slice(0, 5);
-
-                setClinicRooms(finalRooms);
+                setClinicRooms(mergedRooms);
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách phòng khám:", error);
             } finally {
@@ -74,31 +78,98 @@ function ClinicRoom() {
         fetchClinicData();
     }, [flow]);
 
-
-
     const handleChooseService = (service) => {
-        const option = { name: service.label, clinic: selectedClinic.name, price: service.price }
+        const option = { 
+            name: service.label, // tên dịch vụ
+            serviceID: service.code, // mã dịch vụ
+            clinic: selectedClinic.name, // tên phòng khám
+            price: service.price, // giá dịch vụ
+            clinicID: selectedClinic.code, // mã phòng khám
+            departmentID: selectedClinic.departmentCode // mã khoa
+        }
+        console.log(option)
         setSelectedService(option)
         setSelectedClinic(null)
         setBooking(false)        
     }
 
-    const handleRegister = async () => {
+    const handleConfirm = async () => {
         if (!selectedService) {
-            alert("Vui lòng chọn dịch vụ.")
+            openNotification("Lỗi", "Bạn chưa chọn dịch vụ nào")
             return
         }
-        console.log("Chưa có thanh toán")
-        // const payload = {
-        //     service_name: selectedService.name,
-        //     type: flowType,
-        // }
-        // const citizen_id = insurance_check_data?.citizen_id || patient_exit_data?.patient_id || patient_register_initial?.patient_id
-
+        setConfirm(true)
     }
 
-    const handleBack = async () => {
-        navigate(-1)
+    const handleRegister = async () => {
+        // nếu là khám dịch vụ, bỏ qua
+        if (flow === "insur") {
+            return true
+        }
+        try {
+            const { firstName, lastName } = splitName(dataInfo?.personName ?? "");
+            const patientData = patientInfo.patientHISInfo != null ? patientInfo.patientHISInfo
+                : {
+                    HO_BN: lastName,
+                    TEN_BN: firstName,
+                    HO_TEN: dataInfo?.personName ?? "",
+                    DIA_CHI: dataInfo?.residencePlace ?? "",
+                    DIEN_THOAI: dataInfo?.phone ? dataInfo.phone : npInfo.phone,
+                    GIOI_TINH: dataInfo?.gender ? dataInfo.gender === "Nữ" ? 1 : 2 : 3,
+                    MA_BN: "",
+                    NGAY_SINH: convertDateFormat(dataInfo?.dateOfBirth ?? ""),
+                    SO_GTTT: dataInfo?.idCode ?? "",
+                    MA_DANTOC: npInfo?.ethnic ?? "",
+                    MA_NGHE_NGHIEP: npInfo?.job ?? "",
+                    MA_QUOCTICH: npInfo?.national ?? "",
+                    MATINH_CUTRU: npInfo?.province ?? "",
+                    MAXA_CU_TRU: npInfo?.commune ?? "",
+                };
+                patientData["MA_THE_BHYT"] = patientData?.["MA_THE_BHYT"] ?? insuranceInfo?.["MA_THE_BHYT"] ?? "";
+                patientData["GT_THE_TU"] = convertDateFormat(patientData?.["GT_THE_TU"] ?? insuranceInfo?.["GT_THE_TU"] ?? "");
+                patientData["GT_THE_DEN"] = convertDateFormat(patientData?.["GT_THE_DEN"] ?? insuranceInfo?.["GT_THE_DEN"] ?? "");
+                patientData["MA_DKBD"] = patientData?.["MA_DKBD"] ?? insuranceInfo?.["MA_DKBD"] ?? "";
+    
+                const data = {
+                    BN_UU_TIEN: 0,
+                    ID_LOAI_KHAM: "01",
+                    THONG_TIN_BENH_NHAN: patientData,
+                    THONG_TIN_DICH_VU: {
+                        ID_KHOA: selectedService?.departmentID,
+                        ID_PHONG_KHAM: selectedService?.clinicID,
+                        MA_DICH_VU: selectedService?.serviceID
+                    },
+                };
+                console.log(data)
+                const respone = await postMedicalRegister(data);
+    
+                if (respone.code === "000") {
+                    // lưu thông tin gửi về
+                    setPaymentInfo(respone.data)
+                    return true
+                } else {
+                    openNotification("Lỗi xảy ra", respone.message);
+                    return false
+                }
+        } catch (error) {
+            console.log(error);
+            openNotification("Lỗi xử lý", "");
+            return false
+        }
+    };
+
+    const sendRegistration = async () => {
+        const result = await handleRegister();
+        if (result) {
+            openNotification("Thông báo", "Đã đăng ký dịch vụ thành công", "success");
+            if (flow === "insur") {
+                navigate("/mer/insur/print-bill")
+            } else {
+                navigate("/mer/non-insur/payment")
+            }
+        } else {
+            openNotification("Lỗi", "Đăng ký dịch vụ thất bại");
+        }
     }
 
     return (
@@ -119,6 +190,7 @@ function ClinicRoom() {
                             </button>
                         ))}
                     </div>
+                    {/* Bảng chọn dịch vụ */}
                     <Modal
                         open={!!selectedClinic}
                         onCancel={() => setSelectedClinic(null)}
@@ -144,6 +216,27 @@ function ClinicRoom() {
                         </div>
                         )}
                     </Modal>
+
+                    {/* Bảng xác thực */}
+                    <Modal
+                        open={confirm}
+                        footer={null}
+                        centered
+                    >
+                        <RegisterInfo></RegisterInfo>
+                        <div className="grid grid-cols-2 gap-[20px]">
+                            <button
+                                className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
+                                onClick={() => {setConfirm(false)}}>
+                                Hủy bỏ
+                            </button>
+                            <button
+                                className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
+                                onClick={sendRegistration}>
+                                {(flow === "insur" ? "Bước tiếp theo: In phiếu" : "Bước tiếp theo: Thanh toán")}
+                            </button>
+                        </div>
+                    </Modal>
                 </div>
 
                 <div className="flex flex-col justify-center items-center text-[14px] md:text-[16px] lg:text-[18px]">
@@ -152,13 +245,13 @@ function ClinicRoom() {
                         {<div className="grid grid-cols-2 gap-[20px]">
                             <button
                                 className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
-                                onClick={handleBack}>
+                                onClick={() => {navigate(-1)}}>
                                 Trở lại
                             </button>
                             <button disabled={booking}
                                 className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
-                                onClick={handleRegister}>
-                                {loading === true ? (<span className="loading-dots">Đang xử lý</span>) : (flow === "insur" ? "Bước tiếp theo: In phiếu" : "Bước tiếp theo: Thanh toán")}
+                                onClick={handleConfirm}>
+                                {loading === true ? (<span className="loading-dots">Đang xử lý</span>) : ("Xác thực")}
                             </button>
                         </div>}
                     </Spin>
@@ -167,5 +260,3 @@ function ClinicRoom() {
         </>
     )
 }
-
-export default ClinicRoom

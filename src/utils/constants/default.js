@@ -8,3 +8,12 @@ export const INITIAL_INFO = {
 	insuranceInfo: null,
 	patientHISInfo: null,
 };
+
+export const NEW_PATIENT_INFO = {
+	ethnic: "",
+	job: "",
+	national: "",
+	province: "",
+	commune: "",
+	phone: ""
+}

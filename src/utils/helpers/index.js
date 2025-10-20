@@ -1,15 +1,14 @@
 import { notification } from "antd";
 
-export const openNotificationWithIcon = (
-	message = "Đã có lỗi xảy ra!",
-	description = "",
-	duration = 10,
+export const openNotification = (
+	message,
+	description,
 	type = "error" // "success" | "info" | "warning" | "error"
 ) => {
 	const content = {
 		message: message,
 		description: description,
-		duration: duration,
+		duration: 10,
 	};
 
 	switch (type) {
@@ -33,6 +32,13 @@ export const openNotificationWithIcon = (
 			notification.error(content);
 			break;
 	}
+};
+
+export const splitName = (fullName) => {
+	const parts = fullName.trim().split(/\s+/);
+	const lastName = parts[0];
+	const firstName = parts.slice(1).join(" ");
+	return { firstName, lastName };
 };
 
 export const isValidJSON = (data) => {
