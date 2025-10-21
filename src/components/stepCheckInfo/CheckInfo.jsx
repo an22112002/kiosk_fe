@@ -8,21 +8,25 @@ import { LoadingOutlined } from '@ant-design/icons'
 import { CAMERA_WS_URL } from '../../api/config'
 import { openNotification } from '../../utils/helpers';
 import { getPatientInfo, getPatientInsurance } from '../../api/call_API';
+import InsertPatient from '../registerNewPatient/InsertPatient';
+import PatientInfoDisplay from './PatientInfoDisplay';
 
 export default function CheckInfo() {
     const [localLoading, setLocalLoading] = useState(true)
     const [nonInserCase, setNonInserCase] = useState(false)
-    const { setStateStep, patientInfo, setPatientInfo, flow } = useGlobal();
+    const [addPatient, setAddPatient] = useState(false)
+    const { setStateStep, patientInfo, setPatientInfo, flow, npInfo, logGlobal} = useGlobal();
     const navigate = useNavigate()
 
     // Chỉnh bước 1
     useEffect(() => {
+        console.log(patientInfo.personalInfo)
         setStateStep(1)
         if (patientInfo?.personalInfo) {
             toggleStatus(0);
             toggleStatus(1);
         }
-        if (patientInfo?.patientHISInfo) {
+        if (patientInfo?.patientHISInfo || npInfo) {
             toggleStatus(2);
         }
         if (patientInfo?.insuranceInfo) {
@@ -50,6 +54,12 @@ export default function CheckInfo() {
         newFields[index].status = !newFields[index].status;
         setFields(newFields);
     };
+
+    // đóng thêm thông tin
+    const closeAddPatient = () => {
+        toggleStatus(2)
+        setAddPatient(false)
+    }
 
     // Liên kết đầu đọc lấy dữ liệu CCCD
     useEffect(() => {
@@ -112,7 +122,7 @@ export default function CheckInfo() {
                 if (respone.code === "000") {
                     // Dữ liệu trả về chống -> ko có dữ liệu -> Thêm bệnh nhân
                     if (respone.data == null) {
-                        navigate("/mer/new-patient")
+                        setAddPatient(true)
                     } else {
                         setPatientInfo((prev) => {
                             return {
@@ -123,15 +133,21 @@ export default function CheckInfo() {
                         toggleStatus(2)
                     }
                 } else {
-                    navigate("/mer/new-patient")
                     openNotification("Không có dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu")
+                    setAddPatient(true)
                 }
             } catch (error) {
                 console.log(error);
                 openNotification("Lỗi", "Lỗi lấy dữ liệu bệnh nhân");
             }
         }
-        fetchPatientInfo()
+        if (!npInfo) {
+            if (!patientInfo?.patientHISInfo) {
+                fetchPatientInfo();
+            }
+        } else {
+            toggleStatus(2)
+        }
     }, [patientInfo?.personalInfo])
 
     // Lấy dữ liệu bhyt
@@ -176,6 +192,7 @@ export default function CheckInfo() {
     }, [fields])
 
     const handleNextStep = ( () => {
+        logGlobal()
         if (flow === "insur") {
             navigate("/mer/insur/register")
         } else {
@@ -228,6 +245,7 @@ export default function CheckInfo() {
                 </div>
             </Modal>
 
+            {/* Báo không bảo hiểm */}
             <Modal
                 open={nonInserCase}
                 footer={null}
@@ -236,7 +254,7 @@ export default function CheckInfo() {
                 maskClosable={false}
                 styles={{ body: { textAlign: "center" } }}
             >
-                <div className="text-lg font-semibold loading-dots">Bạn không có bảo hiểm, chỉ có thể chọn khám dịch vụ.</div>
+                <div className="text-lg font-semibold">Bạn không có bảo hiểm, chỉ có thể chọn khám dịch vụ</div>
                 <br></br>
                 <div className="flex px-10 items-center justify-center bg-gradient-to-r from-colorTwo to-colorFive text-black rounded-xl 
                                             hover:from-green-500 hover:to-emerald-600 hover:scale-105 
@@ -246,55 +264,25 @@ export default function CheckInfo() {
                     </button>
                 </div>
             </Modal>
+
+            <Modal
+                open={addPatient}
+                footer={null}
+                closable={false}
+                centered
+                maskClosable={false}
+                styles={{ body: { textAlign: "center" } }}
+            >
+                <InsertPatient onBack={closeAddPatient}></InsertPatient>
+            </Modal>
             
             <div className={`transition-all duration-300 ${localLoading ? 'blur-sm !bg-white/20' : ''}`}>
                 <div className='text-center px-7 py-8 rounded-lg'>
                     <div className='mb-3 text-colorOne font-bold text-[18px] lg:text-[25px]'>
                         <h1>Xác thực công dân</h1>
                     </div>
-
-                    <div className='flex justify-center'>
-                        <div className='w-full sm:w-[80%] lg:w-[45vw] grid grid-cols-3 gap-4 text-left'>
-
-                            {/* Cột 1: Ảnh */}
-                            <div className='flex justify-center items-start'>
-                                {patientInfo?.faceImage?.data?.img_data ? (
-                                    <img
-                                        src={patientInfo.faceImage.data.img_data}
-                                        alt='Ảnh công dân'
-                                        className='w-32 h-40 object-cover rounded-lg border'
-                                    />
-                                ) : null}
-                            </div>
-
-                            {/* Cột 2: Tên các trường */}
-                            <div className='flex flex-col justify-start gap-2 font-semibold text-gray-700'>
-                                <span>Họ và tên:</span>
-                                <span>Ngày sinh:</span>
-                                <span>Giới tính:</span>
-                                <span>Quốc tịch:</span>
-                                <span>Quê quán:</span>
-                                <span>Địa chỉ thường trú:</span>
-                                <span>Số điện thoại:</span>
-                            </div>
-
-                            {/* Cột 3: Thông tin tương ứng */}
-                            <div className='flex flex-col justify-start gap-2 text-gray-800'>
-                                {patientInfo?.personalInfo && patientInfo?.patientHISInfo ? (
-                                    <>
-                                        <span>{patientInfo.personalInfo.data.personName}</span>
-                                        <span>{patientInfo.personalInfo.data.dateOfBirth}</span>
-                                        <span>{patientInfo.personalInfo.data.gender}</span>
-                                        <span>{patientInfo.personalInfo.data.nationality}</span>
-                                        <span>{patientInfo.personalInfo.data.originPlace}</span>
-                                        <span>{patientInfo.personalInfo.data.residencePlace}</span>
-                                        <span>{patientInfo.patientHISInfo.DIEN_THOAI}</span>
-                                    </>
-                                ) : null}
-                            </div>
-
-                        </div>
-                    </div>
+                    <PatientInfoDisplay patientInfo={patientInfo} npInfo={npInfo}></PatientInfoDisplay>
+                    
                 </div>
             </div>
             {/* Nút dưới cùng */}

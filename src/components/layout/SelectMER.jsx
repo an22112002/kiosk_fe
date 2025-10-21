@@ -9,26 +9,25 @@ export default function SelectMER() {
     const button = ['Bảo hiểm y tế', 'Dịch vụ']
     const navigate = useNavigate()
     const [localLoading, setLocalLoading] = useState(false)
-    const { setFlow, resetGlobal } = useGlobal()
+    const { setFlowAsync, resetGlobal } = useGlobal()
 
     // đặt lại các giá trị state về mặc định (xóa dữ liệu người dùng trước)
     useEffect(() => {
         resetGlobal()
     }, [])
 
-    const handleButtonChange = (text) => {
+    const handleButtonChange = async (text) => {
         setLocalLoading(true)
-        const delay = 1000
-        setTimeout(() => {
+        setTimeout(async () => {
             if (text === "Bảo hiểm y tế") {
-                setFlow("insur")
+                await setFlowAsync("insur")
                 navigate('/mer/insur/checkPatient')
             } else if (text === "Dịch vụ") {
-                setFlow("non-insur")
+                await setFlowAsync("non-insur")
                 navigate('/mer/non-insur/checkPatient')
             }
             setLocalLoading(false)
-        }, delay)
+        }, 5000)
     }
 
     return (
@@ -67,7 +66,7 @@ export default function SelectMER() {
                 </div>
             </div>
             {/* Nút dưới cùng */}
-                <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
+                <div className="fixed left-1/2 -translate-x-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
                     <button
                         onClick={() => navigate(-1)}
                         className="flex-1 px-6 py-3 bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl 

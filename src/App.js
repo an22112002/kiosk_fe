@@ -5,9 +5,9 @@ import SelectMER from "./components/layout/SelectMER";
 import InsurLayout from "./components/layout/Insur";
 import CheckInfo from "./components/stepCheckInfo/CheckInfo";
 import NonInsurLayout from "./components/layout/NonInsur";
-import InsertPatient from "./components/registerNewPatient/InsertPatient";
 import RegisterService from "./components/stepChooseService/RegisterService";
 import PaymentLayout from "./components/stepPayment/Payment";
+import PrintBill from "./components/stepPrintBill/printBill";
 
 function App() {
   return (
@@ -24,14 +24,15 @@ function App() {
           <Route path="insur" element={<InsurLayout />}>
             <Route path="checkPatient" element={<CheckInfo />}></Route>
             <Route path="register" element={<RegisterService />}></Route>
+            <Route path="print-bill" element={<PrintBill />}></Route>
           </Route>
           {/* luồng không có bảo hiểm */}
           <Route path="non-insur" element={<NonInsurLayout />}>
             <Route path="checkPatient" element={<CheckInfo />}></Route>
             <Route path="register" element={<RegisterService />}></Route>
             <Route path="payment" element={<PaymentLayout />}></Route>
+            <Route path="print-bill" element={<PrintBill />}></Route>
           </Route>
-          <Route path="new-patient" element={<InsertPatient />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>

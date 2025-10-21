@@ -41,6 +41,25 @@ export const splitName = (fullName) => {
 	return { firstName, lastName };
 };
 
+export const parseDateFromDDMMYYYY = (dateString) => {
+	const [day, month, year] = dateString.split("/").map(Number);
+	return new Date(year, month - 1, day);
+};
+
+export const formatCurrency = (amount) => {
+	return new Intl.NumberFormat("vi-VN").format(amount) + " VNĐ";
+};
+
+export const calculateAge = (birthday) => {
+	const birthdayDate = parseDateFromDDMMYYYY(birthday);
+	if (!birthdayDate) return "N/A";
+	else {
+		const ageDifMs = Date.now() - birthdayDate.getTime();
+		const ageDate = new Date(ageDifMs);
+		return Math.abs(ageDate.getUTCFullYear() - 1970);
+	}
+};
+
 export const isValidJSON = (data) => {
 	try {
 		if (typeof data !== "string") {

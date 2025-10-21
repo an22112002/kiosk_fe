@@ -7,56 +7,98 @@ import { useNavigate } from "react-router-dom";
 
 export default function ShowQR() {
     const navigate = useNavigate()
-    const {paymentInfo} = useGlobal()
-    const { success, setSuccess } = useState(false)
+    const {paymentInfo, setPaymentStateAsync} = useGlobal()
+    const [ countDown, setCountDown ] = useState(6)
+    const [ success, setSuccess ] = useState(false)
 
     const handleCheckPayment = async () => {
-        const respone = await getCheckStatusPayment(paymentInfo.THONG_TIN_THANH_TOAN.SO_PHIEU.MA_HO_SO)
-        if (respone.code === "000") {
+        if (!paymentInfo?.THONG_TIN_THANH_TOAN && !paymentInfo?.THONG_TIN_TIEP_NHAN) {
+            openNotification("Lỗi", "Không có thông tin thanh toán")
+            return;
+        }
+        const respone = await getCheckStatusPayment(paymentInfo.THONG_TIN_THANH_TOAN.SO_PHIEU, paymentInfo.THONG_TIN_TIEP_NHAN.MA_LK)
+        if (respone.data.TRANG_THAI === "Đã thanh toán") {
             openNotification("Thông báo", "Thanh toán thành công", "success")
+            await setPaymentStateAsync("Đã thanh toán")
             setSuccess(true)
+            setCountDown(5)
+        }
+    }
 
-            navigate("/mer/non-insur/print-bill")
+    const handleCheckPaymentNoNotification = async () => {
+        if (!paymentInfo?.THONG_TIN_THANH_TOAN && !paymentInfo?.THONG_TIN_TIEP_NHAN) {
+            return;
+        }
+        const respone = await getCheckStatusPayment(paymentInfo.THONG_TIN_THANH_TOAN.SO_PHIEU, paymentInfo.THONG_TIN_TIEP_NHAN.MA_LK)
+        if (respone.data.TRANG_THAI === "Đã thanh toán") {
+            await setPaymentStateAsync("Đã thanh toán")
+            setSuccess(true)
+            setCountDown(5)
         }
     }
 
     useEffect(() => {
-        // Gọi ngay lần đầu
-        handleCheckPayment();
+        if (!success) return;
 
-        // Lặp lại mỗi 5 giây
-        const interval = setInterval(() => {
+        if (countDown === 0) {
+            navigate("/mer/non-insur/print-bill");
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            setCountDown((prev) => prev - 1);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [countDown, success, navigate]);
+
+    useEffect(() => {
+        if (!success) {
+            // Gọi ngay lần đầu
             handleCheckPayment();
-        }, 5000);
 
-        // Dọn dẹp khi component bị unmount
-        return () => clearInterval(interval);
-    }, [success])
+            // Lặp lại mỗi 5 giây
+            const interval = setInterval(() => {
+                handleCheckPaymentNoNotification();
+            }, 5000);
+
+            // Dọn dẹp khi component bị unmount
+            return () => clearInterval(interval);
+        }
+    }, [success, handleCheckPaymentNoNotification])
 
     return (
-        <>
-        {paymentInfo?.THONG_TIN_THANH_TOAN?.QR_CODE ? (
-				<div className="mt-10 flex flex-col items-center">
-					<QRCodeSVG
-						value={paymentInfo.THONG_TIN_THANH_TOAN?.QR_CODE}
-						level="H"
-						size={256}
-					/>
-					<div className="text-2xl mt-6">
-						Xin vui lòng quét mã QR để thanh toán
-					</div>
-				</div>
-			) : null}
+        <div className="mt-auto min-h-20 w-full mb-[7px] flex flex-col items-center justify-center px-12 py-4 gap-4">
+            {paymentInfo?.THONG_TIN_THANH_TOAN?.QR_CODE && (
+                <div className="mt-10 flex flex-col items-center">
+                    <QRCodeSVG
+                        value={paymentInfo.THONG_TIN_THANH_TOAN?.QR_CODE}
+                        level="H"
+                        size={256}
+                    />
+                    <div className="text-2xl mt-6">
+                        Xin vui lòng quét mã QR để thanh toán
+                    </div>
+                </div>
+            )}
 
-			<div className="mt-auto min-h-20 w-full mb-[7px]">
-				<div className="flex items-center w-full h-full px-12 gap-10 py-4">
-					<button
-                    className="p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200"
-                    onClick={handleCheckPayment}
-                    >Kiểm tra thanh toán
+            {countDown < 6 ? (
+                <div className="flex flex-col items-center justify-center w-full min-h-20 mb-[7px]">
+                    <h2 className="text-lg text-gray-700 font-medium">
+                        Tự chuyển hướng sau{" "}
+                        <span className="text-red-500 font-semibold">{countDown}s</span>
+                    </h2>
+                </div>
+            ) : (
+                <div className="flex flex-col items-center justify-center w-full min-h-20 mb-[7px]">
+                    <button
+                        className="p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200"
+                        onClick={handleCheckPayment}
+                    >
+                        Kiểm tra thanh toán
                     </button>
-				</div>
-			</div>
-        </>
+                </div>
+            )}
+        </div>
     )
 }

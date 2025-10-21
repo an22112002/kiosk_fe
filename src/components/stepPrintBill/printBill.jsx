@@ -1,40 +1,71 @@
 import { useGlobal } from "../../context/GlobalContext"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useReactToPrint } from "react-to-print";
+import { useReactToPrint } from "react-to-print"
+import InfoPrint from "./infoPrint"
 
 export default function PrintBill() {
-    const contentRef = useRef<HTMLDivElement>(null);
-    const reactToPrintFn = useReactToPrint({ contentRef });
+    const contentRef = useRef(null)
     const navigate = useNavigate()
-    const { setState, flow } = useGlobal()
+    const { setStateStep, flow, logGlobal } = useGlobal()
+    const [countDown, setCountDown] = useState(30)
 
+    const reactToPrintFn = useReactToPrint({ contentRef });
+
+    // Bước theo flow
     useEffect(() => {
-        if (flow == "insur") {
-            setState(3)
+        setStateStep(flow === "insur" ? 3 : 4)
+    }, [setStateStep, flow])
+
+    
+    // Auto print chỉ 1 lần, đảm bảo ref đã mount
+    useEffect(() => {
+        logGlobal()
+        const timer = setTimeout(() => {
+            if (contentRef.current) {
+                console.log("In phiếu: printing")
+                reactToPrintFn();
+            }
+        }, 3000); // đợi 3 giây
+
+        return () => clearTimeout(timer);
+    }, [])
+
+    // Countdown
+    useEffect(() => {
+        if (countDown <= 0) {
+            navigate("/")
+            return
         }
-        setState(4)
-    }, [setState, flow])
-
-    useEffect(() => {
-		reactToPrintFn();
-	}, []);
-
-    const backHomePage = () => {
-        navigate("/")
-    }
+        const timer = setTimeout(() => setCountDown(prev => prev - 1), 1000)
+        return () => clearTimeout(timer)
+    }, [countDown, navigate])
 
     return (
         <>
-            <div className="mt-auto min-h-20 w-full mb-[7px]">
-				<div className="flex items-center w-full h-full px-12 gap-10 py-4">
-					<button
+            {/* Nội dung in ẩn */}
+            <div style={{ position: "absolute", left: 0, top: 0, visibility: "hidden" }}>
+                <div ref={contentRef}>
+                    <InfoPrint />
+                </div>
+            </div>
+
+            {/* Giao diện hiển thị */}
+            <div className="mt-auto min-h-20 w-full mb-[7px] flex flex-col items-center justify-center px-12 py-4 gap-4">
+                <InfoPrint />
+
+                <button
                     className="p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200"
-                    onClick={backHomePage}
-                    >Chở lại trang chủ
-                    </button>
-				</div>
-			</div>
+                    onClick={() => navigate("/")}
+                >
+                    Trở lại trang chủ
+                </button>
+
+                <h2 className="text-lg text-gray-700 font-medium">
+                    Tự chuyển hướng sau{" "}
+                    <span className="text-red-500 font-semibold">{countDown}s</span>
+                </h2>
+            </div>
         </>
     )
 }

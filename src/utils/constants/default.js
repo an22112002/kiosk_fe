@@ -3,7 +3,6 @@ export const INITIAL_INFO = {
 	dsCert: "",
 	faceImage: null,
 	verifySOD: 0,
-	personalInfo: null,
 	//
 	insuranceInfo: null,
 	patientHISInfo: null,

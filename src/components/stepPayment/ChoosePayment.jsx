@@ -7,7 +7,7 @@ export default function ChoosePayment({ onNext }) {
     const button = ['Tiền mặt', 'Chuyển khoản']
     const info = ['|Thanh toán bằng tiền mặt tại quầy|', '|Chuyển khoản ngân hàng thông qua mã QR|']
 
-    const { flow, selectedService, patientInfo, npInfo, setPaymentInfo } = useGlobal()
+    const { flow, selectedService, patientInfo, npInfo, setPaymentInfo, setPaymentStateAsync } = useGlobal()
     const dataInfo = patientInfo.personalInfo
     const navigate = useNavigate()
 
@@ -69,12 +69,13 @@ export default function ChoosePayment({ onNext }) {
         if (result) {
             openNotification("Thông báo", "Đã đăng ký dịch vụ thành công", "success");
             if (text === "Tiền mặt") {
+                await setPaymentStateAsync("Thanh toán tại quầy")
                 navigate('/mer/non-insur/print-bill')
             } else {
                 onNext()
             }
         } else {
-            openNotification("Lỗi", "Không đăng ký được dich vụ")
+            openNotification("Lỗi", "Không đăng ký được dịch vụ")
         }
     }
 

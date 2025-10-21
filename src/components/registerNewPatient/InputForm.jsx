@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Select, Input } from "antd";
 import { useGlobal } from "../../context/GlobalContext";
+import Keyboard from "react-simple-keyboard";
+import "react-simple-keyboard/build/css/index.css";
+
 import {
   getProvince,
   getNationality,
@@ -11,8 +13,9 @@ import {
 import "react-simple-keyboard/build/css/index.css";
 
 export default function InputForm() {
-  const navigate = useNavigate()
-  const { setNpInfo, flow } = useGlobal()
+  const { npInfo, setNpInfo } = useGlobal()
+  const [activeField, setActiveField] = useState("")
+  const [keyboardInput, setKeyboardInput] = useState("")
   const [formData, setFormData] = useState({
     province: "",
     commune: "",
@@ -36,6 +39,15 @@ export default function InputForm() {
     handleLoadNational();
     handleLoadJob();
   }, []);
+
+  useEffect(() => {
+    setKeyboardInput("")
+  }, [activeField])
+
+  useEffect(() => {
+    setNpInfo(formData)
+    console.log("data", npInfo);
+  }, [formData])
 
   const handleLoadProvince = async () => {
     const respone = await getProvince();
@@ -78,10 +90,10 @@ export default function InputForm() {
     const respone = await getNationality();
     if (respone.code === "000") {
       const national = respone.data
-        .filter((item) => item.MA_QUOCTICH != null && item.MA_QUOCTICH !== "")
+        .filter((item) => item.MA_QUOCGIA != null && item.MA_QUOCGIA !== "")
         .map((item) => ({
-          MA_QT: item.MA_QUOCTICH,
-          TEN_QT: item.TEN_QUOCTICH,
+          MA_QT: item.MA_QUOCGIA,
+          TEN_QT: item.TEN_QUOCGIA,
         }));
       setNAL(national);
     }
@@ -97,25 +109,40 @@ export default function InputForm() {
       setJOB(jobs);
     }
   };
-
+  // Xử lý phone input
+  const checkPhoneInput = (value) => {
+    if (/^[0-9]*$/.test(value) && value.length <= 10) {
+      return true
+    }
+    return false
+  }
   // Xử lý thay đổi Select
   const handleInputChange = (key, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-      ...(key === "province" ? { commune: "" } : {}
-      ), // reset xã nếu đổi tỉnh
-    }));
+    if (key === "phone") {
+      if (checkPhoneInput(value)) {
+        setFormData((prev) => ({
+          ...prev,
+          [key]: value,
+        }));
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [key]: value,
+        ...(key === "province" ? { commune: "" } : {}
+        ), // reset xã nếu đổi tỉnh
+      }));
+    }
   };
 
-  //
-  const handleNextStep = () => {
-    setNpInfo(formData)
-    if (flow === "insur") {
-      navigate("/mer/insur/register")
+  // Xử lý input từ bàn phím ảo
+  const handleKeyboardInput = (input) => {
+    setKeyboardInput(input);
+    if (activeField) {
+      handleInputChange(activeField, input);
     }
-    navigate("/mer/non-insur/register")
-  }
+  };
+
 
   const fields = [
     { label: "Tỉnh / Thành phố (*)", key: "province" },
@@ -123,6 +150,7 @@ export default function InputForm() {
     { label: "Dân tộc (*)", key: "ethnic" },
     { label: "Quốc tịch (*)", key: "national" },
     { label: "Nghề nghiệp", key: "job" },
+    { label: "Điện thoại", key: "phone" },
   ];
 
   return (
@@ -134,78 +162,120 @@ export default function InputForm() {
             Số điện thoại (*):
           </label>
           <Input
+          value={formData.phone}
             maxLength={10}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (/^[0-9]*$/.test(value)) {
-                handleInputChange("phone", value)
-              }
-            }}
+            onFocus={() => setActiveField("phone")}
             placeholder="Nhập số điện thoại"
             className="w-[65%]"
           />
         </div>
 
         {/* Các trường select */}
-        {fields.map((field) => {
-          let options = [];
-          switch (field.key) {
-            case "province":
-              options =
-                TINH?.map((t) => ({ value: t.MA_TINH, label: t.TEN_TINH })) ||
-                [];
-              break;
-            case "commune":
-              options =
-                XA?.filter((x) => x.MA_TINH === formData.province).map((x) => ({
-                  value: x.MA_XA,
-                  label: x.TEN_XA,
-                })) || [];
-              break;
-            case "ethnic":
-              options =
-                ETHIC?.map((e) => ({ value: e.MA_DT, label: e.TEN_DT })) || [];
-              break;
-            case "national":
-              options =
-                NAL?.map((n) => ({ value: n.MA_QT, label: n.TEN_QT })) || [];
-              break;
-            case "job":
-              options =
-                JOB?.map((j) => ({ value: j.MA_NN, label: j.TEN_NN })) || [];
-              break;
-            default:
-              options = [];
-          }
+        {/* Tỉnh / Thành phố */}
+        <div className="flex items-center justify-between gap-3 w-full mb-2">
+          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+            Tỉnh / Thành phố (*):
+          </label>
+          <Select
+            showSearch
+            value={formData.province}
+            placeholder="Chọn hoặc nhập tỉnh / thành phố"
+            onFocus={() => setActiveField("province")}
+            onChange={(value) => handleInputChange("province", value)}
+            className="w-[65%]"
+            options={TINH?.map((t) => ({ value: t.MA_TINH, label: t.TEN_TINH })) || []}
+            filterOption={(input, option) =>
+              option?.label?.toLowerCase().includes(input.toLowerCase())
+            }
+          />
+        </div>
 
-          return (
-            <div
-              key={field.key}
-              className="flex items-center justify-between gap-3 w-full mb-2"
-            >
-              <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
-                {field.label}:
-              </label>
-              <Select
-                showSearch
-                value={formData[field.key]}
-                placeholder={`Chọn hoặc nhập ${field.label.toLowerCase()}`}
-                onFocus={null}
-                onChange={(value) => handleInputChange(field.key, value)}
-                className="w-[65%]"
-                options={options}
-                filterOption={(input, option) =>
-                  option?.label?.toLowerCase().includes(input.toLowerCase())
-                }
-                disabled={field.key === "commune" && !formData.province}
-              />
-            </div>
-          );
-        })}
+        {/* Xã / Phường */}
+        <div className="flex items-center justify-between gap-3 w-full mb-2">
+          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+            Xã / Phường (*):
+          </label>
+          <Select
+            showSearch
+            value={formData.commune}
+            placeholder="Chọn hoặc nhập xã / phường"
+            onFocus={() => setActiveField("commune")}
+            onChange={(value) => handleInputChange("commune", value)}
+            className="w-[65%]"
+            options={
+              XA?.filter((x) => x.MA_TINH === formData.province).map((x) => ({
+                value: x.MA_XA,
+                label: x.TEN_XA,
+              })) || []
+            }
+            disabled={!formData.province}
+            filterOption={(input, option) =>
+              option?.label?.toLowerCase().includes(input.toLowerCase())
+            }
+          />
+        </div>
+
+        {/* Dân tộc */}
+        <div className="flex items-center justify-between gap-3 w-full mb-2">
+          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+            Dân tộc (*):
+          </label>
+          <Select
+            showSearch
+            value={formData.ethnic}
+            placeholder="Chọn hoặc nhập dân tộc"
+            onFocus={() => setActiveField("ethnic")}
+            onChange={(value) => handleInputChange("ethnic", value)}
+            className="w-[65%]"
+            options={ETHIC?.map((e) => ({ value: e.MA_DT, label: e.TEN_DT })) || []}
+            filterOption={(input, option) =>
+              option?.label?.toLowerCase().includes(input.toLowerCase())
+            }
+          />
+        </div>
+
+        {/* Quốc tịch */}
+        <div className="flex items-center justify-between gap-3 w-full mb-2">
+          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+            Quốc tịch (*):
+          </label>
+          <Select
+            showSearch
+            value={formData.national}
+            placeholder="Chọn hoặc nhập quốc tịch"
+            onFocus={() => setActiveField("national")}
+            onChange={(value) => handleInputChange("national", value)}
+            className="w-[65%]"
+            options={NAL?.map((n) => ({ value: n.MA_QT, label: n.TEN_QT })) || []}
+            filterOption={(input, option) =>
+              option?.label?.toLowerCase().includes(input.toLowerCase())
+            }
+          />
+        </div>
+
+        {/* Nghề nghiệp */}
+        <div className="flex items-center justify-between gap-3 w-full mb-2">
+          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+            Nghề nghiệp:
+          </label>
+          <Select
+            showSearch
+            value={formData.job}
+            placeholder="Chọn hoặc nhập nghề nghiệp"
+            onFocus={() => setActiveField("job")}
+            onChange={(value) => handleInputChange("job", value)}
+            className="w-[65%]"
+            options={JOB?.map((j) => ({ value: j.MA_NN, label: j.TEN_NN })) || []}
+            filterOption={(input, option) =>
+              option?.label?.toLowerCase().includes(input.toLowerCase())
+            }
+          />
+        </div>
+        
       </div>
 
       {/* Bàn phím ảo */}
-      {/* {activeField && (
+      {activeField && (
         <div className="mt-6 w-full max-w-[600px]">
           <p className="text-gray-600 text-center mb-2">
             Đang nhập cho trường:{" "}
@@ -222,13 +292,6 @@ export default function InputForm() {
                 "z x c v b n m {bksp}",
                 "{space}"
                 ],
-                shift: [
-                "! @ # $ % ^ & * ( )",
-                "Q W E R T Y U I O P",
-                "{shift} A S D F G H J K L",
-                "Z X C V B N M {bksp}",
-                "{space}"
-                ]
             }}
             display={{
                 "{bksp}": "⌫",
@@ -240,23 +303,7 @@ export default function InputForm() {
             input={keyboardInput}
           />
         </div>
-      )} */}
-        {/* Nút dưới cùng */}
-          <div className="fixed left-1/2 -translate-x-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl 
-                            hover:from-green-500 hover:to-emerald-600 transition-all duration-500 ease-in-out 
-                            font-semibold text-[14px] sm:text-[18px] lg:text-[22px]"
-            >Trở lại</button>
-
-            <button
-              onClick={handleNextStep}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl 
-                            hover:from-green-500 hover:to-emerald-600 transition-all duration-500 ease-in-out 
-                            font-semibold text-[14px] sm:text-[18px] lg:text-[22px]"
-            >Tiếp tục</button>
-            </div>
+      )}
     </div>
   );
 }

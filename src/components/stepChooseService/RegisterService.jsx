@@ -12,7 +12,7 @@ export default function ClinicRoom() {
     const [selectedClinic, setSelectedClinic] = useState(null)
     const [clinicRooms, setClinicRooms] = useState([])
     const navigate = useNavigate()
-    const { setStateStep, flow, selectedService, setSelectedService, patientInfo, npInfo, setPaymentInfo } = useGlobal()
+    const { setStateStep, flow, selectedService, setSelectedService, patientInfo, npInfo, setPaymentInfo, logGlobal } = useGlobal()
     const [confirm, setConfirm] = useState(false)
     const [booking, setBooking] = useState(true)
     const [loading, setLoading] = useState(true)
@@ -103,7 +103,7 @@ export default function ClinicRoom() {
 
     const handleRegister = async () => {
         // nếu là khám dịch vụ, bỏ qua
-        if (flow === "insur") {
+        if (flow !== "insur") {
             return true
         }
         try {
@@ -223,11 +223,11 @@ export default function ClinicRoom() {
                         footer={null}
                         centered
                     >
-                        <RegisterInfo></RegisterInfo>
+                        <RegisterInfo patientInfo={patientInfo} npInfo={npInfo} selectedService={selectedService} flow={flow} ></RegisterInfo>
                         <div className="grid grid-cols-2 gap-[20px]">
                             <button
                                 className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
-                                onClick={() => {setConfirm(false)}}>
+                                onClick={() => {setConfirm(false);logGlobal()}}>
                                 Hủy bỏ
                             </button>
                             <button

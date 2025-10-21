@@ -1,7 +1,4 @@
-import { useGlobal } from "../../context/GlobalContext"
-
-export default function RegisterInfo() {
-    const { patientInfo, selectedService, flow } = useGlobal()
+export default function RegisterInfo({patientInfo, npInfo, selectedService, flow}) {
     return (
         <div>
             <h2 className="text-xl font-bold mb-4 text-center text-green-600">
@@ -18,17 +15,15 @@ export default function RegisterInfo() {
                     <span>Cần thanh toán:</span>
                 </div>
                 <div className='flex flex-col justify-start gap-2 text-gray-800 text-right'>
-                    {patientInfo?.personalInfo && patientInfo?.patientHISInfo && selectedService ? (
-                        <>
-                            <span>{patientInfo.personalInfo.data.personName}</span>
-                            <span>{patientInfo.personalInfo.data.dateOfBirth}</span>
-                            <span>{patientInfo.personalInfo.data.gender}</span>
-                            <span>{patientInfo.patientHISInfo.DIEN_THOAI}</span>
-                            <span>{selectedService.name}</span>
-                            <span>{flow === "insur" ? "Bảo hiểm" : "Dịch vụ"}</span>
-                            <span>{selectedService.price}</span>
-                        </>
-                    ) : null}
+                    <div className='flex flex-col justify-start gap-2 text-gray-800 text-right'>
+                        <span>{patientInfo?.personalInfo?.data?.personName || "N/A"}</span>
+                        <span>{patientInfo?.personalInfo?.data?.dateOfBirth || "N/A"}</span>
+                        <span>{patientInfo?.personalInfo?.data?.gender || "N/A"}</span>
+                        <span>{patientInfo?.patientHISInfo?.DIEN_THOAI || npInfo.phone || "N/A"}</span>
+                        <span>{selectedService?.name || "N/A"}</span>
+                        <span>{flow === "insur" ? "Bảo hiểm" : "Dịch vụ"}</span>
+                        <span>{selectedService?.price || "N/A"}</span>
+                    </div>
                 </div>
             </div>  
             <h2 className="text-xl font-bold mb-4 text-center text-red-600">
