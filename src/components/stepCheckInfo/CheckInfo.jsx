@@ -20,7 +20,6 @@ export default function CheckInfo() {
 
     // Chỉnh bước 1
     useEffect(() => {
-        console.log(patientInfo.personalInfo)
         setStateStep(1)
         if (patientInfo?.personalInfo) {
             toggleStatus(0);
@@ -72,9 +71,9 @@ export default function CheckInfo() {
 		socket.onmessage = (event) => {
 			try {
 				const receivedData = JSON.parse(event.data);
+                console.log(receivedData);
 
 				if (receivedData.id === "2") {
-                    console.log(receivedData);
                     toggleStatus(0)
 					setPatientInfo((prev) => {
 						return {
@@ -83,7 +82,6 @@ export default function CheckInfo() {
 						};
 					});
 				} else if (receivedData.id === "4") {
-                    console.log(receivedData);
                     toggleStatus(1)
 					setPatientInfo((prev) => {
 						return {
@@ -118,7 +116,6 @@ export default function CheckInfo() {
             try {
                 const patientIDCard = patientInfo.personalInfo.data.idCode
                 const respone = await getPatientInfo(patientIDCard)
-                console.log(respone)
                 if (respone.code === "000") {
                     // Dữ liệu trả về chống -> ko có dữ liệu -> Thêm bệnh nhân
                     if (respone.data == null) {

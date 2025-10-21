@@ -12,7 +12,7 @@ export default function ClinicRoom() {
     const [selectedClinic, setSelectedClinic] = useState(null)
     const [clinicRooms, setClinicRooms] = useState([])
     const navigate = useNavigate()
-    const { setStateStep, flow, selectedService, setSelectedService, patientInfo, npInfo, setPaymentInfo, logGlobal } = useGlobal()
+    const { setStateStep, flow, selectedService, setSelectedService, patientInfo, npInfo, setPaymentInfo } = useGlobal()
     const [confirm, setConfirm] = useState(false)
     const [booking, setBooking] = useState(true)
     const [loading, setLoading] = useState(true)
@@ -108,7 +108,6 @@ export default function ClinicRoom() {
             clinicID: selectedClinic.code, // mã phòng khám
             departmentID: selectedClinic.departmentCode // mã khoa
         }
-        console.log(option)
         setSelectedService(option)
         setSelectedClinic(null)
         setBooking(false)        
@@ -161,7 +160,6 @@ export default function ClinicRoom() {
                         MA_DICH_VU: selectedService?.serviceID
                     },
                 };
-                console.log(data)
                 const respone = await postMedicalRegister(data);
     
                 if (respone.code === "000") {
@@ -248,7 +246,7 @@ export default function ClinicRoom() {
                         <div className="grid grid-cols-2 gap-[20px]">
                             <button
                                 className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
-                                onClick={() => {setConfirm(false);logGlobal()}}>
+                                onClick={() => {setConfirm(false)}}>
                                 Hủy bỏ
                             </button>
                             <button

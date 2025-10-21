@@ -7,7 +7,7 @@ import InfoPrint from "./infoPrint"
 export default function PrintBill() {
     const contentRef = useRef(null)
     const navigate = useNavigate()
-    const { setStateStep, flow, logGlobal } = useGlobal()
+    const { setStateStep, flow } = useGlobal()
     const [countDown, setCountDown] = useState(30)
 
     const reactToPrintFn = useReactToPrint({ contentRef });
@@ -20,10 +20,8 @@ export default function PrintBill() {
     
     // Auto print chỉ 1 lần, đảm bảo ref đã mount
     useEffect(() => {
-        logGlobal()
         const timer = setTimeout(() => {
             if (contentRef.current) {
-                console.log("In phiếu: printing")
                 reactToPrintFn();
             }
         }, 3000); // đợi 3 giây
