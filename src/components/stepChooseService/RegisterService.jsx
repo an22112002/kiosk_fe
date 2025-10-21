@@ -32,42 +32,63 @@ export default function ClinicRoom() {
                 const response = await getClinicServices();
                 const data = response?.data || [];
 
-                // Gộp toàn bộ các phòng khám từ nhiều loại khám, nhiều khoa
-                const allRooms = data.flatMap((loaiKham) =>
-                    (loaiKham.KHOA || []).flatMap((khoa) =>
-                        (khoa.PHONG_KHAM || []).map((phong) => ({
-                            code: phong.ID_PHONG_KHAM || phong.MA_PHONG_KHAM,
-                            name: phong.TEN_PHONG_KHAM,
-                            departmentCode: khoa.ID_KHOA,
-                            services: (phong.DICH_VU || []).map((dichVu) => ({
-                                code: dichVu.MA_DICH_VU,
-                                label: dichVu.TEN_DICH_VU,
-                                price:
-                                    flow === "insur"
-                                        ? dichVu.DON_GIA_BHYT
-                                        : dichVu.DON_GIA_PHONG_KHAM,
-                            })),
-                        }))
-                    )
-                );
+                const allRooms = [];
 
-                // Gộp các phòng khám trùng ID => 1 phòng duy nhất
+                // Duyệt từng tầng: LOAI_KHAM → KHOA → PHONG_KHAM → DICH_VU
+                for (const loaiKham of data) {
+                    const khoaList = loaiKham?.KHOA || [];
+                    for (const khoa of khoaList) {
+                        const phongList = khoa?.PHONG_KHAM || [];
+                        for (const phong of phongList) {
+                            const services = (phong?.DICH_VU || [])
+                                .map((dichVu) => {
+                                    const price =
+                                        flow === "insur"
+                                            ? dichVu.DON_GIA_BHYT ?? dichVu.DON_GIA_DICH_VU
+                                            : dichVu.DON_GIA_PHONG_KHAM ?? dichVu.DON_GIA_DICH_VU;
+
+                                    return {
+                                        code: dichVu.MA_DICH_VU || dichVu.ID_DICH_VU,
+                                        label: dichVu.TEN_DICH_VU,
+                                        price: price,
+                                    };
+                                })
+                                // Bỏ các dịch vụ không có giá hoặc giá = 0
+                                .filter((d) => d.price && d.price > 0);
+
+                            // Thêm phòng khám vào danh sách
+                            allRooms.push({
+                                code: phong.ID_PHONG_KHAM || phong.MA_PHONG_KHAM,
+                                name: phong.TEN_PHONG_KHAM,
+                                departmentCode: khoa.ID_KHOA,
+                                departmentName: khoa.TEN_KHOA,
+                                typeCode: loaiKham.ID_LOAI_KHAM,
+                                typeName: loaiKham.TEN_LOAI_KHAM,
+                                services,
+                            });
+                        }
+                    }
+                }
+
+                // Gộp các phòng khám trùng ID
                 const mergedRooms = Object.values(
                     allRooms.reduce((acc, room) => {
                         if (!acc[room.code]) {
                             acc[room.code] = { ...room, services: [...room.services] };
                         } else {
-                            // Nếu phòng đã tồn tại thì gộp thêm các dịch vụ chưa có
-                            const existingServices = acc[room.code].services.map((s) => s.code);
+                            // Nếu phòng đã tồn tại → gộp thêm dịch vụ chưa có
+                            const existingServiceCodes = acc[room.code].services.map((s) => s.code);
                             const newServices = room.services.filter(
-                                (s) => !existingServices.includes(s.code)
+                                (s) => !existingServiceCodes.includes(s.code)
                             );
                             acc[room.code].services.push(...newServices);
                         }
                         return acc;
                     }, {})
                 );
+
                 setClinicRooms(mergedRooms);
+
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách phòng khám:", error);
             } finally {
