@@ -56,12 +56,12 @@ export default function InfoPrint() {
 
 				<div className="text-left font-medium">Ngày đăng ký:</div>
 				<div className="text-right">{new Date().toLocaleDateString("vi-VN")}</div>
+
+				<div className="text-left font-medium">Đơn giá:</div>
+				<div className="text-right">{formatCurrency(parseInt(selectedService?.price)) || "N/A"}</div>
 				
 				{flow === "non-insur" ? (
 					<>
-					<div className="text-left font-medium">Đơn giá:</div>
-					<div className="text-right">{formatCurrency(parseInt(selectedService?.price)) || "N/A"}</div>
-
 					<div className="text-left font-medium">Thanh toán:</div>
 					<div className="text-right">{paymentState || "N/A"}</div>
 					</>

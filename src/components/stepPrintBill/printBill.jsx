@@ -2,6 +2,7 @@ import { useGlobal } from "../../context/GlobalContext"
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useReactToPrint } from "react-to-print"
+import { Helmet } from "react-helmet-async"
 import InfoPrint from "./infoPrint"
 
 export default function PrintBill() {
@@ -41,6 +42,9 @@ export default function PrintBill() {
 
     return (
         <>
+            <Helmet>
+                <title>In phiếu</title>
+            </Helmet>
             {/* Nội dung in ẩn */}
             <div style={{ position: "absolute", left: 0, top: 0, visibility: "hidden" }}>
                 <div ref={contentRef}>

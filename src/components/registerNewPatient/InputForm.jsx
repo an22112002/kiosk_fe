@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Select, Input } from "antd";
 import { useGlobal } from "../../context/GlobalContext";
 import Keyboard from "react-simple-keyboard";
+import { processVietnameseBuffer } from "../../utils/helpers";
 import "react-simple-keyboard/build/css/index.css";
 
 import {
@@ -10,19 +11,19 @@ import {
   getEthnic,
   getOccupations,
 } from "../../api/call_API";
-import "react-simple-keyboard/build/css/index.css";
 
 export default function InputForm() {
-  const { npInfo, setNpInfo } = useGlobal()
-  const [activeField, setActiveField] = useState("")
-  const [keyboardInput, setKeyboardInput] = useState("")
+  const { setNpInfo } = useGlobal();
+  const [activeField, setActiveField] = useState("");
+  const [keyboardInput, setKeyboardInput] = useState(""); // chuỗi sau khi Telex + title case
+
   const [formData, setFormData] = useState({
     province: "",
     commune: "",
     job: "",
     ethnic: "",
     national: "",
-    phone: ""
+    phone: "",
   });
 
   const [TINH, setTINH] = useState(null);
@@ -31,8 +32,7 @@ export default function InputForm() {
   const [NAL, setNAL] = useState(null);
   const [JOB, setJOB] = useState(null);
 
-
-  // Load dữ liệu từ API
+  // Load dữ liệu API
   useEffect(() => {
     handleLoadProvince();
     handleLoadEthic();
@@ -40,36 +40,32 @@ export default function InputForm() {
     handleLoadJob();
   }, []);
 
+  // Khi focus field khác → reset buffer
   useEffect(() => {
-    setKeyboardInput("")
-  }, [activeField])
+    setKeyboardInput("");
+  }, [activeField]);
 
+  // Update global context khi formData thay đổi
   useEffect(() => {
-    setNpInfo(formData)
-    console.log("data", npInfo);
-  }, [formData])
+    setNpInfo(formData);
+    console.log(formData);
+  }, [formData]);
 
+  // Load dữ liệu từ API
   const handleLoadProvince = async () => {
     const respone = await getProvince();
     if (respone.code === "000") {
-      // Lấy danh sách tỉnh (loại bỏ trùng)
       const provinces = Object.values(
         respone.data.reduce((acc, item) => {
-          acc[item.MA_TINH] = {
-            MA_TINH: item.MA_TINH,
-            TEN_TINH: item.TEN_TINH,
-          };
+          acc[item.MA_TINH] = { MA_TINH: item.MA_TINH, TEN_TINH: item.TEN_TINH };
           return acc;
         }, {})
       );
-
-      // Lấy danh sách xã
       const communes = respone.data.map((item) => ({
         MA_XA: item.MA_XA,
         TEN_XA: item.TEN_XA,
         MA_TINH: item.MA_TINH,
       }));
-
       setTINH(provinces);
       setXA(communes);
     }
@@ -90,7 +86,7 @@ export default function InputForm() {
     const respone = await getNationality();
     if (respone.code === "000") {
       const national = respone.data
-        .filter((item) => item.MA_QUOCGIA != null && item.MA_QUOCGIA !== "")
+        .filter((item) => item.MA_QUOCGIA)
         .map((item) => ({
           MA_QT: item.MA_QUOCGIA,
           TEN_QT: item.TEN_QUOCGIA,
@@ -109,40 +105,58 @@ export default function InputForm() {
       setJOB(jobs);
     }
   };
-  // Xử lý phone input
-  const checkPhoneInput = (value) => {
-    if (/^[0-9]*$/.test(value) && value.length <= 10) {
-      return true
-    }
-    return false
-  }
-  // Xử lý thay đổi Select
+
+  // Xử lý input phone
+  const checkPhoneInput = (value) => /^[0-9]*$/.test(value) && value.length <= 10;
+
   const handleInputChange = (key, value) => {
     if (key === "phone") {
-      if (checkPhoneInput(value)) {
-        setFormData((prev) => ({
-          ...prev,
-          [key]: value,
-        }));
-      }
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [key]: value,
-        ...(key === "province" ? { commune: "" } : {}
-        ), // reset xã nếu đổi tỉnh
-      }));
+      if (!checkPhoneInput(value)) return;
+    } else if (key === "province") {
+      // reset commune nếu đổi tỉnh
+      setFormData((prev) => ({ ...prev, [key]: value, commune: "" }));
+      return;
     }
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Xử lý input từ bàn phím ảo
+  // Xử lý nhập bàn phím ảo
   const handleKeyboardInput = (input) => {
-    setKeyboardInput(input);
-    if (activeField) {
-      handleInputChange(activeField, input);
-    }
-  };
+    if (!activeField) return;
 
+    // Nếu là phone → append số mới
+    if (activeField === "phone") {
+      let newBuffer = keyboardInput; // keyboardInput dùng cho phone buffer
+      // Nếu input là backspace
+      if (input === "{bksp}") {
+        newBuffer = newBuffer.slice(0, -1);
+      } else if (/^[0-9]$/.test(input)) {
+        newBuffer += input;
+      }
+      newBuffer = newBuffer.slice(0, 10); // max 10 số
+      setKeyboardInput(newBuffer);
+      handleInputChange("phone", newBuffer);
+      return;
+    }
+
+    // Xử lý các field chữ
+    let buffer = keyboardInput; // buffer chưa xử lý
+    if (input === "{bksp}") {
+      buffer = buffer.slice(0, -1);
+    } else if (input.length === 1) {
+      buffer += input;
+    } else {
+      // có thể xử lý {space} hoặc các nút đặc biệt
+      if (input === "{space}") buffer += " ";
+    }
+
+    // Gọi hàm chuẩn hóa
+    const processed = processVietnameseBuffer(buffer);
+
+    // Cập nhật buffer (luôn tiếng Việt chuẩn)
+    setKeyboardInput(buffer);
+    handleInputChange(activeField, processed);
+  };
 
   const fields = [
     { label: "Tỉnh / Thành phố (*)", key: "province" },
@@ -153,25 +167,27 @@ export default function InputForm() {
     { label: "Điện thoại", key: "phone" },
   ];
 
+  const handleKeyboardButton = (button) => handleKeyboardInput(button);
+
   return (
     <div className="flex flex-col items-center w-full">
       <div className="flex flex-col gap-4 w-full max-w-[700px]">
-        {/* Số điện thoại */}
+        {/* Phone */}
         <div className="flex items-center justify-between gap-3 w-full">
           <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
             Số điện thoại (*):
           </label>
           <Input
-          value={formData.phone}
+            value={formData.phone}
             maxLength={10}
             onFocus={() => setActiveField("phone")}
+            onChange={(value) => handleInputChange("phone", value)}
             placeholder="Nhập số điện thoại"
             className="w-[65%]"
           />
         </div>
 
-        {/* Các trường select */}
-        {/* Tỉnh / Thành phố */}
+        {/* Selects */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
           <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
             Tỉnh / Thành phố (*):
@@ -184,12 +200,10 @@ export default function InputForm() {
             onChange={(value) => handleInputChange("province", value)}
             className="w-[65%]"
             options={TINH?.map((t) => ({ value: t.MA_TINH, label: t.TEN_TINH })) || []}
-            filterOption={(input, option) =>
-              option?.label?.toLowerCase().includes(input.toLowerCase())
-            }
           />
         </div>
 
+        {/* Các Select khác tương tự... */}
         {/* Xã / Phường */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
           <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
@@ -271,7 +285,6 @@ export default function InputForm() {
             }
           />
         </div>
-        
       </div>
 
       {/* Bàn phím ảo */}
@@ -285,20 +298,20 @@ export default function InputForm() {
           </p>
           <Keyboard
             layout={{
-                default: [
+              default: [
                 "1 2 3 4 5 6 7 8 9 0",
                 "q w e r t y u i o p",
-                "{shift} a s d f g h j k l",
+                "a s d f g h j k l",
                 "z x c v b n m {bksp}",
-                "{space}"
-                ],
+                "{space}",
+              ],
             }}
             display={{
-                "{bksp}": "⌫",
-                "{space}": "␣",
-                "{shift}": "⇧"
+              "{bksp}": "⌫",
+              "{space}": "␣",
             }}
-            onChange={handleKeyboardInput}
+            onKeyPress={handleKeyboardButton}
+            onChange={() => {}}
             inputName={activeField}
             input={keyboardInput}
           />

@@ -1,5 +1,6 @@
 import { useGlobal } from "../../context/GlobalContext"
 import { useEffect, useState } from "react"
+import { Helmet } from "react-helmet-async"
 import ChoosePayment from "./ChoosePayment"
 import ShowQR from "./ShowQR"
 
@@ -15,6 +16,9 @@ export default function PaymentLayout() {
 
     return (
         <>
+            <Helmet>
+                <title>Thanh toán</title>
+            </Helmet>
             {step === 1 
             ? (<ChoosePayment onNext={ nextStep }></ChoosePayment>) 
             : (<ShowQR></ShowQR>)}

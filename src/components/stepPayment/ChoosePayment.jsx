@@ -8,7 +8,7 @@ export default function ChoosePayment({ onNext }) {
     const info = ['|Thanh toán bằng tiền mặt tại quầy|', '|Chuyển khoản ngân hàng thông qua mã QR|']
 
     const { flow, selectedService, patientInfo, npInfo, setPaymentInfo, setPaymentStateAsync } = useGlobal()
-    const dataInfo = patientInfo.personalInfo
+    const dataInfo = patientInfo?.personalInfo?.data
     const navigate = useNavigate()
 
     const handleRegister = async () => {
@@ -29,11 +29,11 @@ export default function ChoosePayment({ onNext }) {
                     MA_BN: "",
                     NGAY_SINH: convertDateFormat(dataInfo?.dateOfBirth ?? ""),
                     SO_GTTT: dataInfo?.idCode ?? "",
-                    MA_DANTOC: npInfo?.ethnic ?? "",
-                    MA_NGHE_NGHIEP: npInfo?.job ?? "",
-                    MA_QUOCTICH: npInfo?.national ?? "",
-                    MATINH_CUTRU: npInfo?.province ?? "",
-                    MAXA_CU_TRU: npInfo?.commune ?? "",
+                    MA_DANTOC: npInfo?.ethnic || "",
+                    MA_NGHE_NGHIEP: npInfo?.job || "",
+                    MA_QUOCTICH: npInfo?.national || "",
+                    MATINH_CUTRU: npInfo?.commune || "",
+                    MAXA_CU_TRU: npInfo?.province || "",
                 };
         
                 const data = {
@@ -46,7 +46,8 @@ export default function ChoosePayment({ onNext }) {
                         MA_DICH_VU: selectedService?.serviceID
                     },
                 };
-        
+
+                console.log("post data", data)
                 const respone = await postMedicalRegister(data);
     
                 if (respone.code === "000") {

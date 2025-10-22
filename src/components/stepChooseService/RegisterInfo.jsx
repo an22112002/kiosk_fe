@@ -1,3 +1,5 @@
+import { formatCurrency } from "../../utils/helpers"
+
 export default function RegisterInfo({patientInfo, npInfo, selectedService, flow}) {
     return (
         <div>
@@ -22,10 +24,11 @@ export default function RegisterInfo({patientInfo, npInfo, selectedService, flow
                         <span>{patientInfo?.patientHISInfo?.DIEN_THOAI || npInfo.phone || "N/A"}</span>
                         <span>{selectedService?.name || "N/A"}</span>
                         <span>{flow === "insur" ? "Bảo hiểm" : "Dịch vụ"}</span>
-                        <span>{selectedService?.price || "N/A"}</span>
+                        <span>{formatCurrency(parseInt(selectedService?.price)) || "N/A"}</span>
                     </div>
                 </div>
-            </div>  
+            </div>
+            <br></br> 
             <h2 className="text-xl font-bold mb-4 text-center text-red-600">
                 Lưu ý: sau khi chuyển sang bước tiếp theo bạn sẽ không thể thay đổi những thông tin này nữa
             </h2>

@@ -1,5 +1,11 @@
 import { notification } from "antd";
 
+notification.config({
+  placement: "topRight",
+  duration: 10,
+  getContainer: () => document.body,
+});
+
 export const openNotification = (
 	message,
 	description,
@@ -92,3 +98,80 @@ export const convertDateFormat = (input) => {
 		return `${yyyy}-${mm}-${dd}`;
 	}
 };
+
+export const convertTelexToVietnamese = (input) => {
+  const telexMap = {
+    aw: "ă",
+    aa: "â",
+    dd: "đ",
+    ee: "ê",
+    oo: "ô",
+    ow: "ơ",
+    uw: "ư",
+  };
+
+  const toneMap = {
+    s: "\u0301", // sắc
+    f: "\u0300", // huyền
+    r: "\u0309", // hỏi
+    x: "\u0303", // ngã
+    j: "\u0323", // nặng
+  };
+
+  const vowels = "aăâeêioôơuưy";
+
+  const convertWord = (word) => {
+    let text = word.toLowerCase();
+
+    // 1. Thay âm chính
+    for (const [rule, letter] of Object.entries(telexMap)) {
+      text = text.replace(new RegExp(rule, "g"), letter);
+    }
+
+    // 2. Kiểm tra ký tự cuối là dấu thanh
+    let tone = "";
+    const lastChar = text.slice(-1);
+    if (toneMap[lastChar]) {
+      tone = toneMap[lastChar];
+      text = text.slice(0, -1);
+    }
+
+    if (tone) {
+      // 3. Chọn nguyên âm để gán dấu
+      const chars = [...text];
+
+      // Nguyên tắc: ưu tiên các nguyên âm chính theo thứ tự a, ă, â, e, ê, i, o, ô, ơ, u, ư, y
+      for (let i = 0; i < chars.length; i++) {
+        const c = chars[i];
+        if (vowels.includes(c)) {
+          chars[i] = c + tone;
+          break;
+        }
+      }
+
+      text = chars.join("");
+    }
+
+    return text.normalize("NFC");
+  };
+
+  return input
+    .split(/\s+/)
+    .map((w) => convertWord(w))
+    .join(" ");
+};
+
+export const processVietnameseBuffer = (buffer) => {
+  if (!buffer) return "";
+
+  // 1. Chuyển Telex sang tiếng Việt
+  let vietnamese = convertTelexToVietnamese(buffer);
+
+  // 2. Viết hoa chữ cái đầu mỗi từ
+  vietnamese = vietnamese
+    .split(" ")
+    .map(word => word ? word.charAt(0).toUpperCase() + word.slice(1) : "")
+    .join(" ");
+
+  return vietnamese;
+}

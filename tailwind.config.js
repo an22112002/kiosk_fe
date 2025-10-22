@@ -17,6 +17,7 @@ export default {
         'colorOneLight': '#009e93',
         'colorOneLighter': '#33c2b8',
         'colorOneSoft': '#ccf1ee',
+        'colorBtnBack': '#006f94ff',
       }
     },
   },

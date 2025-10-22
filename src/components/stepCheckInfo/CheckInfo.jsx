@@ -233,8 +233,8 @@ export default function CheckInfo() {
                 ))}
                 </div>
                 <br></br>
-                <div className="flex px-10 items-center justify-center bg-gradient-to-r from-colorTwo to-colorFive text-black rounded-xl 
-                                            hover:from-green-500 hover:to-emerald-600 hover:scale-105 
+                <div className="flex px-10 items-center justify-center bg-gradient-to-r from-gray-400 to-gray-600 
+                                text-white rounded-xl hover:from-gray-500 hover:to-gray-700 hover:scale-105 
                                             transition-all duration-500 ease-in-out">
                     <button className="text-white cursor-pointer p-2 text-[14px] sm:text-[18px] font-semibold lg:text-[22px]" onClick={() => navigate(-1)}>
                         Trở lại
@@ -265,9 +265,8 @@ export default function CheckInfo() {
             <Modal
                 open={addPatient}
                 footer={null}
-                closable={false}
+                width={800}
                 centered
-                maskClosable={false}
                 styles={{ body: { textAlign: "center" } }}
             >
                 <InsertPatient onBack={closeAddPatient}></InsertPatient>
@@ -286,8 +285,8 @@ export default function CheckInfo() {
             <div className="fixed left-1/2 -translate-x-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl 
-                            hover:from-green-500 hover:to-emerald-600 transition-all duration-500 ease-in-out 
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-gray-400 to-gray-600 
+                            text-white rounded-xl hover:from-gray-500 hover:to-gray-700 transition-all duration-500 ease-in-out 
                             font-semibold text-[14px] sm:text-[18px] lg:text-[22px]"
                 >
                     Trở lại

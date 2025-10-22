@@ -4,6 +4,7 @@ import { Modal, Spin } from "antd"
 import { useGlobal } from "../../context/GlobalContext"
 import { LoadingOutlined } from '@ant-design/icons'
 import { getClinicServices } from "../../api/call_API"
+import { Helmet } from "react-helmet-async"
 import RegisterInfo from "./RegisterInfo"
 import { splitName, convertDateFormat, openNotification } from "../../utils/helpers";
 import { postMedicalRegister } from "../../api/call_API";
@@ -17,7 +18,7 @@ export default function ClinicRoom() {
     const [booking, setBooking] = useState(true)
     const [loading, setLoading] = useState(true)
 
-    const dataInfo = patientInfo.personalInfo
+    const dataInfo = patientInfo.personalInfo.data
     const insuranceInfo = patientInfo.insuranceInfo
 
     useEffect(() => {
@@ -139,11 +140,11 @@ export default function ClinicRoom() {
                     MA_BN: "",
                     NGAY_SINH: convertDateFormat(dataInfo?.dateOfBirth ?? ""),
                     SO_GTTT: dataInfo?.idCode ?? "",
-                    MA_DANTOC: npInfo?.ethnic ?? "",
-                    MA_NGHE_NGHIEP: npInfo?.job ?? "",
-                    MA_QUOCTICH: npInfo?.national ?? "",
-                    MATINH_CUTRU: npInfo?.province ?? "",
-                    MAXA_CU_TRU: npInfo?.commune ?? "",
+                    MA_DANTOC: npInfo?.ethnic || "",
+                    MA_NGHE_NGHIEP: npInfo?.job || "",
+                    MA_QUOCTICH: npInfo?.national || "",
+                    MATINH_CUTRU: npInfo?.commune || "",
+                    MAXA_CU_TRU: npInfo?.province || "",
                 };
                 patientData["MA_THE_BHYT"] = patientData?.["MA_THE_BHYT"] ?? insuranceInfo?.["MA_THE_BHYT"] ?? "";
                 patientData["GT_THE_TU"] = convertDateFormat(patientData?.["GT_THE_TU"] ?? insuranceInfo?.["GT_THE_TU"] ?? "");
@@ -160,6 +161,7 @@ export default function ClinicRoom() {
                         MA_DICH_VU: selectedService?.serviceID
                     },
                 };
+                console.log("post data", data)
                 const respone = await postMedicalRegister(data);
     
                 if (respone.code === "000") {
@@ -193,6 +195,9 @@ export default function ClinicRoom() {
 
     return (
         <>
+            <Helmet>
+                <title>Chọn dịch vụ</title>
+            </Helmet>
             {/* Hiện thông báo */}
             <div className="flex flex-col justify-center items-center bg-white p-2 md:p-6 rounded-xl">
                 <div className="text-[14px] md:text-[16px] lg:text-[18px] flex flex-col lg:flex-row w-[90vw] lg:w-[60vw] md:w-[70vw] sm:w-[80vw] gap-3 justify-center items-center">
@@ -243,9 +248,10 @@ export default function ClinicRoom() {
                         centered
                     >
                         <RegisterInfo patientInfo={patientInfo} npInfo={npInfo} selectedService={selectedService} flow={flow} ></RegisterInfo>
+                        <br></br>
                         <div className="grid grid-cols-2 gap-[20px]">
                             <button
-                                className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
+                                className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-gray-400 to-gray-600 text-white rounded-xl hover:from-gray-500 hover:to-gray-700 disabled:opacity-50"
                                 onClick={() => {setConfirm(false)}}>
                                 Hủy bỏ
                             </button>
@@ -263,7 +269,7 @@ export default function ClinicRoom() {
                     <Spin spinning={loading} indicator={<LoadingOutlined />}>
                         {<div className="grid grid-cols-2 gap-[20px]">
                             <button
-                                className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
+                                className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-gray-400 to-gray-600 text-white rounded-xl hover:from-gray-500 hover:to-gray-700 disabled:opacity-50"
                                 onClick={() => {navigate(-1)}}>
                                 Trở lại
                             </button>

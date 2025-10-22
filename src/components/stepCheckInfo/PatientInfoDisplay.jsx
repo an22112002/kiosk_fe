@@ -1,39 +1,78 @@
 export default function PatientInfoDisplay({ patientInfo, npInfo }) {
   return (
-    <div className='flex justify-center'>
-      <div className='w-full sm:w-[80%] lg:w-[45vw] grid grid-cols-3 gap-4 text-left'>
-        {/* Cột 1: Ảnh */}
-        <div className='flex justify-center items-start'>
-          {patientInfo?.faceImage?.data?.img_data ? (
-            <img
-              src={patientInfo.faceImage.data.img_data}
-              alt='Ảnh công dân'
-              className='w-32 h-40 object-cover rounded-lg border'
-            />
-          ) : null}
-        </div>
+    <div className="flex justify-center">
+      <div className="w-full sm:w-[80%] lg:w-[50vw]">
+        <table className="w-full border-collapse">
+          <tbody>
+            {/* Hàng 1: Ảnh và 2 cột thông tin */}
+            <tr>
+              {/* Cột 1: Ảnh */}
+              <td rowSpan="7" className="w-[140px] align-top text-center p-2">
+                {patientInfo?.faceImage?.data?.img_data ? (
+                  <img
+                    src={patientInfo.faceImage.data.img_data}
+                    alt="Ảnh công dân"
+                    className="w-32 h-40 object-cover rounded-lg border"
+                  />
+                ) : (
+                  <div className="w-32 h-40 border rounded-lg flex items-center justify-center text-gray-400 text-sm">
+                    Không có ảnh
+                  </div>
+                )}
+              </td>
 
-        {/* Cột 2: Tên các trường */}
-        <div className='flex flex-col justify-start gap-2 font-semibold text-gray-700'>
-          <span>Họ và tên:</span>
-          <span>Ngày sinh:</span>
-          <span>Giới tính:</span>
-          <span>Quốc tịch:</span>
-          <span>Quê quán:</span>
-          <span>Địa chỉ thường trú:</span>
-          <span>Số điện thoại:</span>
-        </div>
+              {/* Cột 2 và 3 */}
+              <td className="font-semibold text-gray-700 p-2 text-left w-[35%]">
+                Họ và tên:
+              </td>
+              <td className="text-gray-800 p-2 text-right">
+                {patientInfo?.personalInfo?.data?.personName || "?"}
+              </td>
+            </tr>
 
-        {/* Cột 3: Thông tin tương ứng */}
-        <div className='flex flex-col justify-start gap-2 text-gray-800'>
-          <span>{patientInfo?.personalInfo?.data?.personName || "?"}</span>
-          <span>{patientInfo?.personalInfo?.data?.dateOfBirth || "?"}</span>
-          <span>{patientInfo?.personalInfo?.data?.gender || "?"}</span>
-          <span>{patientInfo?.personalInfo?.data?.nationality || "?"}</span>
-          <span>{patientInfo?.personalInfo?.data?.originPlace || "?"}</span>
-          <span>{patientInfo?.personalInfo?.data?.residencePlace || "?"}</span>
-          <span>{patientInfo?.patientHISInfo?.DIEN_THOAI || npInfo?.phone || "?"}</span>
-        </div>
+            <tr>
+              <td className="font-semibold text-gray-700 p-2 text-left">Ngày sinh:</td>
+              <td className="text-gray-800 p-2 text-right">
+                {patientInfo?.personalInfo?.data?.dateOfBirth || "?"}
+              </td>
+            </tr>
+
+            <tr>
+              <td className="font-semibold text-gray-700 p-2 text-left">Giới tính:</td>
+              <td className="text-gray-800 p-2 text-right">
+                {patientInfo?.personalInfo?.data?.gender || "?"}
+              </td>
+            </tr>
+
+            <tr>
+              <td className="font-semibold text-gray-700 p-2 text-left">Quốc tịch:</td>
+              <td className="text-gray-800 p-2 text-right">
+                {patientInfo?.personalInfo?.data?.nationality || "?"}
+              </td>
+            </tr>
+
+            <tr>
+              <td className="font-semibold text-gray-700 p-2 text-left">Quê quán:</td>
+              <td className="text-gray-800 p-2 text-right">
+                {patientInfo?.personalInfo?.data?.originPlace || "?"}
+              </td>
+            </tr>
+
+            <tr>
+              <td className="font-semibold text-gray-700 p-2 text-left">Địa chỉ thường trú:</td>
+              <td className="text-gray-800 p-2 text-right">
+                {patientInfo?.personalInfo?.data?.residencePlace || "?"}
+              </td>
+            </tr>
+
+            <tr>
+              <td className="font-semibold text-gray-700 p-2 text-left">Số điện thoại:</td>
+              <td className="text-gray-800 p-2 text-right">
+                {patientInfo?.patientHISInfo?.DIEN_THOAI || npInfo?.phone || "?"}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   )
