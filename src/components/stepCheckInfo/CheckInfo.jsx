@@ -14,7 +14,7 @@ import ScanFace from './ScanFace';
 // import ScanFace from './ScanFace';
 
 export default function CheckInfo() {
-    const correctLimit = 50
+    const correctLimit = 70
     const [localLoading, setLocalLoading] = useState(true)
     const [nonInserCase, setNonInserCase] = useState(false)
     const [getHIS, setGetHIS] = useState(false)
