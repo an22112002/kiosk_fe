@@ -76,8 +76,10 @@ export default function CheckInfo() {
 
             socket.onmessage = async (event) => {
                 try {
+                    console.log("event", event)
+                    console.log("event.data", event.data)
                     const receivedData = await JSON.parse(event.data);
-                    console.log(receivedData)
+                    console.log("event.data.parse", receivedData)
                     
                     socket.close()
                 } catch (err) {
