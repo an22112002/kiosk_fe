@@ -66,7 +66,6 @@ export default function CheckInfo() {
 
             socket.onopen = async () => {
                 console.log("WebSocket connected! Check image");
-                socket.send(JSON.stringify(payload))
             };
 
             socket.onmessage = async (event) => {
