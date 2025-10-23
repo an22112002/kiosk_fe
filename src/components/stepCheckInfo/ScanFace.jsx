@@ -18,19 +18,22 @@ export default function ScanFace({ setImage }) {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <Webcam
-        ref={webcamRef}
-        audio={false}
-        screenshotFormat="image/jpeg"
-        className="rounded-lg w-full"
-        videoConstraints={{
-          width: 480,
-          height: 360,
-        }}
-      />
-      <div className="mt-2 text-center text-lg font-semibold">
-        Camera sẵn sàng
-      </div>
+        <div className="mt-2 text-center text-lg font-semibold">
+            Xác thực khuôn mặt
+        </div>
+        <Webcam
+            ref={webcamRef}
+            audio={false}
+            screenshotFormat="image/jpeg"
+            className="rounded-lg w-full"
+            videoConstraints={{
+            width: 480,
+            height: 360,
+            }}
+        />
+        <div className="mt-2 text-center text-lg font-semibold">
+            Đứng yên và quay mặt vào camera
+        </div>
     </div>
   );
 }

@@ -14,6 +14,7 @@ import ScanFace from './ScanFace';
 // import ScanFace from './ScanFace';
 
 export default function CheckInfo() {
+    const correctLimit = 50
     const [localLoading, setLocalLoading] = useState(true)
     const [nonInserCase, setNonInserCase] = useState(false)
     const [getHIS, setGetHIS] = useState(false)
@@ -23,6 +24,11 @@ export default function CheckInfo() {
     const [image, setImage] = useState(null)
     const { setStateStep, patientInfo, setPatientInfo, flow, npInfo, logGlobal} = useGlobal();
     const navigate = useNavigate()
+
+    const isInteger = (value) => {
+        const n = parseInt(value, 10);
+        return !isNaN(n) && n.toString() === value.toString();
+    };
 
     // Chỉnh bước 1
     useEffect(() => {
@@ -78,10 +84,21 @@ export default function CheckInfo() {
                         socket.send(JSON.stringify(payload))
                     }
 
-                    console.log("event", event)
-                    console.log("event.data", event.data)
-                    const receivedData = await JSON.parse(event.data);
-                    console.log("event.data.parse", receivedData)
+                    if (isInteger(event.data)) {
+                        const correct = parseInt(event.data)
+                        console.log("correct: ", correct)
+                        if (correct >= correctLimit) {
+                            if (flow === "insur") {
+                                setGetInsur(true)
+                            } else {
+                                setGetHIS(true)
+                            }
+                            socket.close()
+                        } else {
+                            openNotification("Thông báo", "Xác thực khuôn mặt không thành công", "warning")
+                            socket.close()
+                        }
+                    }
 
                 } catch (err) {
                     console.log("Error parsing WebSocket message:", err);
@@ -90,11 +107,6 @@ export default function CheckInfo() {
 
             socket.onclose = async () => {
                 console.log("WebSocket connection closed");
-                if (flow === "insur") {
-                    setGetInsur(true)
-                } else {
-                    setGetHIS(true)
-                }
             };
 
             socket.onerror = async (event) => {
@@ -345,9 +357,13 @@ export default function CheckInfo() {
             <Modal
                 open={imgCapture}
                 footer={null}
-                width={800}
                 centered
-                styles={{ body: { textAlign: "center" } }}
+                style={{ padding: 0, maxWidth: "90vw" }}
+                modalRender={modal => (
+                    <div style={{ textAlign: "center", display: "inline-block", padding: 20 }}>
+                    {modal.props.children}
+                    </div>
+                )}
             >
                 <ScanFace setImage={setImage} ></ScanFace>
             </Modal>
