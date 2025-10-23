@@ -3,6 +3,8 @@ import { useRef, useEffect } from "react";
 
 export default function ScanFace({ setImage }) {
   const webcamRef = useRef(null);
+  const [devices, setDevices] = useState([]);
+  const [deviceId, setDeviceId] = useState("");
 
   useEffect(() => {
     // Bật timer 6 giây để chụp ảnh
@@ -16,6 +18,17 @@ export default function ScanFace({ setImage }) {
     return () => clearTimeout(timer);
   }, [setImage]);
 
+  useEffect(() => {
+    navigator.mediaDevices.enumerateDevices().then((deviceInfos) => {
+      const videoDevices = deviceInfos.filter(d => d.kind === "videoinput");
+      setDevices(videoDevices);
+      // chọn camera Brio 500 theo label
+      const brio = videoDevices.find(d => d.label.toLowerCase().includes("brio"));
+      if (brio) setDeviceId(brio.deviceId);
+      else if (videoDevices.length) setDeviceId(videoDevices[0].deviceId);
+    });
+  }, []);
+
   return (
     <div className="flex flex-col items-center gap-3">
       <Webcam
@@ -26,9 +39,12 @@ export default function ScanFace({ setImage }) {
         videoConstraints={{
           width: 480,
           height: 360,
-          facingMode: "user",
+          deviceId: deviceId || undefined,
         }}
       />
+      <div className="mt-2 text-center text-lg font-semibold">
+        {deviceId ? "Camera sẵn sàng" : "Đang tìm camera..."}
+      </div>
     </div>
   );
 }

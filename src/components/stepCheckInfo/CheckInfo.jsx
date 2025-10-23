@@ -86,6 +86,11 @@ export default function CheckInfo() {
 
             socket.onclose = async () => {
                 console.log("WebSocket connection closed");
+                if (flow === "insur") {
+                    setGetInsur(true)
+                } else {
+                    setGetHIS(true)
+                }
             };
 
             socket.onerror = async (event) => {

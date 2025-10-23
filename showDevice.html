@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Xem thiết bị kết nối</title>
+    </head>
+    <body>
+        <script>
+            navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                devices.forEach(device => {
+                console.log(`${device.kind}: ${device.label} (id: ${device.deviceId})`);
+                });
+            })
+            .catch(err => console.error(err));
+        </script>
+    </body>
+</html>
