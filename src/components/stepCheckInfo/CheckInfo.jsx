@@ -57,6 +57,7 @@ export default function CheckInfo() {
         }
     }, [])
 
+    // xử lý khi camera trả ảnh về
     useEffect(() => {
         if (image !== null) {
             setImgCapture(false)
@@ -147,6 +148,7 @@ export default function CheckInfo() {
                                 faceImage: receivedData,
                             };
                         });
+                        setImgCapture(true)
                         socket.close();
                     }
                 } catch (err) {
@@ -169,7 +171,6 @@ export default function CheckInfo() {
         }
 		return () => {
             console.log("Đã có thông tin");
-            setImgCapture(true)
         };
 	}, []);
 
