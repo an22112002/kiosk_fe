@@ -75,6 +75,7 @@ export default function CheckInfo() {
             };
 
             socket.onmessage = async (event) => {
+                console.log("event: ", event)
                 try {
                     if (event.data === "Đã kết nối!") {
                         const payload = {
@@ -96,6 +97,7 @@ export default function CheckInfo() {
                             socket.close()
                         } else {
                             openNotification("Thông báo", "Xác thực khuôn mặt không thành công", "warning")
+                            console.log("Xác thực khuôn mặt không thành công")
                             socket.close()
                         }
                     }

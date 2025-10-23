@@ -155,16 +155,23 @@ export const convertTelexToVietnamese = (input) => {
     }
 
     if (tone) {
-      // 3. Chọn nguyên âm để gán dấu
       const chars = [...text];
 
-      // Nguyên tắc: ưu tiên các nguyên âm chính theo thứ tự a, ă, â, e, ê, i, o, ô, ơ, u, ư, y
-      for (let i = 0; i < chars.length; i++) {
-        const c = chars[i];
-        if (vowels.includes(c)) {
-          chars[i] = c + tone;
-          break;
+      // 3. Tìm vị trí các nguyên âm
+      const vowelIndices = chars
+        .map((c, i) => (vowels.includes(c) ? i : -1))
+        .filter((i) => i !== -1);
+
+      if (vowelIndices.length === 1) {
+        // Chỉ 1 nguyên âm → gán dấu vào đó
+        chars[vowelIndices[0]] += tone;
+      } else if (vowelIndices.length >= 2) {
+        // Nhiều nguyên âm → gán vào nguyên âm cuối, trừ khi từ kết thúc bằng nguyên âm
+        let targetIndex = vowelIndices[vowelIndices.length - 1];
+        if (vowelIndices.includes(chars.length - 1)) {
+          targetIndex = vowelIndices[vowelIndices.length - 2];
         }
+        chars[targetIndex] += tone;
       }
 
       text = chars.join("");
