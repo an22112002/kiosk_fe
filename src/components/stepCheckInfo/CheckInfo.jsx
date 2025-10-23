@@ -353,17 +353,13 @@ export default function CheckInfo() {
                 <InsertPatient onBack={closeAddPatient}></InsertPatient>
             </Modal>
 
-            {/* Chụp màn hình */}
+            {/* Chụp ảnh */}
             <Modal
                 open={imgCapture}
                 footer={null}
                 centered
-                style={{ padding: 0, maxWidth: "90vw" }}
-                modalRender={modal => (
-                    <div style={{ textAlign: "center", display: "inline-block", padding: 20 }}>
-                    {modal.props.children}
-                    </div>
-                )}
+                style={{ textAlign: "center" }}
+                width={1000}
             >
                 <ScanFace setImage={setImage} ></ScanFace>
             </Modal>
