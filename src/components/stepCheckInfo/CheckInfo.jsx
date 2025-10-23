@@ -62,12 +62,7 @@ export default function CheckInfo() {
         if (image !== null) {
             setImgCapture(false)
             const socket = new WebSocket(CAMERA_WS_URL)
-            console.log(patientInfo.faceImage.data.img_data, image)
-
-            const payload = {
-                "faceCore": patientInfo.faceImage.data.img_data,
-                "faceLive": image
-            }
+            console.log("faceCore: ", patientInfo.faceImage.data.img_data, "faceLive: ", image)
 
             socket.onopen = async () => {
                 console.log("WebSocket connected! Check image");
@@ -76,12 +71,19 @@ export default function CheckInfo() {
 
             socket.onmessage = async (event) => {
                 try {
+                    if (event.data === "Đã kết nối!") {
+                        const payload = {
+                            "faceCore": patientInfo.faceImage.data.img_data,
+                            "faceLive": image
+                        }
+                        socket.send(JSON.stringify(payload))
+                    }
+
                     console.log("event", event)
                     console.log("event.data", event.data)
                     const receivedData = await JSON.parse(event.data);
                     console.log("event.data.parse", receivedData)
-                    
-                    socket.close()
+
                 } catch (err) {
                     console.log("Error parsing WebSocket message:", err);
                 }
