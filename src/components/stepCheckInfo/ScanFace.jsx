@@ -1,24 +1,34 @@
-import Webcam from "react-webcam"
-import { useRef } from "react";
+import Webcam from "react-webcam";
+import { useRef, useEffect } from "react";
 
-export default function ScanFace() {
-    const webcamRef = useRef(null);
+export default function ScanFace({ setImage }) {
+  const webcamRef = useRef(null);
 
-    return (
-        <>
-            <div className="flex flex-col items-center gap-3">
-                <Webcam
-                ref={webcamRef}
-                audio={false}
-                screenshotFormat="image/jpeg"
-                className="rounded-lg w-full"
-                videoConstraints={{
-                    width: 480,
-                    height: 360,
-                    facingMode: "user",
-                }}
-                />
-            </div>
-        </>
-    )
+  useEffect(() => {
+    // Bật timer 6 giây để chụp ảnh
+    const timer = setTimeout(() => {
+      if (webcamRef.current) {
+        const image = webcamRef.current.getScreenshot(); // base64
+        setImage(image); // gọi callback để set state ở cha
+      }
+    }, 6000); // 6 giây
+
+    return () => clearTimeout(timer);
+  }, [setImage]);
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <Webcam
+        ref={webcamRef}
+        audio={false}
+        screenshotFormat="image/jpeg"
+        className="rounded-lg w-full"
+        videoConstraints={{
+          width: 480,
+          height: 360,
+          facingMode: "user",
+        }}
+      />
+    </div>
+  );
 }

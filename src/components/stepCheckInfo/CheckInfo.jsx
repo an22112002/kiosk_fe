@@ -7,9 +7,10 @@ import { useGlobal } from '../../context/GlobalContext';
 import { LoadingOutlined } from '@ant-design/icons'
 import { CAMERA_WS_URL } from '../../api/config'
 import { openNotification } from '../../utils/helpers';
-import { getPatientInfo, getPatientInsurance, getOccupations } from '../../api/call_API';
+import { getPatientInfo, getPatientInsurance } from '../../api/call_API';
 import InsertPatient from '../registerNewPatient/InsertPatient';
 import PatientInfoDisplay from './PatientInfoDisplay';
+import ScanFace from './ScanFace';
 // import ScanFace from './ScanFace';
 
 export default function CheckInfo() {
@@ -18,6 +19,8 @@ export default function CheckInfo() {
     const [getHIS, setGetHIS] = useState(false)
     const [getInsur, setGetInsur] = useState(false)
     const [addPatient, setAddPatient] = useState(false)
+    const [imgCapture, setImgCapture] = useState(false)
+    const [image, setImage] = useState(null)
     const { setStateStep, patientInfo, setPatientInfo, flow, npInfo, logGlobal} = useGlobal();
     const navigate = useNavigate()
 
@@ -54,6 +57,43 @@ export default function CheckInfo() {
         }
     }, [])
 
+    useEffect(() => {
+        if (image !== null) {
+            setImgCapture(false)
+            const socket = new WebSocket(CAMERA_WS_URL)
+            console.log(patientInfo.faceImage.data.img_data, image)
+
+            const payload = {
+                "faceCore": patientInfo.faceImage.data.img_data,
+                "faceLive": image
+            }
+
+            socket.onopen = async () => {
+                console.log("WebSocket connected! Check image");
+                socket.send(JSON.stringify(payload))
+            };
+
+            socket.onmessage = async (event) => {
+                try {
+                    const receivedData = await JSON.parse(event.data);
+                    console.log(receivedData)
+                    
+                    socket.close()
+                } catch (err) {
+                    console.log("Error parsing WebSocket message:", err);
+                }
+            };
+
+            socket.onclose = async () => {
+                console.log("WebSocket connection closed");
+            };
+
+            socket.onerror = async (event) => {
+                console.log("WebSocket error:", event);
+            };
+        }
+    }, [image])
+
     // điều khiển hiện thị thông tin
     const toggleStatus = (index) => {
         const newFields = [...fields];
@@ -89,12 +129,11 @@ export default function CheckInfo() {
                                 personalInfo: receivedData,
                             };
                         });
-
-                        if (flow === "insur") {
-                            setGetInsur(true)
-                        } else {
-                            setGetHIS(true)
-                        }
+                        // if (flow === "insur") {
+                        //     setGetInsur(true)
+                        // } else {
+                        //     setGetHIS(true)
+                        // }
                     } else if (receivedData.id === "4") {
                         toggleStatus(1)
                         await setPatientInfo((prev) => {
@@ -103,10 +142,10 @@ export default function CheckInfo() {
                                 faceImage: receivedData,
                             };
                         });
+                        socket.close();
                     }
                 } catch (err) {
                     console.log("Error parsing WebSocket message:", err);
-                    openNotification("Lỗi kết nối", "Lỗi kết nối với đầu đọc thẻ")
                 }
             };
 
@@ -125,6 +164,7 @@ export default function CheckInfo() {
         }
 		return () => {
             console.log("Đã có thông tin");
+            setImgCapture(true)
         };
 	}, []);
 
@@ -281,6 +321,7 @@ export default function CheckInfo() {
                 </div>
             </Modal>
 
+            {/* Thêm thông tin */}
             <Modal
                 open={addPatient && !nonInserCase}
                 footer={null}
@@ -289,6 +330,17 @@ export default function CheckInfo() {
                 styles={{ body: { textAlign: "center" } }}
             >
                 <InsertPatient onBack={closeAddPatient}></InsertPatient>
+            </Modal>
+
+            {/* Chụp màn hình */}
+            <Modal
+                open={imgCapture}
+                footer={null}
+                width={800}
+                centered
+                styles={{ body: { textAlign: "center" } }}
+            >
+                <ScanFace setImage={setImage} ></ScanFace>
             </Modal>
             
             <div className={`transition-all duration-300 ${localLoading ? 'blur-sm !bg-white/20' : ''}`}>
