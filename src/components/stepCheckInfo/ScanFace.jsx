@@ -1,45 +1,74 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ScanFace({ setImage }) {
+  const navigate = useNavigate();
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [devices, setDevices] = useState([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
   const [stream, setStream] = useState(null);
   const [countdown, setCountdown] = useState(6);
+  const [permissionStatus, setPermissionStatus] = useState("checking"); // 'granted', 'denied', 'prompt'
 
-  // Lấy danh sách camera
+  // Kiểm tra quyền camera
   useEffect(() => {
-    async function getDevices() {
-      try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-      } catch (err) {
-        console.warn("Không lấy được quyền camera:", err);
+    async function checkPermission() {
+      if (!navigator.permissions) {
+        console.warn("Trình duyệt không hỗ trợ API permissions.");
+        await requestCamera();
+        return;
       }
 
-      const all = await navigator.mediaDevices.enumerateDevices();
-      const vids = all.filter((d) => d.kind === "videoinput");
-      setDevices(vids);
+      try {
+        const status = await navigator.permissions.query({ name: "camera" });
+        setPermissionStatus(status.state);
 
-      // chọn camera mặc định nếu chưa chọn
-      if (vids.length > 0 && !selectedDeviceId) {
-        setSelectedDeviceId(vids[0].deviceId);
+        status.onchange = () => {
+          setPermissionStatus(status.state);
+        };
+
+        if (status.state === "granted") {
+          await getDevices();
+        } else if (status.state === "prompt") {
+          await requestCamera();
+        } else if (status.state === "denied") {
+          alert("⚠️ Trình duyệt đang chặn quyền camera. Hãy vào Cài đặt > Quyền riêng tư > Cho phép camera.");
+        }
+      } catch (err) {
+        console.warn("Không thể kiểm tra quyền camera:", err);
+        await requestCamera();
       }
     }
 
-    getDevices();
+    checkPermission();
 
-    // cập nhật khi thay đổi thiết bị
-    const handleDeviceChange = () => getDevices();
-    navigator.mediaDevices.addEventListener("devicechange", handleDeviceChange);
-
-    return () => {
-      navigator.mediaDevices.removeEventListener("devicechange", handleDeviceChange);
-      stopStream();
-    };
+    return () => stopStream();
   }, []);
 
-  // Bắt đầu stream khi chọn thiết bị
+  // 🎥 Xin quyền camera nếu chưa có
+  async function requestCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach((t) => t.stop());
+      await getDevices();
+    } catch (err) {
+      console.error("Không thể truy cập camera:", err);
+      alert("Không thể truy cập camera. Vui lòng cho phép quyền trong trình duyệt.");
+    }
+  }
+
+  // Lấy danh sách camera
+  async function getDevices() {
+    const all = await navigator.mediaDevices.enumerateDevices();
+    const vids = all.filter((d) => d.kind === "videoinput");
+    setDevices(vids);
+    if (vids.length > 0 && !selectedDeviceId) {
+      setSelectedDeviceId(vids[0].deviceId);
+    }
+  }
+
+  // Khởi động camera khi chọn thiết bị
   useEffect(() => {
     async function start() {
       if (!selectedDeviceId) return;
@@ -54,8 +83,10 @@ export default function ScanFace({ setImage }) {
           videoRef.current.srcObject = s;
           await videoRef.current.play().catch(() => {});
         }
+        setCountdown(6);
       } catch (err) {
         console.error("Không bật được camera:", err);
+        alert("Không thể bật camera. Có thể thiết bị đang được ứng dụng khác sử dụng.");
       }
     }
     start();
@@ -86,11 +117,11 @@ export default function ScanFace({ setImage }) {
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, w, h);
     const dataUrl = canvas.toDataURL("image/jpeg");
-    setImage(dataUrl); //  Gửi ảnh ra ngoài
+    setImage(dataUrl); // gửi ảnh ra ngoài
     stopStream();
   }
 
-  // Tự động đếm ngược 6 giây để chụp
+  // ⏱ Tự động đếm ngược
   useEffect(() => {
     if (!stream) return;
     if (countdown === 0) {
@@ -107,37 +138,55 @@ export default function ScanFace({ setImage }) {
         Vui lòng nhìn thẳng vào camera
       </h2>
 
-      {/* chọn camera nếu có nhiều thiết bị */}
-      <select
-        className="border rounded px-3 py-1 mb-3"
-        value={selectedDeviceId}
-        onChange={(e) => setSelectedDeviceId(e.target.value)}
-      >
-        {devices.map((d) => (
-          <option key={d.deviceId} value={d.deviceId}>
-            {d.label || `Camera ${d.deviceId}`}
-          </option>
-        ))}
-      </select>
+      {/* Hiển thị tình trạng quyền */}
+      {permissionStatus === "denied" && (
+        <div className="text-red-600 text-sm">
+          Trình duyệt không cho phép truy cập camera. Hãy bật lại quyền trong phần cài đặt.
+        </div>
+      )}
+      {permissionStatus === "prompt" && (
+        <div className="text-yellow-600 text-sm">
+          Hệ thống đang yêu cầu quyền camera, vui lòng chấp nhận.
+        </div>
+      )}
+      {permissionStatus === "granted" && (
+        <>
+          {/* chọn camera */}
+          <select
+            className="border rounded px-3 py-1 mb-3"
+            value={selectedDeviceId}
+            onChange={(e) => setSelectedDeviceId(e.target.value)}
+          >
+            {devices.map((d) => (
+              <option key={d.deviceId} value={d.deviceId}>
+                {d.label || `Camera ${d.deviceId}`}
+              </option>
+            ))}
+          </select>
 
-      <div className="relative border rounded-lg overflow-hidden">
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="rounded-lg w-[480px] h-auto bg-black"
-        />
-      </div>
+          <div className="relative border rounded-lg overflow-hidden">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="rounded-lg w-[480px] h-auto bg-black"
+            />
+            <div className="absolute bottom-2 right-2 bg-black/50 text-white px-3 py-1 rounded-lg text-sm">
+              {countdown > 0 ? `Chụp sau ${countdown}s` : "Đang chụp..."}
+            </div>
+          </div>
+        </>
+      )}
 
       <canvas ref={canvasRef} style={{ display: "none" }} />
 
       <div className="flex gap-4 mt-3">
         <button
-          onClick={stopStream}
+          onClick={() => navigate("/mer")}
           className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
         >
-          Tắt camera
+          Quay lại
         </button>
       </div>
     </div>
