@@ -99,6 +99,24 @@ export const convertDateFormat = (input) => {
 	}
 };
 
+export const convertDateFormat2 = (input) => {
+	if (input === "") return "";
+	else {
+		const [day, month, year] = input
+			.split("/")
+			.map((part) => parseInt(part, 10));
+
+		const date = new Date(year, month - 1, day); // Month is 0-based in JS
+
+		// Format to yyyy-MM-dd
+		const yyyy = date.getFullYear();
+		const mm = String(date.getMonth() + 1).padStart(2, "0");
+		const dd = String(date.getDate()).padStart(2, "0");
+
+		return `${dd}-${mm}-${yyyy}`;
+	}
+};
+
 export const convertTelexToVietnamese = (input) => {
   const telexMap = {
     aw: "ă",

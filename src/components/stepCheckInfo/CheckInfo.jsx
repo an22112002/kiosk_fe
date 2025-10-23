@@ -7,13 +7,16 @@ import { useGlobal } from '../../context/GlobalContext';
 import { LoadingOutlined } from '@ant-design/icons'
 import { CAMERA_WS_URL } from '../../api/config'
 import { openNotification } from '../../utils/helpers';
-import { getPatientInfo, getPatientInsurance } from '../../api/call_API';
+import { getPatientInfo, getPatientInsurance, getOccupations } from '../../api/call_API';
 import InsertPatient from '../registerNewPatient/InsertPatient';
 import PatientInfoDisplay from './PatientInfoDisplay';
+// import ScanFace from './ScanFace';
 
 export default function CheckInfo() {
     const [localLoading, setLocalLoading] = useState(true)
     const [nonInserCase, setNonInserCase] = useState(false)
+    const [getHIS, setGetHIS] = useState(false)
+    const [getInsur, setGetInsur] = useState(false)
     const [addPatient, setAddPatient] = useState(false)
     const { setStateStep, patientInfo, setPatientInfo, flow, npInfo, logGlobal} = useGlobal();
     const navigate = useNavigate()
@@ -21,17 +24,7 @@ export default function CheckInfo() {
     // Chỉnh bước 1
     useEffect(() => {
         setStateStep(1)
-        if (patientInfo?.personalInfo) {
-            toggleStatus(0);
-            toggleStatus(1);
-        }
-        if (patientInfo?.patientHISInfo || npInfo) {
-            toggleStatus(2);
-        }
-        if (patientInfo?.insuranceInfo) {
-            toggleStatus(3);
-        }
-    }, [setStateStep])
+    }, [])
 
     // state để track từng thông tin
     const [fields, setFields] = useState(
@@ -47,14 +40,28 @@ export default function CheckInfo() {
         { label: "Thông tin bệnh nhân", status: false }
     ]);
 
+    // kiểm tra xem thông tin đã có, nếu quay lại từ bước trước
+    useEffect(() => {
+        if (patientInfo?.personalInfo) {
+            toggleStatus(0);
+            toggleStatus(1);
+        }
+        if (patientInfo?.patientHISInfo || npInfo) {
+            toggleStatus(2);
+        }
+        if (patientInfo?.insuranceInfo) {
+            toggleStatus(3);
+        }
+    }, [])
+
     // điều khiển hiện thị thông tin
     const toggleStatus = (index) => {
         const newFields = [...fields];
-        newFields[index].status = !newFields[index].status;
+        newFields[index].status = true;
         setFields(newFields);
     };
 
-    // đóng thêm thông tin
+    // đóng thêm modal thông tin
     const closeAddPatient = () => {
         toggleStatus(2)
         setAddPatient(false)
@@ -62,121 +69,133 @@ export default function CheckInfo() {
 
     // Liên kết đầu đọc lấy dữ liệu CCCD
     useEffect(() => {
-		const socket = new WebSocket(CAMERA_WS_URL);
+        if (!fields.find(f => f.label === "Thông tin thẻ")?.status && !fields.find(f => f.label === "Ảnh thẻ")?.status) {
+            const socket = new WebSocket(CAMERA_WS_URL);
 
-		socket.onopen = () => {
-			console.log("WebSocket connected!");
-		};
+            socket.onopen = async () => {
+                console.log("WebSocket connected!");
+            };
 
-		socket.onmessage = (event) => {
-			try {
-				const receivedData = JSON.parse(event.data);
-                console.log(receivedData);
+            socket.onmessage = async (event) => {
+                try {
+                    const receivedData = await JSON.parse(event.data);
+                    console.log(receivedData);
 
-				if (receivedData.id === "2") {
-                    toggleStatus(0)
-					setPatientInfo((prev) => {
-						return {
-							...prev,
-							personalInfo: receivedData,
-						};
-					});
-				} else if (receivedData.id === "4") {
-                    toggleStatus(1)
-					setPatientInfo((prev) => {
-						return {
-							...prev,
-							faceImage: receivedData,
-						};
-					});
-				}
-			} catch (err) {
-				console.log("Error parsing WebSocket message:", err);
-                openNotification("Lỗi kết nối", "Lỗi kết nối với đầu đọc thẻ")
-			}
-		};
+                    if (receivedData.id === "2") {
+                        toggleStatus(0)
+                        setPatientInfo((prev) => {
+                            return {
+                                ...prev,
+                                personalInfo: receivedData,
+                            };
+                        });
 
-		socket.onclose = () => {
-			console.log("WebSocket connection closed");
-		};
+                        if (flow === "insur") {
+                            setGetInsur(true)
+                        } else {
+                            setGetHIS(true)
+                        }
+                    } else if (receivedData.id === "4") {
+                        toggleStatus(1)
+                        await setPatientInfo((prev) => {
+                            return {
+                                ...prev,
+                                faceImage: receivedData,
+                            };
+                        });
+                    }
+                } catch (err) {
+                    console.log("Error parsing WebSocket message:", err);
+                    openNotification("Lỗi kết nối", "Lỗi kết nối với đầu đọc thẻ")
+                }
+            };
 
-		socket.onerror = (event) => {
-			console.log("WebSocket error:", event);
-		};
+            socket.onclose = async () => {
+                console.log("WebSocket connection closed");
+            };
 
+            socket.onerror = async (event) => {
+                console.log("WebSocket error:", event);
+            };
+
+            return () => {
+                socket.close();
+                console.log("WebSocket disconnected");
+            };
+        }
 		return () => {
-			socket.close();
-			console.log("WebSocket disconnected");
-		};
+            console.log("Đã có thông tin");
+        };
 	}, []);
 
-    // Lấy dữ liệu bệnh nhân từ HIS
+    // Lấy dữ liệu bệnh nhân từ HIS 
+    const fetchPatientInfo = async () => { 
+        try { 
+            const patientIDCard = await patientInfo?.personalInfo?.data.idCode 
+            const respone = await getPatientInfo(patientIDCard) 
+            if (respone.code === "000") { 
+                // Dữ liệu trả về chống -> ko có dữ liệu -> Thêm bệnh nhân 
+                if (respone.data == null) { 
+                    setAddPatient(true) 
+                } else { 
+                    setPatientInfo((prev) => { 
+                        return { ...prev, patientHISInfo: respone.data}; 
+                    }); 
+                    toggleStatus(2)
+                } 
+            } else { 
+                openNotification("Không có dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu") 
+                setAddPatient(true) 
+            } 
+        } catch (error) {
+            console.log(error); 
+            openNotification("Lỗi", "Lỗi lấy dữ liệu bệnh nhân"); 
+        } 
+    } 
+
     useEffect(() => {
-        const fetchPatientInfo = async () => {
-            try {
-                const patientIDCard = patientInfo.personalInfo.data.idCode
-                const respone = await getPatientInfo(patientIDCard)
-                if (respone.code === "000") {
-                    // Dữ liệu trả về chống -> ko có dữ liệu -> Thêm bệnh nhân
-                    if (respone.data == null) {
-                        setAddPatient(true)
-                    } else {
-                        setPatientInfo((prev) => {
-                            return {
-                                ...prev,
-                                patientHISInfo: respone.data,
-                            };
-                        });
-                        toggleStatus(2)
-                    }
-                } else {
-                    openNotification("Không có dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu")
-                    setAddPatient(true)
-                }
-            } catch (error) {
-                console.log(error);
-                openNotification("Lỗi", "Lỗi lấy dữ liệu bệnh nhân");
+        if (getHIS) {
+            if (!npInfo) { 
+                if (!patientInfo?.patientHISInfo) {
+                    fetchPatientInfo(); 
+                } 
             }
         }
-        if (!npInfo) {
-            if (!patientInfo?.patientHISInfo) {
-                fetchPatientInfo();
-            }
-        } else {
-            toggleStatus(2)
-        }
-    }, [patientInfo?.personalInfo])
+        setGetHIS(false)
+    }, [getHIS])
 
     // Lấy dữ liệu bhyt
+    const fetchPatientInsur = async () => {
+        try {
+            const idCard = await patientInfo?.personalInfo?.data.idCode;
+            const name = await patientInfo?.personalInfo?.data.personName;
+            const dob = await patientInfo?.personalInfo?.data.dateOfBirth;
+
+            // const b = await getOccupations()
+
+            const respone = await getPatientInsurance(idCard, name, dob);
+            console.log("code: ", respone.code)
+            if (respone.code === "000") {
+                setPatientInfo(prev => ({ ...prev, insuranceInfo: respone.data }));
+                toggleStatus(3);
+                setGetHIS(true)
+            } else {
+                setNonInserCase(true);
+            }
+        } catch (error) {
+            console.log("Lỗi lấy dữ liệu bhyt", error);
+            openNotification("Lỗi", "Lỗi lấy dữ liệu bhyt");
+        }
+    };
+
     useEffect(() => {
-        const fetchPatientInsur = async () => {
-            try {
-                const patientIDCard = patientInfo?.personalInfo?.data.idCode
-                const patientName = patientInfo?.personalInfo?.data.personName;
-                const patientDOB = patientInfo?.personalInfo?.data.dateOfBirth;
-                const respone = await getPatientInsurance(patientIDCard, patientName, patientDOB)
-                if (respone.code === "000") {
-                    if (respone.data == null) {
-                        setNonInserCase(true)
-                    } else {
-                        setPatientInfo((prev) => {
-                            return {
-                                ...prev,
-                                insuranceInfo: respone.data,
-                            };
-                        });
-                        toggleStatus(3)
-                    }
-                } else {
-                    setNonInserCase(true)
-                }
-            } catch (error) {
-                console.log(error);
-                openNotification("Lỗi", "Lỗi lấy dữ liệu bhyt");
+        if (getInsur) {
+            if (flow === "insur") {
+                fetchPatientInsur();
             }
         }
-        if (flow === "insur") fetchPatientInsur()
-    }, [patientInfo?.personalInfo])
+        setGetInsur(false)
+    }, [getInsur]);
 
     // Kiểm tra thông tin nhận
     useEffect(() => {
@@ -236,7 +255,7 @@ export default function CheckInfo() {
                 <div className="flex px-10 items-center justify-center bg-gradient-to-r from-gray-400 to-gray-600 
                                 text-white rounded-xl hover:from-gray-500 hover:to-gray-700 hover:scale-105 
                                             transition-all duration-500 ease-in-out">
-                    <button className="text-white cursor-pointer p-2 text-[14px] sm:text-[18px] font-semibold lg:text-[22px]" onClick={() => navigate(-1)}>
+                    <button className="text-white cursor-pointer p-2 text-[14px] sm:text-[18px] font-semibold lg:text-[22px]" onClick={() => navigate("/mer")}>
                         Trở lại
                     </button>
                 </div>
@@ -263,7 +282,7 @@ export default function CheckInfo() {
             </Modal>
 
             <Modal
-                open={addPatient}
+                open={addPatient && !nonInserCase}
                 footer={null}
                 width={800}
                 centered
@@ -278,7 +297,6 @@ export default function CheckInfo() {
                         <h1>Xác thực công dân</h1>
                     </div>
                     <PatientInfoDisplay patientInfo={patientInfo} npInfo={npInfo}></PatientInfoDisplay>
-                    
                 </div>
             </div>
             {/* Nút dưới cùng */}

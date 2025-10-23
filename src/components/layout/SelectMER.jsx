@@ -39,9 +39,7 @@ export default function SelectMER() {
             <Modal
                 open={localLoading}
                 footer={null}
-                closable={false}
                 centered
-                maskClosable={false}
                 styles={{ body: { textAlign: "center" } }}
             >
                 <LoadingOutlined spin style={{ fontSize: 48, color: "#2563eb" }} className="mb-3" />

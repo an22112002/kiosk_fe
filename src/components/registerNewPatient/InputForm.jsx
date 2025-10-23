@@ -48,7 +48,7 @@ export default function InputForm() {
   // Update global context khi formData thay đổi
   useEffect(() => {
     setNpInfo(formData);
-    console.log(formData);
+    // console.log(formData);
   }, [formData]);
 
   // Load dữ liệu từ API
