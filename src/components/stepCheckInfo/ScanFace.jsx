@@ -6,7 +6,6 @@ export default function ScanFace({ setImage }) {
   const [deviceId, setDeviceId] = useState(null);
 
   useEffect(() => {
-    // 🔍 Lấy danh sách camera
     async function initCamera() {
       try {
         // Gọi quyền truy cập camera
@@ -17,7 +16,7 @@ export default function ScanFace({ setImage }) {
 
         console.log("Danh sách camera:", videoDevices);
 
-        // 🎯 Ưu tiên chọn camera bạn muốn — ví dụ Brio 500
+        // Ưu tiên chọn camera Brio 500
         let targetCam = videoDevices.find((d) =>
           d.label.toLowerCase().includes("brio 500")
         );
@@ -40,7 +39,7 @@ export default function ScanFace({ setImage }) {
     initCamera();
   }, []);
 
-  // 📸 Tự động chụp sau 10 giây
+  // Tự động chụp sau 10 giây
   useEffect(() => {
     const timer = setTimeout(() => {
       if (webcamRef.current) {
