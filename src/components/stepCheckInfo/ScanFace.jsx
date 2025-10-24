@@ -10,6 +10,7 @@ export default function ScanFace({ setImage }) {
   const [stream, setStream] = useState(null);
   const [countdown, setCountdown] = useState(6);
   const [permissionStatus, setPermissionStatus] = useState("checking"); // 'granted', 'denied', 'prompt'
+  const [errorMsg, setErrorMsg] = useState(""); // thông báo lỗi camera
 
   // Kiểm tra quyền camera
   useEffect(() => {
@@ -46,11 +47,11 @@ export default function ScanFace({ setImage }) {
     return () => stopStream();
   }, []);
 
-  // 🎥 Xin quyền camera nếu chưa có
+  // Xin quyền camera nếu chưa có
   async function requestCamera() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      stream.getTracks().forEach((t) => t.stop());
+      const s = await navigator.mediaDevices.getUserMedia({ video: true });
+      s.getTracks().forEach((t) => t.stop());
       await getDevices();
     } catch (err) {
       console.error("Không thể truy cập camera:", err);
@@ -68,28 +69,34 @@ export default function ScanFace({ setImage }) {
     }
   }
 
-  // Khởi động camera khi chọn thiết bị
-  useEffect(() => {
-    async function start() {
-      if (!selectedDeviceId) return;
-      stopStream();
-      try {
-        const s = await navigator.mediaDevices.getUserMedia({
-          video: { deviceId: { exact: selectedDeviceId } },
-          audio: false,
-        });
-        setStream(s);
-        if (videoRef.current) {
-          videoRef.current.srcObject = s;
-          await videoRef.current.play().catch(() => {});
-        }
-        setCountdown(6);
-      } catch (err) {
-        console.error("Không bật được camera:", err);
-        alert("Không thể bật camera. Có thể thiết bị đang được ứng dụng khác sử dụng.");
+  // Khởi động camera
+  async function startCamera() {
+    if (!selectedDeviceId) return;
+    stopStream();
+    setErrorMsg("");
+
+    try {
+      const s = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: { exact: selectedDeviceId } },
+        audio: false,
+      });
+      setStream(s);
+      if (videoRef.current) {
+        videoRef.current.srcObject = s;
+        await videoRef.current.play().catch(() => {});
       }
+      setCountdown(6);
+    } catch (err) {
+      console.error("Không bật được camera:", err);
+      setErrorMsg(
+        `Không thể bật camera. Có thể thiết bị đang được ứng dụng khác sử dụng (VD: Video.UI). Vui lòng tắt các ứng dụng khác và thử lại.`
+      );
     }
-    start();
+  }
+
+  // Tự động start khi đổi camera
+  useEffect(() => {
+    startCamera();
     return () => stopStream();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDeviceId]);
@@ -121,7 +128,7 @@ export default function ScanFace({ setImage }) {
     stopStream();
   }
 
-  // ⏱ Tự động đếm ngược
+  // Countdown
   useEffect(() => {
     if (!stream) return;
     if (countdown === 0) {
@@ -138,7 +145,6 @@ export default function ScanFace({ setImage }) {
         Vui lòng nhìn thẳng vào camera
       </h2>
 
-      {/* Hiển thị tình trạng quyền */}
       {permissionStatus === "denied" && (
         <div className="text-red-600 text-sm">
           Trình duyệt không cho phép truy cập camera. Hãy bật lại quyền trong phần cài đặt.
@@ -149,9 +155,13 @@ export default function ScanFace({ setImage }) {
           Hệ thống đang yêu cầu quyền camera, vui lòng chấp nhận.
         </div>
       )}
+
+      {errorMsg && (
+        <div className="text-red-600 text-sm mb-2">{errorMsg}</div>
+      )}
+
       {permissionStatus === "granted" && (
         <>
-          {/* chọn camera */}
           <select
             className="border rounded px-3 py-1 mb-3"
             value={selectedDeviceId}
@@ -163,6 +173,17 @@ export default function ScanFace({ setImage }) {
               </option>
             ))}
           </select>
+
+          <div className="flex gap-2 mb-2">
+            {errorMsg && (
+              <button
+                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                onClick={startCamera}
+              >
+                Thử lại
+              </button>
+            )}
+          </div>
 
           <div className="relative border rounded-lg overflow-hidden">
             <video

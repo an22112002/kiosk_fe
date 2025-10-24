@@ -1,37 +1,38 @@
 import axios from "axios";
+import { HIS_API_URL, HIS_API_URL_1 } from "./config";
 
-// --- Tạo client chung ---
-const client = axios.create({
-  timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+// Cấu hình mặc định
+export const client_HIS_API_URL = axios.create({
+  baseURL: HIS_API_URL,
+  timeout: 30000,
+  headers: { "Content-Type": "application/json" },
   responseType: "json",
 });
 
-// --- GET chung ---
-export async function get(base, url, params = {}, headers = {}) {
+export const client_HIS_API_URL_1 = axios.create({
+  baseURL: HIS_API_URL_1,
+  timeout: 30000,
+  headers: { "Content-Type": "application/json" },
+  responseType: "json",
+});
+
+// --- GET ---
+export async function get(client, url, params = {}, headers = {}) {
   try {
-    const resp = await client.get(url, {
-      baseURL: base,
-      params,              // Axios tự encode UTF-8
-      headers,
-    });
-    return resp.data;     // Trả về .data như fetch.json()
+    const resp = await client.get(url, { params, headers });
+    // Trả về .data
+    return resp.data;
   } catch (err) {
     console.error("GET request error:", err);
     throw err;
   }
 }
 
-// --- POST chung ---
-export async function post(base, url, body = {}, headers = {}) {
+// --- POST ---
+export async function post(client, url, body = {}, headers = {}) {
   try {
-    const resp = await client.post(url, body, {
-      baseURL: base,
-      headers,
-    });
-    return resp.data;     // Trả về .data
+    const resp = await client.post(url, body, { headers });
+    return resp.data;
   } catch (err) {
     console.error("POST request error:", err);
     throw err;

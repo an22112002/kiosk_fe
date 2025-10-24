@@ -118,6 +118,10 @@ export const convertDateFormat2 = (input) => {
 };
 
 export const convertTelexToVietnamese = (input) => {
+	if (input.length === 1) {
+		return input
+	}
+
   const telexMap = {
     aw: "ă",
     aa: "â",
@@ -136,17 +140,66 @@ export const convertTelexToVietnamese = (input) => {
     j: "\u0323", // nặng
   };
 
-  const vowels = "aăâeêioôơuưy";
+  	const vowels = ["a", "ă", "â", "e", "ê", "i", "o", "ô", "ơ", "u", "ư", "y"];
 
-  const convertWord = (word) => {
-    let text = word.toLowerCase();
+	// Các cụm nguyên âm và nguyên âm chính tương ứng
+	const vowelRules = [
+		["oa", "a"], ["oe", "e"], ["uy", "y"],
+		["ai", "a"], ["ao", "a"], ["au", "a"], ["ay", "a"],
+		["eo", "e"], ["êu", "ê"], ["iê", "ê"], ["yê", "ê"],
+		["ua", "a"], ["uô", "ô"], ["ưa", "a"], ["ươ", "ơ"]
+	];
 
-    // 1. Thay âm chính
-    for (const [rule, letter] of Object.entries(telexMap)) {
-      text = text.replace(new RegExp(rule, "g"), letter);
+  	// --- Xác định vị trí nguyên âm để đặt dấu đúng chuẩn Unikey ---
+  	const chooseTonePosition = (chars) => {
+    const vowelIndices = chars
+      .map((c, i) => (vowels.includes(c.normalize("NFC")) ? i : -1))
+      .filter((i) => i !== -1);
+
+    if (vowelIndices.length === 0) return -1;
+    if (vowelIndices.length === 1) return vowelIndices[0];
+
+    const joined = chars.join("");
+
+    if (joined.includes("ươ")) return joined.indexOf("ơ");
+    if (joined.includes("iê")) return joined.indexOf("ê");
+    if (joined.includes("yê")) return joined.indexOf("ê");
+    if (joined.includes("uô")) return joined.indexOf("ô");
+    if (joined.includes("ưa")) return joined.indexOf("a");
+    if (joined.includes("ua")) return joined.indexOf("a");
+
+    for (const c of ["â", "ă", "ê", "ô", "ơ", "ư"]) {
+      const idx = joined.indexOf(c);
+      if (idx !== -1) return idx;
     }
 
-    // 2. Kiểm tra ký tự cuối là dấu thanh
+    for (const [pattern, mainVowel] of vowelRules) {
+	const idx = joined.indexOf(pattern);
+	if (idx !== -1) return idx + pattern.indexOf(mainVowel);
+	}
+
+	// Nếu có nguyên âm ưu tiên (â, ê, ô, ơ, ă, ư)
+	for (const c of ["â", "ă", "ê", "ô", "ơ", "ư"]) {
+	const idx = joined.indexOf(c);
+	if (idx !== -1) return idx;
+	}
+
+	// Nếu không có quy tắc nào khớp → chọn nguyên âm đầu tiên
+	return vowelIndices[0];
+  };
+
+  const convertWord = (word) => {
+    if (!word) return "";
+
+    const isCapitalized = /^[A-Z]/.test(word);
+    let text = word.toLowerCase();
+
+    // 1. Thay các tổ hợp âm đặc biệt (aw, ee, ...)
+    for (const [rule, letter] of Object.entries(telexMap)) {
+      text = text.replace(new RegExp(rule, "gi"), letter);
+    }
+
+    // 2. Kiểm tra ký tự cuối là dấu thanh (s, f, r, x, j)
     let tone = "";
     const lastChar = text.slice(-1);
     if (toneMap[lastChar]) {
@@ -154,30 +207,22 @@ export const convertTelexToVietnamese = (input) => {
       text = text.slice(0, -1);
     }
 
+    // 3. Gắn dấu thanh đúng vị trí
     if (tone) {
       const chars = [...text];
-
-      // 3. Tìm vị trí các nguyên âm
-      const vowelIndices = chars
-        .map((c, i) => (vowels.includes(c) ? i : -1))
-        .filter((i) => i !== -1);
-
-      if (vowelIndices.length === 1) {
-        // Chỉ 1 nguyên âm → gán dấu vào đó
-        chars[vowelIndices[0]] += tone;
-      } else if (vowelIndices.length >= 2) {
-        // Nhiều nguyên âm → gán vào nguyên âm cuối, trừ khi từ kết thúc bằng nguyên âm
-        let targetIndex = vowelIndices[vowelIndices.length - 1];
-        if (vowelIndices.includes(chars.length - 1)) {
-          targetIndex = vowelIndices[vowelIndices.length - 2];
-        }
-        chars[targetIndex] += tone;
-      }
-
+      const pos = chooseTonePosition(chars);
+      if (pos !== -1) chars[pos] = chars[pos] + tone;
       text = chars.join("");
     }
 
-    return text.normalize("NFC");
+    text = text.normalize("NFC");
+
+    // 4. Giữ nguyên kiểu viết hoa đầu từ
+    if (isCapitalized) {
+      text = text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    return text;
   };
 
   return input
@@ -186,17 +231,18 @@ export const convertTelexToVietnamese = (input) => {
     .join(" ");
 };
 
+
+// === Xử lý buffer, thêm logic viết hoa linh hoạt ===
 export const processVietnameseBuffer = (buffer) => {
   if (!buffer) return "";
 
-  // 1. Chuyển Telex sang tiếng Việt
-  let vietnamese = convertTelexToVietnamese(buffer);
+  let vietnamese = convertTelexToVietnamese(buffer.trim());
 
-  // 2. Viết hoa chữ cái đầu mỗi từ
+  // Viết hoa chữ cái đầu của MỖI từ
   vietnamese = vietnamese
     .split(" ")
-    .map(word => word ? word.charAt(0).toUpperCase() + word.slice(1) : "")
+    .map((word) => word ? word.charAt(0).toUpperCase() + word.slice(1) : "")
     .join(" ");
 
   return vietnamese;
-}
+};
