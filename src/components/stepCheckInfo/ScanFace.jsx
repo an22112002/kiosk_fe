@@ -10,6 +10,7 @@ export default function ScanFace({ setImage }) {
   const [countdown, setCountdown] = useState(7);
   const [errorMsg, setErrorMsg] = useState("");
   const [checking, setChecking] = useState(true);
+  const [webcamReady, setWebcamReady] = useState(false);
 
   // Kiểm tra Brio 500
   const checkBrio = async () => {
@@ -64,16 +65,16 @@ export default function ScanFace({ setImage }) {
     setImage(canvas.toDataURL("image/jpeg"));
   };
 
-  // Countdown tự động
+  // Countdown tự động, chỉ chạy khi webcamReady
   useEffect(() => {
-    if (!brioDeviceId) return;
+    if (!brioDeviceId || !webcamReady) return; // CHỈ đếm khi webcam sẵn sàng
     if (countdown === 0) {
       capture();
       return;
     }
     const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
     return () => clearTimeout(timer);
-  }, [countdown, brioDeviceId]);
+  }, [countdown, brioDeviceId, webcamReady]);
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -90,7 +91,9 @@ export default function ScanFace({ setImage }) {
             audio={false}
             screenshotFormat="image/jpeg"
             className="rounded-lg w-full h-full"
+            onUserMedia={() => setWebcamReady(true)}
             onUserMediaError={() => {
+              setWebcamReady(false)
               setErrorMsg(
                 "Không thể bật camera. Có thể đang được ứng dụng khác sử dụng."
               );
