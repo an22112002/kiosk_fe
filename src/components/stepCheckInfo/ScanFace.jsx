@@ -105,7 +105,7 @@ export default function ScanFace({ setImage }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <h2 className="text-lg font-semibold text-gray-700">
-        Vui lòng rút thẻ ra, nhấn Khởi động camera, nhấn Chụp ảnh rồi nhìn vào ống kính
+        Vui lòng rút thẻ ra, nhấn Khởi động camera, nhấn Chụp ảnh rồi nhìn vào ống kính phía trên
       </h2>
 
       {errorMsg && <div className="text-red-600">{errorMsg}</div>}
@@ -142,7 +142,7 @@ export default function ScanFace({ setImage }) {
       <canvas ref={canvasRef} style={{ display: "none" }} />
 
       {/* Trạng thái */}
-      {isStarting && <div className="text-blue-600">Đang khởi động camera (4s)...</div>}
+      {isStarting && <div className="text-blue-600 loading-dots">Đang khởi động camera</div>}
       {isCapturing && countdown !== null && (
         <div className="text-xl font-bold text-green-600">Chụp sau {countdown}s...</div>
       )}

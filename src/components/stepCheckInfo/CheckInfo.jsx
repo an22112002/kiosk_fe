@@ -92,6 +92,7 @@ export default function CheckInfo() {
                         const correct = parseInt(event.data)
                         console.log("correct: ", correct)
                         if (correct >= correctLimit) {
+                            toggleStatus(2)
                             setPatientInfo((prev) => { 
                                 return { ...prev, facePass: true}; 
                             });
@@ -132,7 +133,7 @@ export default function CheckInfo() {
 
     // đóng thêm modal thông tin
     const closeAddPatient = () => {
-        toggleStatus(2)
+        toggleStatus(3)
         setAddPatient(false)
     }
 
