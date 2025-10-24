@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
 
@@ -11,33 +11,33 @@ export default function ScanFace({ setImage }) {
   const [errorMsg, setErrorMsg] = useState("");
   const [countdown, setCountdown] = useState(null);
   const [isCapturing, setIsCapturing] = useState(false);
-  const [waiting, setWaiting] = useState(false);
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
 
-  // 🔄 Liên tục kiểm tra camera Brio 500
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const brio = devices.find(
-          (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("brio")
-        );
+  // Tìm camera Brio 500
+  const findBrio = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const brio = devices.find(
+        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("brio")
+      );
 
-        if (brio) {
-          setBrioDeviceId(brio.deviceId);
-          setErrorMsg("");
-        } else {
-          setBrioDeviceId("");
-          setErrorMsg("Vui lòng rút thẻ ra để bắt đầu nhận diện khuôn mặt.");
-        }
-      } catch {
-        setErrorMsg("Không thể truy cập danh sách thiết bị camera.");
+      if (brio) {
+        setBrioDeviceId(brio.deviceId);
+        setErrorMsg("");
+        return true;
+      } else {
+        setErrorMsg("Không tìm thấy camera. Vui lòng rút thẻ ra và thử lại.");
+        setBrioDeviceId("");
+        return false;
       }
-    }, 2000);
+    } catch {
+      setErrorMsg("Không thể truy cập danh sách thiết bị camera.");
+      return false;
+    }
+  };
 
-    return () => clearInterval(interval);
-  }, []);
-
-  // 📸 Hàm chụp
+  // 🧩 Hàm chụp ảnh (crop phần giữa 1/3)
   const capture = () => {
     const video = webcamRef.current?.video;
     const canvas = canvasRef.current;
@@ -56,29 +56,41 @@ export default function ScanFace({ setImage }) {
     const imgData = canvas.toDataURL("image/jpeg");
     setImage(imgData);
 
-    // Reset trạng thái
+    // Reset sau khi chụp
     setIsCapturing(false);
     setCountdown(null);
   };
 
-  // ▶️ Khi người dùng nhấn nút "Chụp ảnh"
-  const handleCapture = async () => {
-    if (!brioDeviceId) {
-      setErrorMsg("Không tìm thấy camera. Vui lòng rút thẻ ra.");
+  // ▶️ Khi nhấn “Khởi động camera”
+  const handleStartCamera = async () => {
+    setErrorMsg("");
+    setIsStarting(true);
+    const found = await findBrio();
+
+    if (!found) {
+      setIsStarting(false);
       return;
     }
 
-    // Đợi 4 giây để camera ổn định, rồi bắt đầu đếm ngược
-    setWaiting(true);
-    setErrorMsg("");
+    // Đợi 4 giây để camera ổn định
     setTimeout(() => {
-      setWaiting(false);
-      setCountdown(6); // Đếm 6 giây cho người dùng chỉnh tư thế
-      setIsCapturing(true);
+      setIsCameraReady(true);
+      setIsStarting(false);
     }, 4000);
   };
 
-  // ⏳ Đếm ngược rồi chụp
+  // ▶️ Khi nhấn “Chụp ảnh”
+  const handleCapture = () => {
+    if (!brioDeviceId) {
+      setErrorMsg("Camera chưa sẵn sàng.");
+      return;
+    }
+
+    setIsCapturing(true);
+    setCountdown(6);
+  };
+
+  // ⏱ Đếm ngược rồi chụp
   useEffect(() => {
     if (countdown === null || countdown < 0) return;
     if (countdown === 0) {
@@ -93,11 +105,12 @@ export default function ScanFace({ setImage }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <h2 className="text-lg font-semibold text-gray-700">
-        Rút thẻ, đợi hiện hình ảnh, rồi nhấn "Chụp ảnh"
+        Vui lòng rút thẻ ra, nhấn Khởi động camera, nhấn Chụp ảnh rồi nhìn vào ống kính
       </h2>
 
       {errorMsg && <div className="text-red-600">{errorMsg}</div>}
 
+      {/* Hiển thị webcam nếu đã có device */}
       {brioDeviceId && (
         <div className="relative border rounded-lg overflow-hidden w-[480px] h-[360px]">
           <Webcam
@@ -112,7 +125,7 @@ export default function ScanFace({ setImage }) {
             }}
           />
 
-          {/* Overlay vùng giữa */}
+          {/* Overlay 2 bên tối */}
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
             <div
               className="absolute top-0 left-0 h-full bg-black/50"
@@ -128,30 +141,34 @@ export default function ScanFace({ setImage }) {
 
       <canvas ref={canvasRef} style={{ display: "none" }} />
 
-      {/* Thông báo */}
-      {waiting && <div className="text-blue-600 loading-dots">Đang khởi động camera</div>}
+      {/* Trạng thái */}
+      {isStarting && <div className="text-blue-600">Đang khởi động camera (4s)...</div>}
       {isCapturing && countdown !== null && (
         <div className="text-xl font-bold text-green-600">Chụp sau {countdown}s...</div>
       )}
 
-      {/* Nút chụp */}
-      <button
-        onClick={handleCapture}
-        disabled={waiting || isCapturing || !brioDeviceId}
-        className={`px-4 py-2 rounded text-white ${
-          waiting || isCapturing || !brioDeviceId
-            ? "bg-gray-400"
-            : "bg-blue-600 hover:bg-blue-700"
-        }`}
-      >
-        {waiting
-          ? "Đang khởi động..."
-          : isCapturing
-          ? "Đang chụp..."
-          : brioDeviceId
-          ? "Chụp ảnh"
-          : "Đợi camera..."}
-      </button>
+      {/* Nút hành động */}
+      {!isCameraReady ? (
+        <button
+          onClick={handleStartCamera}
+          disabled={isStarting}
+          className={`px-4 py-2 rounded text-white ${
+            isStarting ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {isStarting ? "Đang khởi động..." : "Khởi động camera"}
+        </button>
+      ) : (
+        <button
+          onClick={handleCapture}
+          disabled={isCapturing}
+          className={`px-4 py-2 rounded text-white ${
+            isCapturing ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+          }`}
+        >
+          {isCapturing ? "Đang chụp..." : "Chụp ảnh"}
+        </button>
+      )}
 
       <button
         className="mt-2 px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
