@@ -68,14 +68,12 @@ export default function CheckInfo() {
         if (image !== null) {
             setImgCapture(false)
             const socket = new WebSocket(CAMERA_WS_URL)
-            console.log("faceCore: ", patientInfo.faceImage.data.img_data, "faceLive: ", image)
 
             socket.onopen = async () => {
                 console.log("WebSocket connected! Check image");
             };
 
             socket.onmessage = async (event) => {
-                console.log("event: ", event)
                 try {
                     if (event.data === "Đã kết nối!") {
                         const payload = {
@@ -142,7 +140,6 @@ export default function CheckInfo() {
             socket.onmessage = async (event) => {
                 try {
                     const receivedData = await JSON.parse(event.data);
-                    console.log(receivedData);
 
                     if (receivedData.id === "2") {
                         toggleStatus(0)
@@ -237,12 +234,14 @@ export default function CheckInfo() {
             // const b = await getOccupations()
 
             const respone = await getPatientInsurance(idCard, name, dob);
-            console.log("code: ", respone.code)
             if (respone.code === "000") {
                 setPatientInfo(prev => ({ ...prev, insuranceInfo: respone.data }));
                 toggleStatus(3);
                 setGetHIS(true)
             } else {
+                if (respone?.code !== "000") {
+                    openNotification("Lỗi", respone?.message)
+                }
                 setNonInserCase(true);
             }
         } catch (error) {
