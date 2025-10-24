@@ -13,26 +13,31 @@ export default function ScanFace({ setImage }) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [waiting, setWaiting] = useState(false);
 
-  // Tìm camera Brio 500
-  const findBrio = async () => {
-    try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const brio = devices.find(
-        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("brio")
-      );
-      if (brio) {
-        setBrioDeviceId(brio.deviceId);
-        setErrorMsg("");
-      } else {
-        setBrioDeviceId("");
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMsg("Không thể truy cập danh sách thiết bị camera.");
-    }
-  };
+  // 🔄 Liên tục kiểm tra camera Brio 500
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const brio = devices.find(
+          (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("brio")
+        );
 
-  // Hàm chụp
+        if (brio) {
+          setBrioDeviceId(brio.deviceId);
+          setErrorMsg("");
+        } else {
+          setBrioDeviceId("");
+          setErrorMsg("Vui lòng rút thẻ ra để bắt đầu nhận diện khuôn mặt.");
+        }
+      } catch {
+        setErrorMsg("Không thể truy cập danh sách thiết bị camera.");
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // 📸 Hàm chụp
   const capture = () => {
     const video = webcamRef.current?.video;
     const canvas = canvasRef.current;
@@ -50,36 +55,37 @@ export default function ScanFace({ setImage }) {
 
     const imgData = canvas.toDataURL("image/jpeg");
     setImage(imgData);
+
+    // Reset trạng thái
     setIsCapturing(false);
     setCountdown(null);
   };
 
-  // Xử lý khi bấm nút chụp
+  // ▶️ Khi người dùng nhấn nút "Chụp ảnh"
   const handleCapture = async () => {
-    setErrorMsg("");
-    await findBrio();
-
     if (!brioDeviceId) {
       setErrorMsg("Không tìm thấy camera. Vui lòng rút thẻ ra.");
       return;
     }
 
-    // Đợi 4 giây cho camera ổn định, rồi 6 giây để người dùng chỉnh tư thế trước khi chụp
+    // Đợi 4 giây để camera ổn định, rồi bắt đầu đếm ngược
     setWaiting(true);
+    setErrorMsg("");
     setTimeout(() => {
       setWaiting(false);
-      setCountdown(6);
+      setCountdown(6); // Đếm 6 giây cho người dùng chỉnh tư thế
       setIsCapturing(true);
     }, 4000);
   };
 
-  // Đếm ngược rồi chụp
+  // ⏳ Đếm ngược rồi chụp
   useEffect(() => {
     if (countdown === null || countdown < 0) return;
     if (countdown === 0) {
       capture();
       return;
     }
+
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [countdown]);
@@ -87,7 +93,7 @@ export default function ScanFace({ setImage }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <h2 className="text-lg font-semibold text-gray-700">
-        Rút thẻ, nhấn Chụp ảnh, rồi nhìn vào camera phía trên
+        Rút thẻ, đợi hiện hình ảnh, rồi nhấn "Chụp ảnh"
       </h2>
 
       {errorMsg && <div className="text-red-600">{errorMsg}</div>}
@@ -106,7 +112,7 @@ export default function ScanFace({ setImage }) {
             }}
           />
 
-          {/* Overlay gạch gạch hai bên */}
+          {/* Overlay vùng giữa */}
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
             <div
               className="absolute top-0 left-0 h-full bg-black/50"
@@ -122,18 +128,29 @@ export default function ScanFace({ setImage }) {
 
       <canvas ref={canvasRef} style={{ display: "none" }} />
 
+      {/* Thông báo */}
+      {waiting && <div className="text-blue-600 loading-dots">Đang khởi động camera</div>}
       {isCapturing && countdown !== null && (
-        <div className="text-xl font-bold text-green-600">Chụp sau {countdown}s</div>
+        <div className="text-xl font-bold text-green-600">Chụp sau {countdown}s...</div>
       )}
 
+      {/* Nút chụp */}
       <button
         onClick={handleCapture}
-        disabled={waiting || isCapturing}
+        disabled={waiting || isCapturing || !brioDeviceId}
         className={`px-4 py-2 rounded text-white ${
-          waiting || isCapturing ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+          waiting || isCapturing || !brioDeviceId
+            ? "bg-gray-400"
+            : "bg-blue-600 hover:bg-blue-700"
         }`}
       >
-        {waiting ? "Đang khởi động..." : isCapturing ? "Đang chụp..." : "Chụp ảnh"}
+        {waiting
+          ? "Đang khởi động..."
+          : isCapturing
+          ? "Đang chụp..."
+          : brioDeviceId
+          ? "Chụp ảnh"
+          : "Đợi camera..."}
       </button>
 
       <button
