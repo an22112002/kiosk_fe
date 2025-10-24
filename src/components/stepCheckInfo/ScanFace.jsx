@@ -1,56 +1,67 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
 
 export default function ScanFace({ setImage }) {
+  const navigate = useNavigate();
   const webcamRef = useRef(null);
+  const canvasRef = useRef(null);
   const [brioDeviceId, setBrioDeviceId] = useState("");
-  const [countdown, setCountdown] = useState(6);
+  const [countdown, setCountdown] = useState(7);
   const [errorMsg, setErrorMsg] = useState("");
-  const [retryKey, setRetryKey] = useState(0); // để remount Webcam khi retry
+  const [checking, setChecking] = useState(true);
 
-  // Lấy deviceId của Brio 500
-  useEffect(() => {
-    async function getBrioDevice() {
-      try {
-        // Lấy danh sách camera
-        const allDevices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = allDevices.filter(d => d.kind === "videoinput");
-
-        // Chọn Brio 500 theo label
-        const brio = videoDevices.find(d =>
-          d.label.toLowerCase().includes("brio")
-        );
-
-        if (brio) {
-          setBrioDeviceId(brio.deviceId);
-        } else {
-          setErrorMsg("Không tìm thấy camera Brio 500.");
-        }
-      } catch (err) {
-        console.error("Lỗi enumerateDevices:", err);
-        setErrorMsg("Không thể lấy danh sách camera.");
+  // Kiểm tra Brio 500
+  const checkBrio = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const brio = devices.find(
+        d => d.kind === "videoinput" && d.label.toLowerCase().includes("brio")
+      );
+      if (brio) {
+        setBrioDeviceId(brio.deviceId);
+        setErrorMsg("");
+        setChecking(false);
+      } else {
+        setBrioDeviceId("");
+        setErrorMsg("Vui lòng rút thẻ ra để bắt đầu nhận diện khuôn mặt.");
+        setChecking(true);
       }
+    } catch {
+      setErrorMsg("Không thể lấy danh sách camera.");
+      setChecking(true);
     }
+  };
 
-    getBrioDevice();
-
-    const handleChange = () => getBrioDevice();
-    navigator.mediaDevices.addEventListener("devicechange", handleChange);
-    return () => navigator.mediaDevices.removeEventListener("devicechange", handleChange);
+  // Liên tục kiểm tra Brio 500
+  useEffect(() => {
+    const interval = setInterval(checkBrio, 2000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Release stream cũ trước khi mount Webcam mới
+  // Dừng stream cũ
   useEffect(() => {
-    if (webcamRef.current && webcamRef.current.stream) {
+    if (webcamRef.current?.stream) {
       webcamRef.current.stream.getTracks().forEach(t => t.stop());
     }
-  }, [brioDeviceId, retryKey]);
+  }, [brioDeviceId]);
 
-  // Chụp ảnh
+  // Capture phần giữa 1/3 chiều rộng
   const capture = () => {
-    if (!webcamRef.current) return;
-    const imageSrc = webcamRef.current.getScreenshot();
-    if (imageSrc) setImage(imageSrc);
+    if (!webcamRef.current || !canvasRef.current) return;
+    const video = webcamRef.current.video;
+    const canvas = canvasRef.current;
+
+    const w = video.videoWidth;
+    const h = video.videoHeight;
+    const cropW = w / 3;
+    const cropX = (w - cropW) / 2;
+
+    canvas.width = cropW;
+    canvas.height = h;
+    canvas.getContext("2d").drawImage(video, cropX, 0, cropW, h, 0, 0, cropW, h);
+
+    setImage(canvas.toDataURL("image/jpeg"));
   };
 
   // Countdown tự động
@@ -64,36 +75,26 @@ export default function ScanFace({ setImage }) {
     return () => clearTimeout(timer);
   }, [countdown, brioDeviceId]);
 
-  // Retry khi cam bị exclusive access
-  const handleRetry = () => {
-    setErrorMsg("");
-    setRetryKey(k => k + 1);
-    setCountdown(6);
-  };
-
   return (
     <div className="flex flex-col items-center gap-3">
       <h2 className="text-lg font-semibold text-gray-700">
-        Vui lòng nhìn thẳng vào camera Brio 500
+        Vui lòng nhìn thẳng vào camera phía trên
       </h2>
 
-      {errorMsg && (
-        <div className="text-red-600 text-sm mb-2">{errorMsg}</div>
-      )}
+      {errorMsg && <div className="text-red-600 text-sm mb-2">{errorMsg}</div>}
 
       {brioDeviceId && (
-        <div className="relative border rounded-lg overflow-hidden">
+        <div className="relative border rounded-lg overflow-hidden w-[480px] h-[360px]">
           <Webcam
-            key={retryKey} // remount nếu retry
             ref={webcamRef}
             audio={false}
             screenshotFormat="image/jpeg"
-            className="rounded-lg w-[480px] h-auto bg-black"
-            onUserMediaError={(err) => {
-              console.error("Webcam error:", err);
+            className="rounded-lg w-full h-full"
+            onUserMediaError={() => {
               setErrorMsg(
-                "Không thể bật camera Brio 500. Có thể đang được ứng dụng khác sử dụng. Hãy đóng các ứng dụng khác và nhấn Thử lại."
+                "Không thể bật camera. Có thể đang được ứng dụng khác sử dụng."
               );
+              setChecking(true);
             }}
             videoConstraints={{
               width: 480,
@@ -101,23 +102,36 @@ export default function ScanFace({ setImage }) {
               deviceId: { exact: brioDeviceId },
             }}
           />
+
+          {/* Overlay gạch gạch 2 bên */}
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+            <div className="absolute top-0 left-0 h-full bg-black/50" style={{ width: "33.3333%" }} />
+            <div className="absolute top-0 right-0 h-full bg-black/50" style={{ width: "33.3333%" }} />
+          </div>
         </div>
       )}
 
-      {errorMsg && (
-        <button
-          className="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-          onClick={handleRetry}
-        >
-          Thử lại
-        </button>
+      <canvas ref={canvasRef} style={{ display: "none" }} />
+
+      {checking && !brioDeviceId && (
+        <div className="mt-2 text-center text-lg font-semibold text-yellow-700">
+          Vui lòng rút thẻ ra để bắt đầu nhận diện khuôn mặt...
+        </div>
       )}
 
-      <div className="mt-2 text-center text-lg font-semibold">
-        {brioDeviceId
-          ? `Camera Brio 500 sẵn sàng - chụp sau ${countdown}s`
-          : "Đang tìm camera Brio 500..."}
-      </div>
+      {brioDeviceId && !checking && (
+        <div className="mt-2 text-center text-lg font-semibold">
+          Camera sẵn sàng - chụp sau {countdown}s
+        </div>
+      )}
+
+      <button
+        className="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+        onClick={() => navigate("/mer")}
+      >
+        Quay lại
+      </button>
+
     </div>
   );
 }

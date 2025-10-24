@@ -41,11 +41,13 @@ export default function CheckInfo() {
     [
         { label: "Thông tin thẻ", status: false },
         { label: "Ảnh thẻ", status: false },
+        { label: "Xác thực khuôn mặt", status: false },
         { label: "Thông tin bệnh nhân", status: false },
         { label: "Thông tin bảo hiểm", status: false },
     ] : [
         { label: "Thông tin thẻ", status: false },
         { label: "Ảnh thẻ", status: false },
+        { label: "Xác thực khuôn mặt", status: false },
         { label: "Thông tin bệnh nhân", status: false }
     ]);
 
@@ -56,10 +58,10 @@ export default function CheckInfo() {
             toggleStatus(1);
         }
         if (patientInfo?.patientHISInfo || npInfo) {
-            toggleStatus(2);
+            toggleStatus(3);
         }
         if (patientInfo?.insuranceInfo) {
-            toggleStatus(3);
+            toggleStatus(4);
         }
     }, [])
 
@@ -201,7 +203,7 @@ export default function CheckInfo() {
                     setPatientInfo((prev) => { 
                         return { ...prev, patientHISInfo: respone.data}; 
                     }); 
-                    toggleStatus(2)
+                    toggleStatus(3)
                 } 
             } else { 
                 openNotification("Không có dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu") 
@@ -236,7 +238,7 @@ export default function CheckInfo() {
             const respone = await getPatientInsurance(idCard, name, dob);
             if (respone.code === "000") {
                 setPatientInfo(prev => ({ ...prev, insuranceInfo: respone.data }));
-                toggleStatus(3);
+                toggleStatus(4);
                 setGetHIS(true)
             } else {
                 if (respone?.code !== "000") {
