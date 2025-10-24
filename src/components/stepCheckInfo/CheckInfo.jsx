@@ -57,6 +57,9 @@ export default function CheckInfo() {
             toggleStatus(0);
             toggleStatus(1);
         }
+        if (patientInfo.facePass) {
+            toggleStatus(2);
+        }
         if (patientInfo?.patientHISInfo || npInfo) {
             toggleStatus(3);
         }
@@ -89,6 +92,9 @@ export default function CheckInfo() {
                         const correct = parseInt(event.data)
                         console.log("correct: ", correct)
                         if (correct >= correctLimit) {
+                            setPatientInfo((prev) => { 
+                                return { ...prev, facePass: true}; 
+                            });
                             if (flow === "insur") {
                                 setGetInsur(true)
                             } else {

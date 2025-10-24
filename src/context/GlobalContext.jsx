@@ -1,5 +1,5 @@
 import { createContext, useState, useContext } from "react";
-import { INITIAL_INFO, NEW_PATIENT_INFO } from "../utils/constants/default" ;
+import { INITIAL_INFO } from "../utils/constants/default" ;
 
 // Tạo context
 const GlobalContext = createContext();

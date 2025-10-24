@@ -4,6 +4,7 @@ export const INITIAL_INFO = {
 	faceImage: null,
 	verifySOD: 0,
 	//
+	facePass: false,
 	insuranceInfo: null,
 	patientHISInfo: null,
 };
