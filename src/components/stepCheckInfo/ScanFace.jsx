@@ -25,7 +25,6 @@ export default function ScanFace({ setImage }) {
         setErrorMsg("");
       } else {
         setBrioDeviceId("");
-        setErrorMsg("Vui lòng rút thẻ ra để bắt đầu nhận diện khuôn mặt.");
       }
     } catch (err) {
       console.error(err);
@@ -61,7 +60,7 @@ export default function ScanFace({ setImage }) {
     await findBrio();
 
     if (!brioDeviceId) {
-      setErrorMsg("Không tìm thấy camera Brio 500. Vui lòng rút thẻ ra.");
+      setErrorMsg("Không tìm thấy camera. Vui lòng rút thẻ ra.");
       return;
     }
 
@@ -88,7 +87,7 @@ export default function ScanFace({ setImage }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <h2 className="text-lg font-semibold text-gray-700">
-        Nhấn Chụp ảnh rồi nhìn vào camera phía trên
+        Rút thẻ, nhấn Chụp ảnh, rồi nhìn vào camera phía trên
       </h2>
 
       {errorMsg && <div className="text-red-600">{errorMsg}</div>}
@@ -123,9 +122,8 @@ export default function ScanFace({ setImage }) {
 
       <canvas ref={canvasRef} style={{ display: "none" }} />
 
-      {waiting && <div className="text-blue-600 loading-dots">Đang khởi động camera</div>}
       {isCapturing && countdown !== null && (
-        <div className="text-xl font-bold text-green-600 loading-dots">Chụp sau {countdown}s</div>
+        <div className="text-xl font-bold text-green-600">Chụp sau {countdown}s</div>
       )}
 
       <button
