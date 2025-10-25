@@ -10,7 +10,6 @@ export default function ScanFace({ setImage }) {
   const [brioDeviceId, setBrioDeviceId] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [countdown, setCountdown] = useState(null);
-  const [isCameraReady, setIsCameraReady] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
 
@@ -64,7 +63,6 @@ export default function ScanFace({ setImage }) {
   const handleStartCamera = async () => {
     setErrorMsg("");
     setIsStarting(true);
-    setIsCameraReady(false);
     setIsCapturing(false);
     setCountdown(null);
 
@@ -76,7 +74,6 @@ export default function ScanFace({ setImage }) {
 
     // ✅ Đợi 2 giây cho camera ổn định, rồi tự bắt đầu đếm ngược chụp
     setTimeout(() => {
-      setIsCameraReady(true);
       setIsStarting(false);
       setIsCapturing(true);
       setCountdown(4); // đếm ngược 4s để người dùng chuẩn bị
@@ -96,8 +93,11 @@ export default function ScanFace({ setImage }) {
 
   return (
     <div className="flex flex-col items-center gap-3">
+      <h2 className="text-lg font-semibold text-red-700 text-center text-[35px]">
+        VUI LÒNG RÚT THẺ CCCD RA
+      </h2>
       <h2 className="text-lg font-semibold text-gray-700 text-center text-[30px]">
-        VUI LÒNG RÚT THẺ CCCD RA, RỒI ẤN "XÁC THỰC KHUÔN MẶT", NHÌN LÊN CAMERA PHÍA TRÊN
+        RỒI ẤN "XÁC THỰC KHUÔN MẶT", NHÌN LÊN CAMERA PHÍA TRÊN
       </h2>
 
       {errorMsg && <div className="text-red-600">{errorMsg}</div>}

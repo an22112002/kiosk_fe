@@ -35,7 +35,7 @@ export default function SelectMER() {
         <title>Lựa chọn hình thức khám</title>
       </Helmet>
 
-      {/* modal loading */}
+      {/* Modal loading */}
       <Modal
         open={localLoading}
         footer={null}
@@ -48,64 +48,60 @@ export default function SelectMER() {
         </div>
       </Modal>
 
-      {/* container cuộn dọc */}
+      {/* Container chính toàn màn hình */}
       <div
-        className={`relative transition-all duration-300 h-screen ${
-          localLoading ? "blur-sm !bg-white/20" : ""
-        }`}
+        className={`relative flex flex-col items-center justify-between 
+                    h-screen overflow-hidden transition-all duration-300 
+                    ${localLoading ? "blur-sm !bg-white/20" : ""}`}
       >
-        {/* Nội dung chính */}
-        <div className="flex flex-col items-center justify-start text-center px-7 py-8 rounded-lg w-full min-h-full">
-          <div className="mb-7 text-colorOne font-bold text-[22px] lg:text-[30px]">
-            <h1 className="border-4 border-colorOneLighter rounded-2xl px-6 py-4 inline-block bg-white/10 text-colorOne font-bold shadow-md">
-              LỰA CHỌN HÌNH THỨC KHÁM
-            </h1>
-          </div>
-
-          <div className="flex flex-col items-center gap-8 w-full max-w-3xl mt-10">
-            {button.map((text, i) => (
-              <div
-                key={i}
-                onClick={() => handleButtonChange(text)}
-                className="w-full flex justify-center"
-              >
-                <div
-                  className="flex flex-col items-center justify-center 
-                              w-[80%] min-w-[300px] lg:min-w-[400px]
-                              h-32 bg-gradient-to-r from-colorTwo to-colorFive 
-                              text-white rounded-xl shadow-lg cursor-pointer
-                              hover:from-green-500 hover:to-emerald-600 
-                              hover:scale-105 transition-all duration-500 ease-in-out"
-                >
-                  <button
-                    className="flex flex-col items-center justify-center gap-2 
-                               text-[25px] sm:text-[27px] lg:text-[30px] font-semibold"
-                  >
-                    {text}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-            <br></br>
-            <br></br>
-            {/* Nút dưới cùng */}
-            <div className="left-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
-            <button
-                onClick={() => navigate("/")}
-                className="flex items-center justify-center gap-2 flex-1 
-                            px-8 py-4 rounded-2xl font-semibold text-white 
-                            text-[25px] sm:text-[27px] lg:text-[30px]
-                            bg-gradient-to-r from-colorBtnBack to-colorOneDark shadow-md
-                            hover:from-colorBtnBack hover:to-colorOneDark hover:scale-105
-                            active:scale-95 transition-all duration-300 ease-in-out"
-            >
-                <ArrowLeftOutlined /> QUAY LẠI MÀN HÌNH CHÍNH
-            </button>
-            </div>
+        {/* Tiêu đề */}
+        <div className="mt-10 text-center">
+          <h1 className="border-4 border-colorOneLighter rounded-2xl px-6 py-4 inline-block bg-white/10 text-colorOne font-bold text-[22px] lg:text-[30px] shadow-md">
+            LỰA CHỌN HÌNH THỨC KHÁM
+          </h1>
         </div>
 
-        
+        {/* Nút lựa chọn */}
+        <div className="flex flex-col items-center gap-8 w-full max-w-3xl">
+          {button.map((text, i) => (
+            <div
+              key={i}
+              onClick={() => handleButtonChange(text)}
+              className="w-full flex justify-center"
+            >
+              <div
+                className="flex flex-col items-center justify-center 
+                            w-[80%] min-w-[300px] lg:min-w-[400px]
+                            h-32 bg-gradient-to-r from-colorTwo to-colorFive 
+                            text-white rounded-xl shadow-lg cursor-pointer
+                            hover:from-green-500 hover:to-emerald-600 
+                            hover:scale-105 transition-all duration-500 ease-in-out"
+              >
+                <button
+                  className="flex flex-col items-center justify-center gap-2 
+                             text-[25px] sm:text-[27px] lg:text-[30px] font-semibold"
+                >
+                  {text}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Nút quay lại */}
+        <div className="mb-10 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center justify-center gap-2 flex-1 
+                        px-8 py-4 rounded-2xl font-semibold text-white 
+                        text-[25px] sm:text-[27px] lg:text-[30px]
+                        bg-gradient-to-r from-colorBtnBack to-colorOneDark shadow-md
+                        hover:from-colorBtnBack hover:to-colorOneDark hover:scale-105
+                        active:scale-95 transition-all duration-300 ease-in-out"
+          >
+            <ArrowLeftOutlined /> QUAY LẠI MÀN HÌNH CHÍNH
+          </button>
+        </div>
       </div>
     </>
   )

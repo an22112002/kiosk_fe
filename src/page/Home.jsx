@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Helmet } from "react-helmet-async"
 import { Modal } from "antd"
 import { CalendarOutlined, LoadingOutlined } from '@ant-design/icons'
+import { QRCodeSVG } from 'qrcode.react'
 
 export default function HomePage() {
     const [localLoading, setLocalLoading] = useState(false)
@@ -84,6 +85,20 @@ export default function HomePage() {
                     alt="Hướng dẫn"
                     className="w-2/3 h-1/3 mx-auto"
                 />
+            </div>
+            <div className="grid items-center text-center justify-center w-full h-full text-[20px]">
+                <br></br>
+                <div>Tên chủ TK: BENH VIEN THAN HA NOI</div>
+                <div>Số TK: 8600046636</div>
+                <div>Ngân hàng: BIDV - TMCP Đầu tư và Phát triển Việt Nam</div>
+                <br></br>
+                <div className="flex justify-center items-center">
+                <QRCodeSVG
+                    value="00020101021138540010A00000072701240006970418011086000466360208QRIBFTTA53037045802VN6304F93A"
+                    level="H"
+                    size={256}
+                />
+                </div>
             </div>
         </>
     )

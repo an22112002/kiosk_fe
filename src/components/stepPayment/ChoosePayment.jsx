@@ -89,7 +89,7 @@ export default function ChoosePayment({ onNext }) {
                 <div className='flex w-full gap-1 sm:w-[90%] lg:w-[45vw]'>
                     {button.map((text, i) => (
                         <div key={i} className='flex m-2 h-full w-1/2' onClick={() => handleChange(text)}>
-                            <div className='flex flex-col items-center justify-start h-[80%] w-full hover:scale-105 transition-all duration-500 ease-in-out'>
+                            <div className='flex flex-col items-center justify-start h-[100%] w-full hover:scale-105 transition-all duration-500 ease-in-out'>
                                 <div className='w-full bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600'>
                                     <button className='cursor-pointer p-2 text-[14px] sm:text-[18px] font-semibold lg:text-[22px]'>{text}</button>
                                 </div>
