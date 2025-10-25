@@ -46,7 +46,7 @@ export default function HomePage() {
                 <br></br>
                 <div className="mb-7 text-colorOne font-bold text-[18px] lg:text-[25px]">
                     <h1 className="border-4 border-colorOneLighter rounded-2xl px-6 py-4 inline-block bg-white/10 text-colorOne font-bold shadow-md">
-                        KIOSK THANH TOÁN TỰ ĐỘNG QUÉT MÃ QR VIỆN PHÍ
+                        KIOSK THANH TOÁN TỰ ĐỘNG VIỆN PHÍ QUÉT MÃ QR
                     </h1>
                 </div>
 
