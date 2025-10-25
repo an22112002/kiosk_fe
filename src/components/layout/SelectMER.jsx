@@ -48,20 +48,20 @@ export default function SelectMER() {
         </div>
       </Modal>
 
-      {/* Container chính toàn màn hình */}
+      {/* Container chính */}
       <div
-        className={`relative flex flex-col items-center justify-between 
+        className={`relative flex flex-col items-center justify-center 
                     h-screen overflow-hidden transition-all duration-300 
                     ${localLoading ? "blur-sm !bg-white/20" : ""}`}
       >
         {/* Tiêu đề */}
-        <div className="mt-10 text-center">
+        <div className="mb-10 text-center">
           <h1 className="border-4 border-colorOneLighter rounded-2xl px-6 py-4 inline-block bg-white/10 text-colorOne font-bold text-[22px] lg:text-[30px] shadow-md">
             LỰA CHỌN HÌNH THỨC KHÁM
           </h1>
         </div>
 
-        {/* Nút lựa chọn */}
+        {/* Cột các nút */}
         <div className="flex flex-col items-center gap-8 w-full max-w-3xl">
           {button.map((text, i) => (
             <div
@@ -86,13 +86,12 @@ export default function SelectMER() {
               </div>
             </div>
           ))}
-        </div>
 
-        {/* Nút quay lại */}
-        <div className="mb-10 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
+          {/* Nút quay lại */}
           <button
             onClick={() => navigate("/")}
-            className="flex items-center justify-center gap-2 flex-1 
+            className="flex items-center justify-center gap-2 
+                        w-[80%] min-w-[300px] lg:min-w-[400px]
                         px-8 py-4 rounded-2xl font-semibold text-white 
                         text-[25px] sm:text-[27px] lg:text-[30px]
                         bg-gradient-to-r from-colorBtnBack to-colorOneDark shadow-md
