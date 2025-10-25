@@ -19,7 +19,7 @@ export default function ScanFace({ setImage }) {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const brio = devices.find(
-        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("brio")
+        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("iriun")
       );
       if (brio) {
         setBrioDeviceId(brio.deviceId);
@@ -74,13 +74,13 @@ export default function ScanFace({ setImage }) {
       return;
     }
 
-    // ✅ Đợi 3 giây cho camera ổn định, rồi tự bắt đầu đếm ngược chụp
+    // ✅ Đợi 2 giây cho camera ổn định, rồi tự bắt đầu đếm ngược chụp
     setTimeout(() => {
       setIsCameraReady(true);
       setIsStarting(false);
       setIsCapturing(true);
-      setCountdown(6); // đếm ngược 6s để người dùng chuẩn bị
-    }, 3000);
+      setCountdown(4); // đếm ngược 4s để người dùng chuẩn bị
+    }, 2000);
   };
 
   // ⏱️ Đếm ngược rồi chụp
@@ -96,8 +96,8 @@ export default function ScanFace({ setImage }) {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <h2 className="text-lg font-semibold text-gray-700 text-center text-[20px]">
-        Vui lòng rút thẻ CCCD ra, rồi nhấn "Khởi động camera", nhìn vào ống kính phía trên.
+      <h2 className="text-lg font-semibold text-gray-700 text-center text-[30px]">
+        VUI LÒNG RÚT THẺ CCCD RA, RỒI ẤN "XÁC THỰC KHUÔN MẶT", NHÌN LÊN CAMERA PHÍA TRÊN
       </h2>
 
       {errorMsg && <div className="text-red-600">{errorMsg}</div>}
@@ -156,7 +156,7 @@ export default function ScanFace({ setImage }) {
             ? "Đang khởi động..."
             : isCapturing
             ? "Đang chụp..."
-            : "Khởi động camera"}
+            : "XÁC THỰC KHUÔN MẶT"}
         </button>
 
         <button

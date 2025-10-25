@@ -300,10 +300,11 @@ export default function CheckInfo() {
                 closable={false}
                 centered
                 maskClosable={false}
+                width={900}
                 styles={{ body: { textAlign: "center" } }}
             >
                 <LoadingOutlined spin style={{ fontSize: 48, color: "#2563eb" }} className="mb-3" />
-                <div className="text-lg font-semibold loading-dots">Vui lòng đưa căn cước công dân vào máy</div>
+                <div className="text-lg font-semibold text-[23px] loading-dots">VUI LÒNG ĐƯA CĂN CƯỚC CÔNG DÂN VÀO MÁY</div>
                 <br></br>
                 <div className="flex flex-col space-y-2">
                 {fields.map((field, index) => (

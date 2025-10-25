@@ -56,6 +56,25 @@ export default function InputForm({ onBack }) {
     setNpInfo(formData);
   }, [formData]);
 
+  const getFieldName = (n) => {
+    switch (n) {
+      case "phone":
+        return "Điện thoại"
+      case "province":
+        return "Tỉnh / Thành phố"
+      case "commune":
+        return "Xã / Phường"
+      case "job":
+        return "Nghề nghiệp"
+      case "ethnic":
+        return "Dân tộc"
+      case "national":
+        return "Quốc gia"
+      default:
+        return ""
+    }
+  }
+
   // Load dữ liệu từ API
   const handleLoadProvince = async () => {
     const respone = await getProvince();
@@ -356,7 +375,7 @@ const handleLoadJob = async () => {
         <div className="mt-6 w-full max-w-[600px]">
           <p className="text-gray-600 text-center mb-2">
             Đang nhập cho trường:{" "}
-            <span className="font-semibold text-colorOne">{activeField}</span>
+            <span className="font-semibold text-colorOne">{getFieldName(activeField)}</span>
           </p>
           <Keyboard
             layout={{

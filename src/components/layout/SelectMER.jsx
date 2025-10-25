@@ -87,25 +87,25 @@ export default function SelectMER() {
               </div>
             ))}
           </div>
-
-          {/* thêm khoảng trống cuối để không che mất bởi nút dưới */}
-          <div className="h-40"></div>
+            <br></br>
+            <br></br>
+            {/* Nút dưới cùng */}
+            <div className="left-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
+            <button
+                onClick={() => navigate("/")}
+                className="flex items-center justify-center gap-2 flex-1 
+                            px-8 py-4 rounded-2xl font-semibold text-white 
+                            text-[25px] sm:text-[27px] lg:text-[30px]
+                            bg-gradient-to-r from-colorBtnBack to-colorOneDark shadow-md
+                            hover:from-colorBtnBack hover:to-colorOneDark hover:scale-105
+                            active:scale-95 transition-all duration-300 ease-in-out"
+            >
+                <ArrowLeftOutlined /> QUAY LẠI MÀN HÌNH CHÍNH
+            </button>
+            </div>
         </div>
 
-        {/* Nút dưới cùng (cố định) */}
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
-          <button
-            onClick={() => navigate("/")}
-            className="flex items-center justify-center gap-2 flex-1 
-                        px-8 py-4 rounded-2xl font-semibold text-white 
-                        text-[25px] sm:text-[27px] lg:text-[30px]
-                        bg-gradient-to-r from-colorBtnBack to-colorOneDark shadow-md
-                        hover:from-colorBtnBack hover:to-colorOneDark hover:scale-105
-                        active:scale-95 transition-all duration-300 ease-in-out"
-          >
-            <ArrowLeftOutlined /> Trở lại
-          </button>
-        </div>
+        
       </div>
     </>
   )

@@ -3,11 +3,11 @@ import { formatCurrency } from "../../utils/helpers"
 export default function RegisterInfo({patientInfo, npInfo, selectedService, flow}) {
     return (
         <div>
-            <h2 className="text-xl font-bold mb-4 text-center text-green-600">
+            <h2 className="text-xl font-bold mb-4 text-center text-green-600 text-[22px]">
                 Xác thực thông tin
             </h2>
             <div className='flex justify-center'>
-                <div className='flex flex-col justify-start gap-2 font-semibold text-gray-700 text-left'>
+                <div className='flex flex-col justify-start gap-2 font-semibold text-gray-700 text-left text-[20px]'>
                     <span>Họ và tên:</span>
                     <span>Ngày sinh:</span>
                     <span>Giới tính:</span>
@@ -17,7 +17,7 @@ export default function RegisterInfo({patientInfo, npInfo, selectedService, flow
                     <span>Cần thanh toán:</span>
                 </div>
                 <div className='flex flex-col justify-start gap-2 text-gray-800 text-right'>
-                    <div className='flex flex-col justify-start gap-2 text-gray-800 text-right'>
+                    <div className='flex flex-col justify-start gap-2 text-gray-800 text-right text-[20px]'>
                         <span>{patientInfo?.personalInfo?.data?.personName || "N/A"}</span>
                         <span>{patientInfo?.personalInfo?.data?.dateOfBirth || "N/A"}</span>
                         <span>{patientInfo?.personalInfo?.data?.gender || "N/A"}</span>
@@ -28,6 +28,7 @@ export default function RegisterInfo({patientInfo, npInfo, selectedService, flow
                     </div>
                 </div>
             </div>
+            <br></br>
             <br></br> 
             <h2 className="text-xl font-bold mb-4 text-center text-red-600">
                 Lưu ý: sau khi chuyển sang bước tiếp theo bạn sẽ không thể thay đổi những thông tin này nữa

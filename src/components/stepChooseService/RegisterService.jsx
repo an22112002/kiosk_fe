@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Modal, Spin } from "antd"
 import { useGlobal } from "../../context/GlobalContext"
-import { LoadingOutlined } from '@ant-design/icons'
+
 import { getClinicServices } from "../../api/call_API"
 import { Helmet } from "react-helmet-async"
 import RegisterInfo from "./RegisterInfo"
@@ -174,7 +174,6 @@ export default function ClinicRoom() {
                 }
         } catch (error) {
             console.log(error);
-            openNotification("Lỗi xử lý", "");
             return false
         }
     };
@@ -182,8 +181,8 @@ export default function ClinicRoom() {
     const sendRegistration = async () => {
         const result = await handleRegister();
         if (result) {
-            openNotification("Thông báo", "Đã đăng ký dịch vụ thành công", "success");
             if (flow === "insur") {
+                openNotification("Thông báo", "Đã đăng ký dịch vụ thành công", "success");
                 navigate("/mer/insur/print-bill")
             } else {
                 navigate("/mer/non-insur/payment")
@@ -199,9 +198,9 @@ export default function ClinicRoom() {
                 <title>Chọn dịch vụ</title>
             </Helmet>
             {/* Hiện thông báo */}
-            <div className="flex flex-col justify-center items-center bg-white p-2 md:p-6 rounded-xl">
-                <div className="text-[14px] md:text-[16px] lg:text-[18px] flex flex-col lg:flex-row w-[90vw] lg:w-[60vw] md:w-[70vw] sm:w-[80vw] gap-3 justify-center items-center">
-                    
+            <div className="overflow-y-auto flex flex-col justify-center items-center bg-white p-2 md:p-6 rounded-xl">
+                <div className="text-colorOne my-4 font-semibold px-4 py-2 bg-white rounded-xl text-[28px]">XIN CHỌN PHÒNG KHÁM</div>
+                <div className="text-[28px] md:text-[25px] lg:text-[30px] flex flex-col lg:flex-row w-[90vw] lg:w-[60vw] md:w-[70vw] sm:w-[80vw] gap-3 justify-center items-center">
                     <div className="grid grid-cols-2 gap-[20px]">
                         {clinicRooms.map((clinic) => (
                             <button
@@ -210,7 +209,7 @@ export default function ClinicRoom() {
                                         text-white hover:scale-105 duration-500 transition-all"
                             onClick={() => setSelectedClinic(clinic)}
                             >
-                            <h2 className="text-lg font-bold">{clinic.name}</h2>
+                            <div className="font-bold">{clinic.name}</div>
                             </button>
                         ))}
                     </div>
@@ -219,18 +218,19 @@ export default function ClinicRoom() {
                         open={!!selectedClinic}
                         onCancel={() => setSelectedClinic(null)}
                         footer={null}
+                        width={1000}
                         centered
                     >
                         {selectedClinic && (
                         <div>
-                            <h2 className="text-xl font-bold mb-4 text-center text-green-600">
+                            <h2 className="text-xl font-bold mb-4 text-center text-green-600 text-[28px]">
                                 {selectedClinic.name}
                             </h2>
                             <div className="grid grid-cols-2 gap-[20px]">
                             {selectedClinic.services.map((service, idx) => (
                                 <button
                                 key={idx}
-                                className="p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200"
+                                className="p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200 text-[25px]"
                                 onClick={() => handleChooseService(service)}
                                 >
                                 <div className="font-semibold">{service.label}</div>
@@ -251,12 +251,12 @@ export default function ClinicRoom() {
                         <br></br>
                         <div className="grid grid-cols-2 gap-[20px]">
                             <button
-                                className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-gray-400 to-gray-600 text-white rounded-xl hover:from-gray-500 hover:to-gray-700 disabled:opacity-50"
+                                className="text-[25px] hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-gray-400 to-gray-600 text-white rounded-xl hover:from-gray-500 hover:to-gray-700 disabled:opacity-50"
                                 onClick={() => {setConfirm(false)}}>
                                 Hủy bỏ
                             </button>
                             <button
-                                className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
+                                className="text-[25px] hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
                                 onClick={sendRegistration}>
                                 {(flow === "insur" ? "Bước tiếp theo: In phiếu" : "Bước tiếp theo: Thanh toán")}
                             </button>
@@ -264,23 +264,27 @@ export default function ClinicRoom() {
                     </Modal>
                 </div>
 
-                <div className="flex flex-col justify-center items-center text-[14px] md:text-[16px] lg:text-[18px]">
-                    <p className="text-colorOne my-4 font-semibold px-4 py-2 bg-white rounded-xl">Dịch vụ đã chọn: <span className="italic text-green-600">{selectedService ? `${selectedService.clinic} - ${selectedService.name} - ${selectedService.price} VNĐ` : "Xin chọn dịch vụ"}</span></p>
-                    <Spin spinning={loading} indicator={<LoadingOutlined />}>
-                        {<div className="grid grid-cols-2 gap-[20px]">
+                <div className="flex flex-col justify-center text-[25px] md:text-[28px] lg:text-[30px]">
+                    <p className="text-colorOne my-4 font-semibold px-4 py-2 bg-white rounded-xl ">{selectedService ? `Dịch vụ đã chọn: ${selectedService.clinic} - ${selectedService.name} - ${selectedService.price} VNĐ` : "" }</p>
+                    
+                        <div className="grid grid-cols-2 gap-[30px]">
+                            {/* Nút điều khiển */}
                             <button
-                                className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-gray-400 to-gray-600 text-white rounded-xl hover:from-gray-500 hover:to-gray-700 disabled:opacity-50"
+                                className="text-[25px] hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-gray-400 to-gray-600 text-white rounded-xl hover:from-gray-500 hover:to-gray-700 disabled:opacity-50"
                                 onClick={() => {navigate(-1)}}>
                                 Trở lại
                             </button>
                             <button disabled={booking}
-                                className="hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
+                                className="text-[25px] hover:scale-105 transition-all duration-500 ease-in-out cursor-pointer px-5 py-2 font-semibold bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600 disabled:opacity-50"
                                 onClick={handleConfirm}>
                                 {loading === true ? (<span className="loading-dots">Đang xử lý</span>) : ("Xác thực")}
                             </button>
-                        </div>}
-                    </Spin>
+                        </div>
                 </div>
+                <br></br>
+                <br></br>
+                <br></br>
+                <br></br>
             </div>
         </>
     )
