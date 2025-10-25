@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { useReactToPrint } from "react-to-print"
 import { Helmet } from "react-helmet-async"
 import InfoPrint from "./infoPrint"
+import InfoPrintCompact from "./InfoPrintCompact"
 
 export default function PrintBill() {
     const contentRef = useRef(null)
@@ -48,7 +49,7 @@ export default function PrintBill() {
             {/* Nội dung in ẩn */}
             <div style={{ position: "absolute", left: 0, top: 0, visibility: "hidden" }}>
                 <div ref={contentRef}>
-                    <InfoPrint />
+                    <InfoPrintCompact />
                 </div>
             </div>
 
