@@ -37,6 +37,13 @@ export default function ShowQR() {
         }
     }
 
+    const handleChangePayment = async () => {
+        openNotification("Thông báo", "Đã đổi sang thanh toán tiền mặt", "info")
+        await setPaymentStateAsync("Thanh toán tại quầy")
+        setSuccess(true)
+        setCountDown(5)
+    }
+
     useEffect(() => {
         if (!success) return;
 
@@ -92,11 +99,23 @@ export default function ShowQR() {
             ) : (
                 <div className="flex flex-col items-center justify-center w-full min-h-20 mb-[7px]">
                     <button
-                        className="p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200"
+                        className="text-[25px] p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200"
                         onClick={handleCheckPayment}
                     >
                         Kiểm tra thanh toán
                     </button>
+                    <br></br>
+                    <br></br>
+                    <button
+                        className="text-[25px] p-3 bg-gradient-to-r from-colorBtnBack to-colorOneDark text-white rounded-xl hover:from-gray-500 hover:to-gray-600"
+                        onClick={handleChangePayment}
+                    >
+                        Đổi sang thanh toán tiền mặt
+                    </button>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
                 </div>
             )}
         </div>

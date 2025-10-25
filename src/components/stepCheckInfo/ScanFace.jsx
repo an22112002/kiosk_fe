@@ -13,12 +13,12 @@ export default function ScanFace({ setImage }) {
   const [isStarting, setIsStarting] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
 
-  // 🔍 Tìm camera Iriun (Brio)
+  // 🔍 Tìm camera Iriun, Brio
   const findBrio = async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const brio = devices.find(
-        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("brio")
+        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("brio") // iriun:test, brio:deploy
       );
       if (brio) {
         setBrioDeviceId(brio.deviceId);

@@ -397,12 +397,12 @@ const handleLoadJob = async () => {
       )}
 
       {/* Gợi ý nhập từ bàn phím ảo */}
+      <div className="w-full max-w-[600px] mt-3 bg-white border rounded-lg shadow p-3 h-[200px] overflow-y-auto">
       {suggestions.length > 0 && (
-        <>
-          <p className="text-gray-600 text-center mb-2">
-              Bạn đang nhập?
-          </p>
-          <div className="w-full max-w-[600px] mt-3 bg-white border rounded-lg shadow p-3">
+        <div className="w-full flex flex-col items-center">
+          <p className="text-gray-600 text-center mb-2">Bạn đang nhập?</p>
+
+          {/* Khung chứa có chiều cao cố định và scroll */}
             {suggestions.map((opt) => (
               <div
                 key={opt.value}
@@ -412,9 +412,9 @@ const handleLoadJob = async () => {
                 {opt.label}
               </div>
             ))}
-          </div>
-        </>
+        </div>
       )}
+      </div>
 
       {/* Nhóm nút hành động */}
       <div className="flex justify-center gap-6 mt-8 w-full max-w-[700px] mx-auto">

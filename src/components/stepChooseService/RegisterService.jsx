@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Modal, Spin } from "antd"
+import { Modal } from "antd"
 import { useGlobal } from "../../context/GlobalContext"
 
 import { getClinicServices } from "../../api/call_API"
@@ -245,6 +245,7 @@ export default function ClinicRoom() {
                     <Modal
                         open={confirm}
                         footer={null}
+                        width={1000}
                         centered
                     >
                         <RegisterInfo patientInfo={patientInfo} npInfo={npInfo} selectedService={selectedService} flow={flow} ></RegisterInfo>

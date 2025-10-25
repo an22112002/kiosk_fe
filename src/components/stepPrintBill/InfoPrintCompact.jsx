@@ -9,7 +9,7 @@ export default function InfoPrintCompact() {
 
   return (
     <div className="w-[600px] mx-auto p-6 text-[16px] font-sans border border-gray-300 rounded-lg leading-relaxed">
-      <h1 className="text-2xl font-bold text-center mb-6">Thông tin khám bệnh</h1>
+      <h1 className="text-2xl font-bold mb-6">Thông tin khám bệnh</h1>
 
       {/* Thông tin cá nhân */}
       <div className="space-y-2">
@@ -41,7 +41,7 @@ export default function InfoPrintCompact() {
           <div>Thanh toán: {paymentState || "N/A"}</div>
         )}
 
-        <div>Phòng khám: <span className="font-bold text-xl">{selectedService?.clinic || "N/A"}</span></div>
+        <div><span className="font-bold text-xl">{selectedService?.clinic || "N/A"}</span></div>
         <div>Số thứ tự: <span className="font-bold text-xl">{paymentInfo?.THONG_TIN_TIEP_NHAN.STT_LK || "N/A"}</span></div>
       </div>
     </div>
