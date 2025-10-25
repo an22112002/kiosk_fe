@@ -10,18 +10,17 @@ export default function ScanFace({ setImage }) {
   const [brioDeviceId, setBrioDeviceId] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [countdown, setCountdown] = useState(null);
-  const [isCapturing, setIsCapturing] = useState(false);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
 
-  // Tìm camera Brio 500
+  // 🔍 Tìm camera Iriun (Brio)
   const findBrio = async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const brio = devices.find(
         (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("brio")
       );
-
       if (brio) {
         setBrioDeviceId(brio.deviceId);
         setErrorMsg("");
@@ -37,7 +36,7 @@ export default function ScanFace({ setImage }) {
     }
   };
 
-  // 🧩 Hàm chụp ảnh (crop phần giữa 1/3)
+  // 📸 Hàm chụp ảnh (crop phần giữa 1/3)
   const capture = () => {
     const video = webcamRef.current?.video;
     const canvas = canvasRef.current;
@@ -56,7 +55,7 @@ export default function ScanFace({ setImage }) {
     const imgData = canvas.toDataURL("image/jpeg");
     setImage(imgData);
 
-    // Reset sau khi chụp
+    // Reset trạng thái
     setIsCapturing(false);
     setCountdown(null);
   };
@@ -65,52 +64,45 @@ export default function ScanFace({ setImage }) {
   const handleStartCamera = async () => {
     setErrorMsg("");
     setIsStarting(true);
-    const found = await findBrio();
+    setIsCameraReady(false);
+    setIsCapturing(false);
+    setCountdown(null);
 
+    const found = await findBrio();
     if (!found) {
       setIsStarting(false);
       return;
     }
 
-    // Đợi 4 giây để camera ổn định
+    // ✅ Đợi 3 giây cho camera ổn định, rồi tự bắt đầu đếm ngược chụp
     setTimeout(() => {
       setIsCameraReady(true);
       setIsStarting(false);
-    }, 4000);
+      setIsCapturing(true);
+      setCountdown(6); // đếm ngược 6s để người dùng chuẩn bị
+    }, 3000);
   };
 
-  // ▶️ Khi nhấn “Chụp ảnh”
-  const handleCapture = () => {
-    if (!brioDeviceId) {
-      setErrorMsg("Camera chưa sẵn sàng.");
-      return;
-    }
-
-    setIsCapturing(true);
-    setCountdown(6);
-  };
-
-  // ⏱ Đếm ngược rồi chụp
+  // ⏱️ Đếm ngược rồi chụp
   useEffect(() => {
     if (countdown === null || countdown < 0) return;
     if (countdown === 0) {
       capture();
       return;
     }
-
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [countdown]);
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <h2 className="text-lg font-semibold text-gray-700">
-        Vui lòng rút thẻ ra, nhấn Khởi động camera, nhấn Chụp ảnh rồi nhìn vào ống kính phía trên
+      <h2 className="text-lg font-semibold text-gray-700 text-center">
+        Vui lòng rút thẻ ra, nhấn "Khởi động camera", nhìn vào ống kính phía trên.
       </h2>
 
       {errorMsg && <div className="text-red-600">{errorMsg}</div>}
 
-      {/* Hiển thị webcam nếu đã có device */}
+      {/* Hiển thị webcam */}
       {brioDeviceId && (
         <div className="relative border rounded-lg overflow-hidden w-[480px] h-[360px]">
           <Webcam
@@ -125,57 +117,55 @@ export default function ScanFace({ setImage }) {
             }}
           />
 
-          {/* Overlay 2 bên tối */}
-          <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-            <div
-              className="absolute top-0 left-0 h-full bg-black/50"
-              style={{ width: "33.3333%" }}
-            />
-            <div
-              className="absolute top-0 right-0 h-full bg-black/50"
-              style={{ width: "33.3333%" }}
-            />
-          </div>
+          {/* Overlay khu vực khuôn mặt */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `
+                radial-gradient(
+                  ellipse 33.33% 35% at center,
+                  transparent 99%,
+                  rgba(0,0,0,0.7) 100%
+                )
+              `,
+            }}
+          ></div>
         </div>
       )}
 
       <canvas ref={canvasRef} style={{ display: "none" }} />
 
-      {/* Trạng thái */}
-      {isStarting && <div className="text-blue-600 loading-dots">Đang khởi động camera</div>}
+      {/* Trạng thái hiển thị */}
+      {isStarting && <div className="text-blue-600 font-semibold">Đang khởi động camera...</div>}
       {isCapturing && countdown !== null && (
         <div className="text-xl font-bold text-green-600">Chụp sau {countdown}s...</div>
       )}
 
       {/* Nút hành động */}
-      {!isCameraReady ? (
+      <div className="flex flex-col gap-3 mt-3">
         <button
           onClick={handleStartCamera}
-          disabled={isStarting}
-          className={`px-4 py-2 rounded text-white ${
-            isStarting ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+          disabled={isStarting || isCapturing}
+          className={`px-5 py-2 rounded text-white text-lg font-medium ${
+            isStarting || isCapturing
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
           }`}
         >
-          {isStarting ? "Đang khởi động..." : "Khởi động camera"}
+          {isStarting
+            ? "Đang khởi động..."
+            : isCapturing
+            ? "Đang chụp..."
+            : "Khởi động camera"}
         </button>
-      ) : (
-        <button
-          onClick={handleCapture}
-          disabled={isCapturing}
-          className={`px-4 py-2 rounded text-white ${
-            isCapturing ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
-          }`}
-        >
-          {isCapturing ? "Đang chụp..." : "Chụp ảnh"}
-        </button>
-      )}
 
-      <button
-        className="mt-2 px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
-        onClick={() => navigate("/mer")}
-      >
-        Quay lại
-      </button>
+        <button
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+          onClick={() => navigate("/mer")}
+        >
+          Quay lại
+        </button>
+      </div>
     </div>
   );
 }
