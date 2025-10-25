@@ -351,26 +351,6 @@ const handleLoadJob = async () => {
         </div>
       </div>
 
-      {/* Gợi ý nhập từ bàn phím ảo */}
-      {suggestions.length > 0 && (
-        <>
-          <p className="text-gray-600 text-center mb-2">
-              Bạn đang nhập?
-          </p>
-          <div className="w-full max-w-[600px] mt-3 bg-white border rounded-lg shadow p-3">
-            {suggestions.map((opt) => (
-              <div
-                key={opt.value}
-                className="py-1 px-2 cursor-pointer hover:bg-gray-100 rounded"
-                onClick={() => handleSuggestionClick(opt)}
-              >
-                {opt.label}
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
       {/* Bàn phím ảo */}
       {activeField && (
         <div className="mt-6 w-full max-w-[600px]">
@@ -395,6 +375,26 @@ const handleLoadJob = async () => {
             onKeyPress={handleKeyboardInput}
           />
         </div>
+      )}
+
+      {/* Gợi ý nhập từ bàn phím ảo */}
+      {suggestions.length > 0 && (
+        <>
+          <p className="text-gray-600 text-center mb-2">
+              Bạn đang nhập?
+          </p>
+          <div className="w-full max-w-[600px] mt-3 bg-white border rounded-lg shadow p-3">
+            {suggestions.map((opt) => (
+              <div
+                key={opt.value}
+                className="py-1 px-2 cursor-pointer hover:bg-gray-100 rounded"
+                onClick={() => handleSuggestionClick(opt)}
+              >
+                {opt.label}
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Nhóm nút hành động */}

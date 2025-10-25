@@ -96,8 +96,8 @@ export default function ScanFace({ setImage }) {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <h2 className="text-lg font-semibold text-gray-700 text-center">
-        Vui lòng rút thẻ ra, nhấn "Khởi động camera", nhìn vào ống kính phía trên.
+      <h2 className="text-lg font-semibold text-gray-700 text-center text-[20px]">
+        Vui lòng rút thẻ CCCD ra, rồi nhấn "Khởi động camera", nhìn vào ống kính phía trên.
       </h2>
 
       {errorMsg && <div className="text-red-600">{errorMsg}</div>}
