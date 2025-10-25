@@ -50,7 +50,7 @@ export default function SelectMER() {
 
       {/* container cuộn dọc */}
       <div
-        className={`relative transition-all duration-300 h-screen overflow-y-auto ${
+        className={`relative transition-all duration-300 h-screen ${
           localLoading ? "blur-sm !bg-white/20" : ""
         }`}
       >

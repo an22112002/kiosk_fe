@@ -19,7 +19,7 @@ export default function ScanFace({ setImage }) {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const brio = devices.find(
-        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("iriun")
+        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("brio")
       );
       if (brio) {
         setBrioDeviceId(brio.deviceId);
