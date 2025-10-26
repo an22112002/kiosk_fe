@@ -37,12 +37,12 @@ export default function ShowQR() {
         }
     }
 
-    const handleChangePayment = async () => {
-        openNotification("Thông báo", "Đã đổi sang thanh toán tiền mặt", "info")
-        await setPaymentStateAsync("Thanh toán tại quầy")
-        setSuccess(true)
-        setCountDown(5)
-    }
+    // const handleChangePayment = async () => {
+    //     openNotification("Thông báo", "Đã đổi sang thanh toán tiền mặt", "info")
+    //     await setPaymentStateAsync("Thanh toán tại quầy")
+    //     setSuccess(true)
+    //     setCountDown(5)
+    // }
 
     useEffect(() => {
         if (!success) return;
@@ -104,18 +104,14 @@ export default function ShowQR() {
                     >
                         Kiểm tra thanh toán
                     </button>
-                    <br></br>
+                    {/* <br></br>
                     <br></br>
                     <button
                         className="text-[25px] p-3 bg-gradient-to-r from-colorBtnBack to-colorOneDark text-white rounded-xl hover:from-gray-500 hover:to-gray-600"
                         onClick={handleChangePayment}
                     >
                         Đổi sang thanh toán tiền mặt
-                    </button>
-                    <br></br>
-                    <br></br>
-                    <br></br>
-                    <br></br>
+                    </button> */}
                 </div>
             )}
         </div>

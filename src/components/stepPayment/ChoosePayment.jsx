@@ -70,7 +70,7 @@ export default function ChoosePayment({ onNext }) {
         if (result) {
             openNotification("Thông báo", "Đã đăng ký dịch vụ thành công", "success");
             if (text === "TIỀN MẶT") {
-                await setPaymentStateAsync("Thanh toán tại quầy")
+                await setPaymentStateAsync("Chưa thanh toán")
                 navigate('/mer/non-insur/print-bill')
             } else {
                 onNext()
