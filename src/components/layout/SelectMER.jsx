@@ -5,6 +5,8 @@ import { Modal } from 'antd'
 import { LoadingOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import { useGlobal } from '../../context/GlobalContext';
 
+// MER: medical examination register
+
 export default function SelectMER() {
   const button = ['BẢO HIỂM Y TẾ', 'DỊCH VỤ']
   const navigate = useNavigate()

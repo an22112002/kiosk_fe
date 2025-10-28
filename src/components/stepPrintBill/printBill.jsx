@@ -58,7 +58,7 @@ export default function PrintBill() {
                 <InfoPrint />
 
                 <button
-                    className="p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200"
+                    className="text-[25px] p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200"
                     onClick={() => navigate("/")}
                 >
                     Trở lại trang chủ
@@ -66,7 +66,7 @@ export default function PrintBill() {
 
                 <h2 className="text-lg text-gray-700 font-medium">
                     Tự chuyển hướng sau{" "}
-                    <span className="text-red-500 font-semibold">{countDown}s</span>
+                    <span className="text-[25px] text-red-500 font-semibold">{countDown}s</span>
                 </h2>
             </div>
         </>

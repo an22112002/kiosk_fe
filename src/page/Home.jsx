@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Helmet } from "react-helmet-async"
 import { Modal } from "antd"
 import { CalendarOutlined, LoadingOutlined } from '@ant-design/icons'
-import { QRCodeSVG } from 'qrcode.react'
+// import { QRCodeSVG } from 'qrcode.react'
 
 export default function HomePage() {
     const [localLoading, setLocalLoading] = useState(false)
@@ -86,7 +86,7 @@ export default function HomePage() {
                     className="w-2/3 h-1/3 mx-auto"
                 />
             </div>
-            <div className="grid items-center text-center justify-center w-full h-full text-[20px]">
+            {/* <div className="grid items-center text-center justify-center w-full h-full text-[20px]">
                 <br></br>
                 <div>Tên chủ TK: BENH VIEN THAN HA NOI</div>
                 <div>Số TK: 8600046636</div>
@@ -99,7 +99,7 @@ export default function HomePage() {
                     size={256}
                 />
                 </div>
-            </div>
+            </div> */}
         </>
     )
 }

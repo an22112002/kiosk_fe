@@ -9,7 +9,7 @@ export default function InfoPrintCompact() {
 
   return (
     <div className="w-[600px] mx-auto p-6 text-[16px] font-sans border border-gray-300 rounded-lg leading-relaxed">
-      <h1 className="text-2xl font-bold mb-6">Thông tin khám bệnh</h1>
+      <h1 className="text-2xl font-bold mb-6">--Thông tin khám bệnh--</h1>
 
       {/* Thông tin cá nhân */}
       <div className="space-y-2">
@@ -23,7 +23,8 @@ export default function InfoPrintCompact() {
 
         {flow === "insur" && (
           <>
-            <div>Bảo hiểm y tế: Giá trị từ {insurInfo?.GT_THE_TU || "N/A"} đến {insurInfo?.GT_THE_DEN || "N/A"}</div>
+            <div>Bảo hiểm y tế:</div>
+            <div>Giá trị từ {insurInfo?.GT_THE_TU || "N/A"} đến {insurInfo?.GT_THE_DEN || "N/A"}</div>
             <div>Mã thẻ bảo hiểm: {insurInfo?.MA_THE_BHYT || "N/A"}</div>
           </>
         )}

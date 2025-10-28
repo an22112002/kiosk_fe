@@ -1,7 +1,7 @@
 export default function PatientInfoDisplay({ patientInfo, npInfo }) {
   return (
     <div className="flex justify-center">
-      <div className="w-full sm:w-[80%] lg:w-[50vw]">
+      <div className="w-full sm:w-[80%] lg:w-[50vw] border-4 border-blue-500 rounded-xl p-4 inline-block">
         <table className="w-full border-collapse">
           <tbody>
             {/* Hàng 1: Ảnh và 2 cột thông tin */}

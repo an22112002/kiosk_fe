@@ -4,10 +4,11 @@ import { getCheckStatusPayment } from "../../api/call_API";
 import { openNotification } from "../../utils/helpers";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { formatCurrency } from "../../utils/helpers";
 
 export default function ShowQR() {
     const navigate = useNavigate()
-    const {paymentInfo, setPaymentStateAsync} = useGlobal()
+    const {paymentInfo, setPaymentStateAsync, patientInfo, selectedService} = useGlobal()
     const [ countDown, setCountDown ] = useState(6)
     const [ success, setSuccess ] = useState(false)
 
@@ -85,6 +86,9 @@ export default function ShowQR() {
                     />
                     <div className="text-2xl mt-6">
                         Xin vui lòng quét mã QR để thanh toán
+                    </div>
+                    <div className="text-2xl mt-6">
+                        Thanh toán cho: <span className="text-gray-500 font-semibold">{patientInfo?.personalInfo?.data?.personName || "N/A"} - {formatCurrency(selectedService?.price) || "N/A"}</span>
                     </div>
                 </div>
             )}

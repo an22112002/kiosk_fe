@@ -304,9 +304,9 @@ export default function CheckInfo() {
                 styles={{ body: { textAlign: "center" } }}
             >
                 <LoadingOutlined spin style={{ fontSize: 48, color: "#2563eb" }} className="mb-3" />
-                <div className="text-lg font-semibold text-[23px] loading-dots">VUI LÒNG ĐƯA CĂN CƯỚC CÔNG DÂN VÀO MÁY</div>
+                <div className="text-[25px] text-lg font-semibold text-[23px] loading-dots">VUI LÒNG ĐƯA CĂN CƯỚC CÔNG DÂN VÀO MÁY</div>
                 <br></br>
-                <div className="flex flex-col space-y-2">
+                <div className="text-[25px] flex flex-col space-y-2">
                 {fields.map((field, index) => (
                     <div
                         key={index}
@@ -384,11 +384,12 @@ export default function CheckInfo() {
                 </div>
             </div>
             {/* Nút dưới cùng */}
-            <div className="fixed left-1/2 -translate-x-1/2 w-[90%] sm:w-[80%] lg:w-[45vw] flex gap-4">
+            <div className="flex gap-4 w-[90%] sm:w-[80%] lg:w-[45vw] mx-auto mt-6">
                 <button
                     onClick={() => navigate(-1)}
                     className="flex-1 px-6 py-3 bg-gradient-to-r from-gray-400 to-gray-600 
-                            text-white rounded-xl hover:from-gray-500 hover:to-gray-700 transition-all duration-500 ease-in-out 
+                            text-white rounded-xl hover:from-gray-500 hover:to-gray-700 
+                            transition-all duration-500 ease-in-out 
                             font-semibold text-[14px] sm:text-[18px] lg:text-[22px]"
                 >
                     Trở lại
@@ -396,8 +397,9 @@ export default function CheckInfo() {
 
                 <button
                     onClick={handleNextStep}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl 
-                            hover:from-green-500 hover:to-emerald-600 transition-all duration-500 ease-in-out 
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-colorTwo to-colorFive 
+                            text-white rounded-xl hover:from-green-500 hover:to-emerald-600 
+                            transition-all duration-500 ease-in-out 
                             font-semibold text-[14px] sm:text-[18px] lg:text-[22px]"
                 >
                     Tiếp tục

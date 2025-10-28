@@ -13,12 +13,12 @@ export default function ScanFace({ setImage }) {
   const [isStarting, setIsStarting] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
 
-  // 🔍 Tìm camera Iriun, Brio
+  // Tìm camera Iriun, Brio
   const findBrio = async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const brio = devices.find(
-        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("brio") // iriun:test, brio:deploy
+        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("iriun") // iriun:test, brio:deploy
       );
       if (brio) {
         setBrioDeviceId(brio.deviceId);
@@ -35,7 +35,7 @@ export default function ScanFace({ setImage }) {
     }
   };
 
-  // 📸 Hàm chụp ảnh (crop phần giữa 1/3)
+  // Hàm chụp ảnh (crop phần giữa 1/3)
   const capture = () => {
     const video = webcamRef.current?.video;
     const canvas = canvasRef.current;
@@ -59,7 +59,7 @@ export default function ScanFace({ setImage }) {
     setCountdown(null);
   };
 
-  // ▶️ Khi nhấn “Khởi động camera”
+  // Khi nhấn “Khởi động camera”
   const handleStartCamera = async () => {
     setErrorMsg("");
     setIsStarting(true);
@@ -72,7 +72,7 @@ export default function ScanFace({ setImage }) {
       return;
     }
 
-    // ✅ Đợi 2 giây cho camera ổn định, rồi tự bắt đầu đếm ngược chụp
+    // Đợi 2 giây cho camera ổn định, rồi tự bắt đầu đếm ngược chụp
     setTimeout(() => {
       setIsStarting(false);
       setIsCapturing(true);
@@ -80,7 +80,7 @@ export default function ScanFace({ setImage }) {
     }, 2000);
   };
 
-  // ⏱️ Đếm ngược rồi chụp
+  // Đếm ngược rồi chụp
   useEffect(() => {
     if (countdown === null || countdown < 0) return;
     if (countdown === 0) {
@@ -91,12 +91,21 @@ export default function ScanFace({ setImage }) {
     return () => clearTimeout(timer);
   }, [countdown]);
 
+  useEffect(() => {
+    const audio = new Audio("/audio/take-CCCD-out-voice.mp3")
+    audio.play().catch(err => {
+      console.warn("Trình duyệt chặn autoplay, cần user interaction:", err)
+    })
+  }, []);
+
   return (
     <div className="flex flex-col items-center gap-3">
-      <h2 className="text-lg font-semibold text-red-700 text-center text-[35px]">
+      <br></br>
+      <h2 className="text-lg text-red-700 text-center text-[40px]">
         VUI LÒNG RÚT THẺ CCCD RA
       </h2>
-      <h2 className="text-lg font-semibold text-gray-700 text-center text-[30px]">
+      <br></br>
+      <h2 className="text-lg font-semibold text-gray-700 text-center text-[31px]">
         RỒI ẤN "XÁC THỰC KHUÔN MẶT", NHÌN LÊN CAMERA PHÍA TRÊN
       </h2>
 
@@ -146,7 +155,7 @@ export default function ScanFace({ setImage }) {
         <button
           onClick={handleStartCamera}
           disabled={isStarting || isCapturing}
-          className={`px-5 py-2 rounded text-white text-lg font-medium ${
+          className={`text-[30px] px-5 py-2 rounded text-white ${
             isStarting || isCapturing
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700"
@@ -158,9 +167,9 @@ export default function ScanFace({ setImage }) {
             ? "Đang chụp..."
             : "XÁC THỰC KHUÔN MẶT"}
         </button>
-
+        <br></br>
         <button
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+          className="text-[22px] px-5 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
           onClick={() => navigate("/mer")}
         >
           Quay lại

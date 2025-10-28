@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Select, Input, message } from "antd";
+import { Select, Input } from "antd";
 import { useGlobal } from "../../context/GlobalContext";
 import Keyboard from "react-simple-keyboard";
 import { processVietnameseBuffer } from "../../utils/helpers";
@@ -265,11 +265,11 @@ const handleLoadJob = async () => {
 
   // UI
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="text-[25px] flex flex-col items-center w-full">
       <div className="flex flex-col gap-4 w-full max-w-[700px]">
         {/* Phone */}
         <div className="flex items-center justify-between gap-3 w-full">
-          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+          <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
             Số điện thoại (*):
           </label>
           <Input
@@ -278,13 +278,13 @@ const handleLoadJob = async () => {
             onFocus={() => setActiveField("phone")}
             onChange={(e) => handleInputChange("phone", e.target.value)}
             placeholder="Nhập số điện thoại"
-            className="w-[65%]"
+            className="w-[65%] h-[120%]"
           />
         </div>
 
         {/* Province */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
-          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+          <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
             Tỉnh / Thành phố (*):
           </label>
           <Select
@@ -293,14 +293,14 @@ const handleLoadJob = async () => {
             placeholder="Chọn hoặc nhập tỉnh / thành phố"
             onFocus={() => setActiveField("province")}
             onChange={(value) => handleInputChange("province", value)}
-            className="w-[65%]"
+            className="w-[65%] h-[120%]"
             options={TINH.map((t) => ({ value: t.MA_TINH, label: t.TEN_TINH }))}
           />
         </div>
 
         {/* Commune */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
-          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+          <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
             Xã / Phường (*):
           </label>
           <Select
@@ -309,7 +309,7 @@ const handleLoadJob = async () => {
             placeholder="Chọn hoặc nhập xã / phường"
             onFocus={() => setActiveField("commune")}
             onChange={(value) => handleInputChange("commune", value)}
-            className="w-[65%]"
+            className="w-[65%] h-[120%]"
             options={
               XA.filter((x) => x.MA_TINH === formData.province).map((x) => ({
                 value: x.MA_XA,
@@ -322,7 +322,7 @@ const handleLoadJob = async () => {
 
         {/* Ethnic */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
-          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+          <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
             Dân tộc (*):
           </label>
           <Select
@@ -331,14 +331,14 @@ const handleLoadJob = async () => {
             placeholder="Chọn hoặc nhập dân tộc"
             onFocus={() => setActiveField("ethnic")}
             onChange={(value) => handleInputChange("ethnic", value)}
-            className="w-[65%]"
+            className="w-[65%] h-[120%]"
             options={ETHIC.map((e) => ({ value: e.MA_DT, label: e.TEN_DT }))}
           />
         </div>
 
         {/* National */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
-          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+          <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
             Quốc tịch (*):
           </label>
           <Select
@@ -347,7 +347,7 @@ const handleLoadJob = async () => {
             placeholder="Chọn hoặc nhập quốc tịch"
             onFocus={() => setActiveField("national")}
             onChange={(value) => handleInputChange("national", value)}
-            className="w-[65%]"
+            className="w-[65%] h-[120%]"
             options={NAL.map((n) => ({ value: n.MA_QT, label: n.TEN_QT }))}
             disabled={formData.national === "000"} // khóa 000 - Việt Nam
           />
@@ -355,7 +355,7 @@ const handleLoadJob = async () => {
 
         {/* Job */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
-          <label className="font-medium text-[16px] text-gray-700 w-[35%] text-right">
+          <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
             Nghề nghiệp:
           </label>
           <Select
@@ -364,7 +364,7 @@ const handleLoadJob = async () => {
             placeholder="Chọn hoặc nhập nghề nghiệp"
             onFocus={() => setActiveField("job")}
             onChange={(value) => handleInputChange("job", value)}
-            className="w-[65%]"
+            className="w-[65%] h-[120%]"
             options={JOB.map((j) => ({ value: j.MA_NN, label: j.TEN_NN }))}
           />
         </div>

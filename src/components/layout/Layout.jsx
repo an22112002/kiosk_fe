@@ -9,7 +9,7 @@ export default function Layout() {
             </header>
 
             {/* Nội dung chính các trang */}
-            <main>
+            <main className="flex-1 pb-20">
                 <Outlet />
             </main>
 
