@@ -17,6 +17,7 @@ COPY . .
 ENV REACT_APP_HIS_MERCHANT_ID=2239141840762336
 ENV REACT_APP_HIS_API_URL=http://192.168.2.223:1410/api/Kiosk
 ENV REACT_APP_HIS_API_URL_1=http://192.168.2.223:1408/api/Kiosk
+ENV REACT_APP_CAMERA_NAME=brio
 
 # Build React
 RUN yarn build
@@ -28,7 +29,7 @@ FROM nginx:stable-alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Expose port 3000
-EXPOSE 3000
+EXPOSE 80
 
 # Chạy Nginx
 CMD ["nginx", "-g", "daemon off;"]

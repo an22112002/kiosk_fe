@@ -26,7 +26,7 @@ export default function InfoPrint() {
 				<div className="text-right">{dataInfo?.dateOfBirth || "N/A"}</div>
 
 				<div className="text-left font-medium">Điện thoại:</div>
-				<div className="text-right">{dataInfo?.phone || patientHISInfo?.DIEN_THOAI || npInfo.phone || "N/A"}</div>
+				<div className="text-right">{patientHISInfo?.DIEN_THOAI || npInfo.phone || "N/A"}</div>
 
 				<div className="text-left font-medium">Địa chỉ:</div>
 				<div className="text-right">{dataInfo?.residencePlace || "N/A"}</div>

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
+import { CAMERA_NAME } from "../../api/config";
 
 export default function ScanFace({ setImage }) {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function ScanFace({ setImage }) {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const brio = devices.find(
-        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes("iriun") // iriun:test, brio:deploy
+        (d) => d.kind === "videoinput" && d.label.toLowerCase().includes(CAMERA_NAME) // iriun:test, brio:deploy
       );
       if (brio) {
         setBrioDeviceId(brio.deviceId);
@@ -101,7 +102,7 @@ export default function ScanFace({ setImage }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <br></br>
-      <h2 className="text-lg text-red-700 text-center text-[40px]">
+      <h2 className="text-lg text-red-700 text-center text-[35px]">
         VUI LÒNG RÚT THẺ CCCD RA
       </h2>
       <br></br>

@@ -17,7 +17,7 @@ export default function InfoPrintCompact() {
         <div>Giới tính: {dataInfo?.gender || "N/A"}</div>
         <div>Tuổi: {dataInfo?.dateOfBirth ? calculateAge(dataInfo?.dateOfBirth) : "N/A"}</div>
         <div>Ngày sinh: {dataInfo?.dateOfBirth || "N/A"}</div>
-        <div>Điện thoại: {dataInfo?.phone || patientHISInfo?.DIEN_THOAI || npInfo?.phone || "N/A"}</div>
+        <div>Điện thoại: {patientHISInfo?.DIEN_THOAI || npInfo?.phone || "N/A"}</div>
         <div>Địa chỉ: {dataInfo?.residencePlace || "N/A"}</div>
         <div>Đối tượng khám bệnh: {flow === "insur" ? "Bảo hiểm y tế" : "Dịch vụ"}</div>
 

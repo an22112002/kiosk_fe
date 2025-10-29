@@ -361,7 +361,7 @@ export default function CheckInfo() {
                 centered
                 styles={{ body: { textAlign: "center" } }}
             >
-                <InsertPatient onBack={closeAddPatient}></InsertPatient>
+                <InsertPatient patientInfo={patientInfo} onBack={closeAddPatient}></InsertPatient>
             </Modal>
 
             {/* Chụp ảnh */}

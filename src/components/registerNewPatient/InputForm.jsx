@@ -14,7 +14,7 @@ import {
   getOccupations,
 } from "../../api/call_API";
 
-export default function InputForm({ onBack }) {
+export default function InputForm({ patientInfo, onBack }) {
   const { setNpInfo } = useGlobal();
   const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ export default function InputForm({ onBack }) {
     job: "",
     ethnic: "",
     national: "000",
-    phone: "",
+    phone: patientInfo?.personalInfo?.data?.phone || "",
   });
 
   const [TINH, setTINH] = useState([]);
@@ -174,6 +174,55 @@ const handleLoadJob = async () => {
     }
   };
 
+  // Người dùng nhập đúng label thì set luôn value
+  const handleTypeFull = (processed) => {
+    if (processed.trim()) {
+    let matched = null;
+
+    switch (activeField) {
+      case "province":
+        matched = TINH.find(
+          (t) => t.TEN_TINH.toLowerCase() === processed.trim().toLowerCase()
+        );
+        if (matched) handleInputChange("province", matched.MA_TINH);
+        break;
+      case "commune":
+        matched = XA.find(
+          (x) =>
+            x.MA_TINH === formData.province &&
+            x.TEN_XA.toLowerCase() === processed.trim().toLowerCase()
+        );
+        if (matched) handleInputChange("commune", matched.MA_XA);
+        break;
+      case "ethnic":
+        matched = ETHIC.find(
+          (e) => e.TEN_DT.toLowerCase() === processed.trim().toLowerCase()
+        );
+        if (matched) handleInputChange("ethnic", matched.MA_DT);
+        break;
+      case "national":
+        matched = NAL.find(
+          (n) => n.TEN_QT.toLowerCase() === processed.trim().toLowerCase()
+        );
+        if (matched) handleInputChange("national", matched.MA_QT);
+        break;
+      case "job":
+        matched = JOB.find(
+          (j) => j.TEN_NN.toLowerCase() === processed.trim().toLowerCase()
+        );
+        if (matched) handleInputChange("job", matched.MA_NN);
+        break;
+      default:
+        break;
+    }
+
+    // Nếu tìm thấy kết quả → reset keyboard buffer & gợi ý
+    if (matched) {
+      setKeyboardInput("");
+      setSuggestions([]);
+    }
+  }}
+
   // Xử lý nhập bàn phím ảo
   const handleKeyboardInput = (input) => {
     if (!activeField) return;
@@ -200,6 +249,8 @@ const handleLoadJob = async () => {
     // cập nhật gợi ý
     const sug = getSuggestionList(activeField, processed);
     setSuggestions(sug.slice(0, 5)); // tối đa 5 gợi ý
+
+    handleTypeFull(processed)
   };
 
   // Khi chọn gợi ý
@@ -238,23 +289,23 @@ const handleLoadJob = async () => {
     const validJob = formData.job === "" ? true : JOB.some((item) => item.MA_NN === formData.job);
 
     if (!validProvince) {
-      openNotification("Thông báo", "Tỉnh/Thành phố không hợp lệ!", "warning");
+      openNotification("Thông báo", "Tỉnh/Thành phố không hợp lệ! Không có trong cơ sở dữ liệu!", "warning");
       return;
     }
     if (!validCommune) {
-      openNotification("Thông báo", "Xã/Phường không hợp lệ!", "warning");
+      openNotification("Thông báo", "Xã/Phường không hợp lệ! Không có trong cơ sở dữ liệu!", "warning");
       return;
     }
     if (!validEthnic) {
-      openNotification("Thông báo", "Dân tộc không hợp lệ!", "warning");
+      openNotification("Thông báo", "Dân tộc không hợp lệ! Không có trong cơ sở dữ liệu!", "warning");
       return;
     }
     if (!validNational) {
-      openNotification("Thông báo", "Quốc tịch không hợp lệ!", "warning");
+      openNotification("Thông báo", "Quốc tịch không hợp lệ! Không có trong cơ sở dữ liệu!", "warning");
       return;
     }
     if (!validJob) {
-      openNotification("Thông báo", "Nghề nghiệp không hợp lệ!", "warning");
+      openNotification("Thông báo", "Nghề nghiệp không hợp lệ! Không có trong cơ sở dữ liệu!", "warning");
       return;
     }
 

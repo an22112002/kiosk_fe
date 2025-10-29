@@ -1,6 +1,6 @@
 import InputForm from "./InputForm"
 
-export default function InsertPatient({ onBack }) {
+export default function InsertPatient({ patientInfo, onBack }) {
 
     return (
         <>
@@ -15,7 +15,7 @@ export default function InsertPatient({ onBack }) {
                 {/* Form */}
                 <div className="flex justify-center mb-10">
                     <div className="flex w-full gap-2 sm:w-[80%] lg:w-[45vw]">
-                        <InputForm onBack={onBack} />
+                        <InputForm patientInfo={patientInfo} onBack={onBack} />
                     </div>
                 </div>
             </div>
