@@ -357,7 +357,7 @@ export default function CheckInfo() {
             <Modal
                 open={addPatient && !nonInserCase}
                 footer={null}
-                width={800}
+                width={1000}
                 centered
                 styles={{ body: { textAlign: "center" } }}
             >

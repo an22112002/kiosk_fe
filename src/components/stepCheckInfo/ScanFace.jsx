@@ -102,7 +102,7 @@ export default function ScanFace({ setImage }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <br></br>
-      <h2 className="text-lg text-red-700 text-center text-[35px]">
+      <h2 className="text-lg text-red-700 text-center text-[30px]">
         VUI LÒNG RÚT THẺ CCCD RA
       </h2>
       <br></br>

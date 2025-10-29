@@ -248,7 +248,7 @@ const handleLoadJob = async () => {
 
     // cập nhật gợi ý
     const sug = getSuggestionList(activeField, processed);
-    setSuggestions(sug.slice(0, 5)); // tối đa 5 gợi ý
+    setSuggestions(sug);
 
     handleTypeFull(processed)
   };
