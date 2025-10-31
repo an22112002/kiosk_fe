@@ -52,12 +52,12 @@ export default function SelectMER() {
 
       {/* Container chính */}
       <div
-        className={`relative flex flex-col items-center justify-center 
-                    h-screen overflow-hidden transition-all duration-300 
+        className={`relative flex flex-col items-center justify-center w-full
+                    h-full transition-all duration-300 overflow-auto
                     ${localLoading ? "blur-sm !bg-white/20" : ""}`}
       >
         {/* Tiêu đề */}
-        <div className="mb-10 text-center">
+        <div className="mt-10 mb-10 text-center">
           <h1 className="border-4 border-colorOneLighter rounded-2xl px-6 py-4 inline-block bg-white/10 text-colorOne font-bold text-[22px] lg:text-[30px] shadow-md">
             LỰA CHỌN HÌNH THỨC KHÁM
           </h1>

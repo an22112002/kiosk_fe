@@ -8,8 +8,8 @@ export default function InfoPrintCompact() {
   const insurInfo = patientInfo.insuranceInfo;
 
   return (
-    <div className="w-[600px] mx-auto p-6 text-[16px] font-sans border border-gray-300 rounded-lg leading-relaxed">
-      <h1 className="text-2xl font-bold mb-6">--Thông tin khám bệnh--</h1>
+    <div className="w-[80mm] mx-auto p-6 text-[16px] font-sans border border-gray-300 rounded-lg leading-relaxed">
+      <h1 className="text-2xl font-bold mb-6">Thông tin khám bệnh</h1>
 
       {/* Thông tin cá nhân */}
       <div className="space-y-2">

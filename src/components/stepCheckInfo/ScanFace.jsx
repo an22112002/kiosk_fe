@@ -102,9 +102,9 @@ export default function ScanFace({ setImage }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <br></br>
-      <h2 className="text-lg text-red-700 text-center text-[30px]">
+      <strong className="text-red-700 text-center text-[1.5rem]">
         VUI LÒNG RÚT THẺ CCCD RA
-      </h2>
+      </strong>
       <br></br>
       <h2 className="text-lg font-semibold text-gray-700 text-center text-[31px]">
         RỒI ẤN "XÁC THỰC KHUÔN MẶT", NHÌN LÊN CAMERA PHÍA TRÊN

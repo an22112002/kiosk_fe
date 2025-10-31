@@ -317,7 +317,7 @@ const handleLoadJob = async () => {
   // UI
   return (
     <div className="text-[25px] flex flex-col items-center w-full">
-      <div className="flex flex-col gap-4 w-full max-w-[700px]">
+      <div className="flex flex-col gap-4 w-full max-w-[900px]">
         {/* Phone */}
         <div className="flex items-center justify-between gap-3 w-full">
           <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">

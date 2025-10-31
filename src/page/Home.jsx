@@ -42,25 +42,22 @@ export default function HomePage() {
                 localLoading ? "blur-sm !bg-white/20" : ""
             }`}
             >
-            <div className="text-center px-7 py-8 rounded-lg w-full h-full">
-                <br></br>
-                <br></br>
-                <div className="mb-7 text-colorOne font-bold text-[18px] lg:text-[25px]">
+            <div className="flex flex-col item-center text-center px-7 py-8 rounded-lg w-full h-full">
+                <div className="mb-7 text-colorOne font-bold text-[18px] lg:text-[25px] mt-[5%]">
                     <h1 className="border-4 border-colorOneLighter rounded-2xl px-6 py-4 inline-block bg-white/10 text-colorOne font-bold shadow-md">
                         KIOSK THANH TOÁN TỰ ĐỘNG VIỆN PHÍ QUÉT MÃ QR
                     </h1>
                 </div>
 
-                <div className="flex justify-center w-full h-full">
-                    <div className="grid grid-cols-1 gap-8 w-full max-w-5xl">
-                        {button.map((text, i) => (
+                <div className="flex flex-col item-center justify-center w-full h-full mt-[5%] p-[5%]">
+                    {button.map((text, i) => (
                         <div
                             key={i}
                             onClick={() => handleChange(text)}
                             className="flex justify-center"
                         >
                             <div className="flex flex-col items-center justify-center 
-                                            w-full min-w-[300px] lg:min-w-[400px] 
+                                            w-full min-w-[250px] lg:min-w-[300px] 
                                             h-32 bg-gradient-to-r from-colorTwo to-colorFive 
                                             text-white rounded-xl shadow-lg cursor-pointer
                                             hover:from-green-500 hover:to-emerald-600 
@@ -72,19 +69,15 @@ export default function HomePage() {
                             </div>
                         </div>
                         ))}
+                    <div>
+                        <img
+                        src="/image/guide.png"
+                        alt="Hướng dẫn"
+                        className="w-2/3 h-1/3 mx-auto mt-[6%]"
+                    />
                     </div>
                 </div>
             </div>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-                <img
-                    src="/image/guide.png"
-                    alt="Hướng dẫn"
-                    className="w-2/3 h-1/3 mx-auto"
-                />
             </div>
             {/* <div className="grid items-center text-center justify-center w-full h-full text-[20px]">
                 <br></br>
