@@ -5,7 +5,7 @@ import Keyboard from "react-simple-keyboard";
 import { processVietnameseBuffer } from "../../utils/helpers";
 import "react-simple-keyboard/build/css/index.css";
 import { useNavigate } from "react-router-dom";
-import { openNotification } from "../../utils/helpers";
+import { openNotification, getXaTinhCode, getDanTocCode } from "../../utils/helpers";
 
 import {
   getProvince,
@@ -39,11 +39,32 @@ export default function InputForm({ patientInfo, onBack }) {
 
   // Load dữ liệu API
   useEffect(() => {
-    handleLoadProvince();
-    handleLoadEthic();
-    handleLoadNational();
-    handleLoadJob();
+    const fetchData = async () => {
+      await handleLoadProvince();
+      await handleLoadEthic();
+      await handleLoadNational();
+      await handleLoadJob();
+    };
+    fetchData();
   }, []);
+  // 
+  useEffect(() => {
+    if (
+      !patientInfo?.personalInfo?.data ||
+      XA.length === 0 ||
+      TINH.length === 0 ||
+      ETHIC.length === 0
+    ) return;
+
+    const place = patientInfo?.personalInfo?.data?.residencePlace || "";
+    const race = patientInfo?.personalInfo?.data?.race || "";
+
+    const [maXa, maTinh] = getXaTinhCode(place, XA, TINH);
+    setFormData((prev) => ({ ...prev, province: maTinh, commune: maXa }));
+
+    const maDantoc = getDanTocCode(race, ETHIC);
+    setFormData((prev) => ({ ...prev, ethnic: maDantoc }));
+  }, [XA, TINH, ETHIC, patientInfo]);
 
   // Khi focus field khác → reset buffer
   useEffect(() => {
@@ -317,7 +338,7 @@ const handleLoadJob = async () => {
   // UI
   return (
     <div className="text-[25px] flex flex-col items-center w-full">
-      <div className="flex flex-col gap-4 w-full max-w-[900px]">
+      <div className="flex flex-col gap-4 w-full">
         {/* Phone */}
         <div className="flex items-center justify-between gap-3 w-full">
           <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
@@ -421,6 +442,26 @@ const handleLoadJob = async () => {
         </div>
       </div>
 
+      {/* Gợi ý nhập từ bàn phím ảo */}
+      <div className="w-full max-w-[600px] mt-3 bg-white border rounded-lg shadow p-3 h-[200px] overflow-y-auto">
+      {suggestions.length > 0 && (
+        <div className="w-full flex flex-col items-center">
+          <p className="text-gray-600 text-center mb-2">Bạn đang nhập?</p>
+
+          {/* Khung chứa có chiều cao cố định và scroll */}
+            {suggestions.map((opt) => (
+              <div
+                key={opt.value}
+                className="py-1 px-2 cursor-pointer hover:bg-gray-100 rounded"
+                onClick={() => handleSuggestionClick(opt)}
+              >
+                {opt.label}
+              </div>
+            ))}
+        </div>
+      )}
+      </div>
+      
       {/* Bàn phím ảo */}
       {activeField && (
         <div className="mt-6 w-full max-w-[600px]">
@@ -446,26 +487,6 @@ const handleLoadJob = async () => {
           />
         </div>
       )}
-
-      {/* Gợi ý nhập từ bàn phím ảo */}
-      <div className="w-full max-w-[600px] mt-3 bg-white border rounded-lg shadow p-3 h-[200px] overflow-y-auto">
-      {suggestions.length > 0 && (
-        <div className="w-full flex flex-col items-center">
-          <p className="text-gray-600 text-center mb-2">Bạn đang nhập?</p>
-
-          {/* Khung chứa có chiều cao cố định và scroll */}
-            {suggestions.map((opt) => (
-              <div
-                key={opt.value}
-                className="py-1 px-2 cursor-pointer hover:bg-gray-100 rounded"
-                onClick={() => handleSuggestionClick(opt)}
-              >
-                {opt.label}
-              </div>
-            ))}
-        </div>
-      )}
-      </div>
 
       {/* Nhóm nút hành động */}
       <div className="flex justify-center gap-6 mt-8 w-full max-w-[700px] mx-auto">

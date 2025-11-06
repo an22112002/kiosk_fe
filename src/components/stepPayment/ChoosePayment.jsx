@@ -1,11 +1,15 @@
 import { useNavigate } from "react-router-dom"
+import { useState } from "react"
 import { useGlobal } from "../../context/GlobalContext"
 import { openNotification, splitName, convertDateFormat } from "../../utils/helpers"
 import { postMedicalRegister } from "../../api/call_API"
+import { LoadingOutlined, ArrowLeftOutlined } from '@ant-design/icons'
+import Modal from "antd/es/modal/Modal"
 
 export default function ChoosePayment({ onNext }) {
     const button = ['TIỀN MẶT', 'CHUYỂN KHOẢN QR']
     const info = ['|Thanh toán bằng tiền mặt tại quầy|', '|Chuyển khoản ngân hàng thông qua mã QR|']
+    const [localLoading, setLocalLoading] = useState(false)
 
     const { flow, selectedService, patientInfo, npInfo, setPaymentInfo, setPaymentStateAsync } = useGlobal()
     const dataInfo = patientInfo?.personalInfo?.data
@@ -66,7 +70,9 @@ export default function ChoosePayment({ onNext }) {
     };
 
     const handleChange = async (text) => {
+        setLocalLoading(true)
         const result = await handleRegister()
+        setLocalLoading(false)
         if (result) {
             openNotification("Thông báo", "Đã đăng ký dịch vụ thành công", "success");
             if (text === "TIỀN MẶT") {
@@ -81,38 +87,52 @@ export default function ChoosePayment({ onNext }) {
     }
 
     return (
-        <div className='text-center px-7 py-8 rounded-lg'>
-            <div className='mb-3 text-colorOne font-bold text-[18px] lg:text-[25px]'>
-                <h1>CHỌN HÌNH THỨC THANH TOÁN</h1>
-            </div>
-            <div className='flex justify-center'>
-                <div className='flex w-full gap-1 sm:w-[90%] lg:w-[45vw]'>
-                    {button.map((text, i) => (
-                        <div key={i} className='flex m-2 h-full w-full' onClick={() => handleChange(text)}>
-                            <div className='flex flex-col items-center justify-start h-[100%] w-full hover:scale-105 transition-all duration-500 ease-in-out'>
-                                <div className='w-full bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600'>
-                                    <button className='cursor-pointer p-2 text-[14px] sm:text-[18px] font-semibold lg:text-[22px]'>{text}</button>
-                                </div>
-                                <div className="mt-2 text-center text-gray-400">{info[i]}</div>
-                            </div>
-                        </div>
-                    ))}
+        <>
+            {/* Modal loading */}
+            <Modal
+                open={localLoading}
+                footer={null}
+                closable={false}
+                centered
+                styles={{ body: { textAlign: "center" } }}
+            >
+                <LoadingOutlined spin style={{ fontSize: 48, color: "#2563eb" }} className="mb-3" />
+                <div className="text-lg font-semibold loading-dots">
+                    Đang xử lý, vui lòng chờ
                 </div>
-            </div>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <div className='flex justify-center'>
-                <div className='flex w-full gap-1 sm:w-[90%] lg:w-[45vw]'>
-                    <div className='w-full bg-gradient-to-r from-colorBtnBack to-colorOneDark text-white rounded-xl hover:from-gray-500 hover:to-gray-600 w-[60%]'
-                    onClick={() => navigate("/")}>
-                        <button className='cursor-pointer p-2 text-[14px] sm:text-[18px] font-semibold lg:text-[22px]'>
-                            QUAY LẠI MÀN HÌNH CHÍNH
-                        </button>
+            </Modal>
+            <div className='text-center px-7 py-8 rounded-lg'>
+                <div className='w-[100%] h-[20vh]'></div>
+                <div className='mb-3 text-colorOne font-bold text-[18px] lg:text-[25px]'>
+                    <h1 className="text-[2rem] border-4 border-colorOneLighter rounded-2xl px-6 py-4 mb-10 inline-block bg-white/10 text-colorOne font-bold shadow-md">
+                        CHỌN HÌNH THỨC THANH TOÁN
+                    </h1>
+                </div>
+                <div className='flex justify-center mb-[25vh]'>
+                    <div className='flex w-full gap-1 justify-around'>
+                        {button.map((text, i) => (
+                            <div key={i} className='flex m-2 h-full w-[40vw]' onClick={() => handleChange(text)}>
+                                <div className='flex flex-col items-center justify-start h-[100%] w-full hover:scale-105 transition-all duration-500 ease-in-out'>
+                                    <div className='w-full bg-gradient-to-r from-colorTwo to-colorFive text-white rounded-xl hover:from-green-500 hover:to-emerald-600'>
+                                        <button className='cursor-pointer p-2 text-[20px] sm:text-[25px] font-semibold lg:text-[30px]'>{text}</button>
+                                    </div>
+                                    <div className="mt-2 text-center text-gray-400 text-[1.3rem]">{info[i]}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className='flex justify-center'>
+                    <div className='flex w-full gap-1 sm:w-[90%] lg:w-[45vw]'>
+                        <div className='w-full bg-gradient-to-r from-colorBtnBack to-colorOneDark text-white rounded-xl hover:from-gray-500 hover:to-gray-600 w-[60%]'
+                        onClick={() => navigate("/")}>
+                            <button className='cursor-pointer p-2 text-[20px] sm:text-[25px] font-semibold lg:text-[30px]'>
+                                <ArrowLeftOutlined /> QUAY LẠI MÀN HÌNH CHÍNH
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }

@@ -9,7 +9,7 @@ export default function InfoPrint() {
     const insurInfo = patientInfo.insuranceInfo
 
 	return (
-		<div className="w-[600px] mx-auto p-6 text-[16px] font-sans border border-gray-300 rounded-lg">
+		<div className="w-[600px] mx-auto p-6 text-[1.2rem] font-sans border border-gray-300 rounded-lg">
 			<h1 className="text-2xl font-bold text-center mb-6">Thông tin khám bệnh</h1>
 
 			<div className="grid grid-cols-2 gap-y-3">

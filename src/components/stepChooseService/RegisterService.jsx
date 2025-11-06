@@ -8,8 +8,10 @@ import { Helmet } from "react-helmet-async"
 import RegisterInfo from "./RegisterInfo"
 import { splitName, convertDateFormat, openNotification } from "../../utils/helpers";
 import { postMedicalRegister } from "../../api/call_API";
+import { LoadingOutlined } from '@ant-design/icons'
 
 export default function ClinicRoom() {
+    const [localLoading, setLocalLoading] = useState(false)
     const [selectedClinic, setSelectedClinic] = useState(null)
     const [clinicRooms, setClinicRooms] = useState([])
     const navigate = useNavigate()
@@ -179,7 +181,9 @@ export default function ClinicRoom() {
     };
 
     const sendRegistration = async () => {
+        setLocalLoading(true)
         const result = await handleRegister();
+        setLocalLoading(false)
         if (result) {
             if (flow === "insur") {
                 openNotification("Thông báo", "Đã đăng ký dịch vụ thành công", "success");
@@ -197,6 +201,19 @@ export default function ClinicRoom() {
             <Helmet>
                 <title>Chọn dịch vụ</title>
             </Helmet>
+            {/* Modal loading */}
+            <Modal
+                open={localLoading}
+                footer={null}
+                closable={false}
+                centered
+                styles={{ body: { textAlign: "center" } }}
+            >
+                <LoadingOutlined spin style={{ fontSize: 48, color: "#2563eb" }} className="mb-3" />
+                <div className="text-lg font-semibold loading-dots">
+                    Đang xử lý, vui lòng chờ
+                </div>
+            </Modal>
             {/* Hiện thông báo */}
             <div className="overflow-y-auto flex flex-col justify-center items-center bg-white p-2 md:p-6 rounded-xl">
                 <div className="text-colorOne my-4 font-semibold px-4 py-2 bg-white rounded-xl text-[28px]">XIN CHỌN PHÒNG KHÁM</div>
@@ -218,6 +235,7 @@ export default function ClinicRoom() {
                         open={!!selectedClinic}
                         onCancel={() => setSelectedClinic(null)}
                         footer={null}
+                        closable={false}
                         width={1000}
                         centered
                     >
@@ -245,6 +263,7 @@ export default function ClinicRoom() {
                     <Modal
                         open={confirm}
                         footer={null}
+                        closable={false}
                         width={1000}
                         centered
                     >
@@ -265,7 +284,7 @@ export default function ClinicRoom() {
                     </Modal>
                 </div>
 
-                <div className="flex flex-col justify-center text-[25px] md:text-[28px] lg:text-[30px]">
+                <div className="flex flex-col justify-center text-[25px] md:text-[28px] lg:text-[30px] mb-3">
                     <p className="text-colorOne my-4 font-semibold px-4 py-2 bg-white rounded-xl ">{selectedService ? `Dịch vụ đã chọn: ${selectedService.clinic} - ${selectedService.name} - ${selectedService.price} VNĐ` : "" }</p>
                     
                         <div className="grid grid-cols-2 gap-[30px]">
@@ -282,10 +301,6 @@ export default function ClinicRoom() {
                             </button>
                         </div>
                 </div>
-                <br></br>
-                <br></br>
-                <br></br>
-                <br></br>
             </div>
         </>
     )

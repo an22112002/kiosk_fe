@@ -43,10 +43,13 @@ export default function HomePage() {
             }`}
             >
             <div className="flex flex-col item-center text-center px-7 py-8 rounded-lg w-full h-full">
-                <div className="mb-7 text-colorOne font-bold text-[18px] lg:text-[25px] mt-[5%]">
-                    <h1 className="border-4 border-colorOneLighter rounded-2xl px-6 py-4 inline-block bg-white/10 text-colorOne font-bold shadow-md">
+                <div className="mb-7 font-bold text-[18px] lg:text-[25px] mt-[5%]">
+                    <h1 className="text-[1.9rem] border-4 border-colorOneLighter rounded-2xl px-6 py-4 inline-block bg-white/10 text-colorOne font-bold shadow-md">
                         KIOSK THANH TOÁN TỰ ĐỘNG VIỆN PHÍ QUÉT MÃ QR
                     </h1>
+                    <div className='mt-4 text-[1.5rem] text-colorOneDark'>
+                        PHỤC VỤ KHÁM BẢO HIỂM VÀ KHÁM DỊCH VỤ
+                    </div>
                 </div>
 
                 <div className="flex flex-col item-center justify-center w-full h-full mt-[5%] p-[5%]">

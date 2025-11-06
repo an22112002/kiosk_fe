@@ -117,6 +117,78 @@ export const convertDateFormat2 = (input) => {
 	}
 };
 
+// Các tiền tố cần loại bỏ khi chuẩn hóa tên
+const removePart = [
+  "TP", "Thành phố", "T.", "Thôn",
+  "TX.", "Thị xã", "P.", "Phường", "X.", "Xã",
+  "TT.", "Thị trấn", "Tỉnh"
+];
+
+// Chuẩn hóa tên địa danh: bỏ tiền tố, về lowercase, loại khoảng trắng thừa
+const normalizeName = (name) => {
+  if (!name) return "";
+  let n = name.trim();
+  removePart.forEach(rp => {
+    const regex = new RegExp(`^${rp}\\s*`, "i");
+    n = n.replace(regex, "").trim();
+  });
+  return n.toLowerCase();
+};
+
+// Tìm mã tương ứng trong danh sách
+const findCodeByName = (str, list) => {
+  if (!Array.isArray(list) || list.length === 0) return null;
+
+  const isXa = "TEN_XA" in list[0];
+  const keyName = isXa ? "TEN_XA" : "TEN_TINH";
+  const keyCode = isXa ? "MA_XA" : "MA_TINH";
+
+  const target = normalizeName(str);
+  const found = list.find(item => normalizeName(item[keyName]) === target);
+  return found ? found[keyCode] : null;
+};
+
+// Lấy mã xã và mã tỉnh từ chuỗi địa chỉ
+export const getXaTinhCode = (addressStr, XA, TINH) => {
+  if (!addressStr) return ["", ""];
+
+  const parts = addressStr.split(",").map(p => p.trim());
+  if (parts.length === 0) return ["", ""];
+
+  const tinhStr = parts[parts.length - 1]; // phần cuối là tỉnh
+  const maTinh = findCodeByName(tinhStr, TINH) || "";
+
+  // thử từng phần còn lại (trừ phần tỉnh) để tìm xã
+  let maXa = "";
+  for (let i = 0; i < parts.length - 1; i++) {
+    const code = findCodeByName(parts[i], XA);
+    if (code) {
+      maXa = code;
+      break; // tìm thấy thì dừng
+    }
+  }
+  return [maXa, maTinh];
+};
+
+// Lấy mã dân tộc
+export const getDanTocCode = (race, ETHNIC) => {
+  if (!race || !Array.isArray(ETHNIC) || ETHNIC.length === 0) return "";
+
+  // chuẩn hóa chuỗi so khớp (bỏ khoảng trắng dư, không phân biệt hoa thường)
+  const target = race.trim().toLowerCase();
+
+  // xác định tên trường
+  const keyName = ETHNIC[0].TEN_DT ? "TEN_DT" : null;
+  const keyCode = ETHNIC[0].MA_DT ? "MA_DT" : null;
+
+  if (!keyName || !keyCode) return "";
+
+  // tìm phần tử trùng tên dân tộc
+  const found = ETHNIC.find(item => item[keyName].trim().toLowerCase() === target);
+
+  return found ? found[keyCode] : "";
+};
+
 export const convertTelexToVietnamese = (input) => {
 	if (input.length === 1) {
 		return input

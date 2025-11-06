@@ -1,0 +1,6 @@
+- Liên kết bảo hiểm
+- Thêm luồng VSSID, có quét thì ko có cần nhận diện
+- Thêm quét QR wifi vào phần đầu
+- Xử lý phần nhập thông tin
+- Thêm nút home
+- Thêm nút chuyển luồng thanh toán tiền mặt

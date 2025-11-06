@@ -299,7 +299,6 @@ export default function CheckInfo() {
                 footer={null}
                 closable={false}
                 centered
-                maskClosable={false}
                 width={900}
                 styles={{ body: { textAlign: "center" } }}
             >
@@ -339,7 +338,6 @@ export default function CheckInfo() {
                 footer={null}
                 closable={false}
                 centered
-                maskClosable={false}
                 styles={{ body: { textAlign: "center" } }}
             >
                 <div className="text-lg font-semibold">Bạn không có bảo hiểm, chỉ có thể chọn khám dịch vụ</div>
@@ -358,6 +356,7 @@ export default function CheckInfo() {
                 open={addPatient && !nonInserCase}
                 footer={null}
                 width={1000}
+                closable={false}
                 centered
                 styles={{ body: { textAlign: "center" } }}
             >
@@ -368,6 +367,7 @@ export default function CheckInfo() {
             <Modal
                 open={imgCapture}
                 footer={null}
+                closable={false}
                 centered
                 style={{ textAlign: "center" }}
                 width={1000}
@@ -378,19 +378,19 @@ export default function CheckInfo() {
             <div className={`transition-all duration-300 ${localLoading ? 'blur-sm !bg-white/20' : ''}`}>
                 <div className='text-center px-7 py-8 rounded-lg'>
                     <div className='mb-3 text-colorOne font-bold text-[18px] lg:text-[25px]'>
-                        <h1>Xác thực công dân</h1>
+                        <h1 className='text-[2rem]' >XÁC THỰC CÔNG DÂN</h1>
                     </div>
                     <PatientInfoDisplay patientInfo={patientInfo} npInfo={npInfo}></PatientInfoDisplay>
                 </div>
             </div>
             {/* Nút dưới cùng */}
-            <div className="flex gap-4 w-[90%] sm:w-[80%] lg:w-[45vw] mx-auto mt-6">
+            <div className="flex gap-4 w-[90%] sm:w-[80%] lg:w-[45vw] mx-auto mt-6 mb-2">
                 <button
                     onClick={() => navigate(-1)}
                     className="flex-1 px-6 py-3 bg-gradient-to-r from-gray-400 to-gray-600 
                             text-white rounded-xl hover:from-gray-500 hover:to-gray-700 
                             transition-all duration-500 ease-in-out 
-                            font-semibold text-[14px] sm:text-[18px] lg:text-[22px]"
+                            font-semibold text-[20px] sm:text-[25px] lg:text-[30px]"
                 >
                     Trở lại
                 </button>
@@ -400,7 +400,7 @@ export default function CheckInfo() {
                     className="flex-1 px-6 py-3 bg-gradient-to-r from-colorTwo to-colorFive 
                             text-white rounded-xl hover:from-green-500 hover:to-emerald-600 
                             transition-all duration-500 ease-in-out 
-                            font-semibold text-[14px] sm:text-[18px] lg:text-[22px]"
+                            font-semibold text-[20px] sm:text-[25px] lg:text-[30px]"
                 >
                     Tiếp tục
                 </button>

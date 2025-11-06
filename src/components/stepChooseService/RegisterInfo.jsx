@@ -3,8 +3,8 @@ import { formatCurrency } from "../../utils/helpers"
 export default function RegisterInfo({patientInfo, npInfo, selectedService, flow}) {
     return (
         <div>
-            <h2 className="text-xl font-bold mb-4 text-center text-green-600 text-[27px]">
-                Xác thực thông tin
+            <h2 className="text-xl font-bold mb-4 text-center text-green-600 text-[3rem] mb-3 mt-3">
+                XÁC THỰC THÔNG TIN
             </h2>
             <div className="flex justify-center">
         <table className="text-[25px] font-sans border-collapse">
@@ -54,10 +54,8 @@ export default function RegisterInfo({patientInfo, npInfo, selectedService, flow
             </tbody>
         </table>
         </div>
-            <br></br>
-            <br></br> 
-            <h1 className="text-xl font-bold mb-4 text-center text-red-600">
-                Lưu ý: Chuyển sang bước tiếp theo bạn sẽ không thể thay đổi những thông tin này nữa
+            <h1 className="text-xl font-bold mb-4 text-center text-red-600 mt-4">
+                LƯU Ý: CHUYỂN SANG BƯỚC TIẾP THEO BẠN KHÔNG THỂ ĐỔI CÁC THÔNG TIN NÀY NỮA
             </h1>
         </div>
     )

@@ -14,7 +14,7 @@ export default function InsertPatient({ patientInfo, onBack }) {
 
                 {/* Form */}
                 <div className="flex justify-center mb-10">
-                    <div className="flex w-full gap-2 sm:w-[80%] lg:w-[45vw]">
+                    <div className="flex w-full gap-2">
                         <InputForm patientInfo={patientInfo} onBack={onBack} />
                     </div>
                 </div>

@@ -102,18 +102,17 @@ export default function ScanFace({ setImage }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <br></br>
-      <strong className="text-red-700 text-center text-[1.5rem]">
+      <strong className="text-red-700 text-center text-[2rem] pb-[10px]">
         VUI LÒNG RÚT THẺ CCCD RA
       </strong>
-      <br></br>
-      <h2 className="text-lg font-semibold text-gray-700 text-center text-[31px]">
+      <h2 className="font-semibold text-gray-700 text-center text-[1.9rem]">
         RỒI ẤN "XÁC THỰC KHUÔN MẶT", NHÌN LÊN CAMERA PHÍA TRÊN
       </h2>
 
       {errorMsg && <div className="text-red-600">{errorMsg}</div>}
 
       {/* Hiển thị webcam */}
-      {brioDeviceId && (
+      {brioDeviceId ? (
         <div className="relative border rounded-lg overflow-hidden w-[480px] h-[360px]">
           <Webcam
             ref={webcamRef}
@@ -140,6 +139,14 @@ export default function ScanFace({ setImage }) {
               `,
             }}
           ></div>
+        </div>
+      ) : (
+        <div className="relative border rounded-lg overflow-hidden w-[360px] h-[360px]">
+          <img
+            src="/image/guild2.png"
+            alt="Lấy ra"
+            className="w-[100%] h-[100%]"
+          />
         </div>
       )}
 

@@ -42,6 +42,7 @@ export default function SelectMER() {
         open={localLoading}
         footer={null}
         centered
+        closable={false}
         styles={{ body: { textAlign: "center" } }}
       >
         <LoadingOutlined spin style={{ fontSize: 48, color: "#2563eb" }} className="mb-3" />
@@ -52,10 +53,10 @@ export default function SelectMER() {
 
       {/* Container chính */}
       <div
-        className={`relative flex flex-col items-center justify-center w-full
-                    h-full transition-all duration-300 overflow-auto
-                    ${localLoading ? "blur-sm !bg-white/20" : ""}`}
+        className={`flex flex-col items-center justify-center w-full h-full transition-all duration-300
+              ${localLoading ? "blur-sm !bg-white/20" : ""}`}
       >
+        <div className='w-[100%] h-[20vh]'></div>
         {/* Tiêu đề */}
         <div className="mt-10 mb-10 text-center">
           <h1 className="border-4 border-colorOneLighter rounded-2xl px-6 py-4 inline-block bg-white/10 text-colorOne font-bold text-[22px] lg:text-[30px] shadow-md">
