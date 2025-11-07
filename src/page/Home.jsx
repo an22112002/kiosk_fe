@@ -47,9 +47,9 @@ export default function HomePage() {
                     <h1 className="text-[1.9rem] border-4 border-colorOneLighter rounded-2xl px-6 py-4 inline-block bg-white/10 text-colorOne font-bold shadow-md">
                         KIOSK THANH TOÁN TỰ ĐỘNG VIỆN PHÍ QUÉT MÃ QR
                     </h1>
-                    <div className='mt-4 text-[1.5rem] text-colorOneDark'>
+                    {/* <div className='mt-4 text-[1.5rem] text-colorOneDark'>
                         PHỤC VỤ KHÁM BẢO HIỂM VÀ KHÁM DỊCH VỤ
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="flex flex-col item-center justify-center w-full h-full mt-[5%] p-[5%]">
