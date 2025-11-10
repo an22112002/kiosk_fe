@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test Clipboard</title>
+  </head>
+  <body>
+    <button id="btn1">Get Clipboard</button>
+    <button id="btn2">Split Clipboard</button>
+    <div id="display"></div>
+
+    <script type="module">
+      function split(text) {
+        const parts = text.split("|")
+      }
+
+      document.getElementById("btn1").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText("037202007890|---|Nguyễn Ngô An|22112000|Nam|Phúc Nam, Phúc Thành, Thành phố Ninh Bình, Ninh Bình|13052021");
+          const text = await navigator.clipboard.readText();
+          document.getElementById("display").innerText = "Clipboard: " + text;
+        } catch (err) {
+          document.getElementById("display").innerText = "Lỗi: " + err;
+        }
+      });
+
+      document.getElementById("btn2").addEventListener("click", async () => {
+        try {
+          const text = await navigator.clipboard.readText();
+
+        } catch (err) {
+          document.getElementById("display").innerText = "Lỗi: " + err;
+        }
+      });
+    </script>
+  </body>
+</html>
