@@ -1,6 +1,5 @@
-import { get, post, client_HIS_API_URL, client_HIS_API_URL_1 } from "./request";
-import { HIS_MERCHANT_ID } from "./config";
-import { convertDateFormat } from "../utils/helpers/index";
+import { get, post, get_agent, post_agent, client_HIS_API_URL, client_HIS_API_URL_1, local_agent } from "./request";
+import { HIS_MERCHANT_ID, AGENT_KEY } from "./config";
 import { encodeHMACSHA265 } from "../utils/helpers/encrypt";
 
 // --- GET danh sách tỉnh ---
@@ -73,20 +72,20 @@ export async function getPatientInfo(patientIDCard) {
 }
 
 // --- GET bảo hiểm ---
-export async function getPatientInsurance(patientIDCard, patientName, patientDOB) {
-  const timestamp = Date.now().toString();
-  const sign = await encodeHMACSHA265(`${HIS_MERCHANT_ID}|${timestamp}|${patientIDCard}|CCCD`);
-  return get(client_HIS_API_URL_1, "/bhyt", {
-    SO_GTTT: patientIDCard,
-    LOAI_GTTT: "CCCD",
-    HO_TEN: patientName,                // Axios tự encode UTF-8
-    NGAY_SINH: convertDateFormat(patientDOB),
-  }, {
-    "x-sign": sign,
-    "x-merchant-id": HIS_MERCHANT_ID,
-    "x-timestamp": timestamp,
-  });
-}
+// export async function getPatientInsurance(patientIDCard, patientName, patientDOB) {
+//   const timestamp = Date.now().toString();
+//   const sign = await encodeHMACSHA265(`${HIS_MERCHANT_ID}|${timestamp}|${patientIDCard}|CCCD`);
+//   return get(client_HIS_API_URL_1, "/bhyt", {
+//     SO_GTTT: patientIDCard,
+//     LOAI_GTTT: "CCCD",
+//     HO_TEN: patientName,                // Axios tự encode UTF-8
+//     NGAY_SINH: convertDateFormat(patientDOB),
+//   }, {
+//     "x-sign": sign,
+//     "x-merchant-id": HIS_MERCHANT_ID,
+//     "x-timestamp": timestamp,
+//   });
+// }
 
 // --- GET trạng thái thanh toán ---
 export async function getCheckStatusPayment(soPhieu, maHoSo) {
@@ -110,5 +109,44 @@ export async function postMedicalRegister(data) {
     "x-sign": sign,
     "x-merchant-id": HIS_MERCHANT_ID,
     "x-timestamp": timestamp,
+  });
+}
+
+// --- GET báo agnet thu nhỏ cửa sổ kiosk ---
+export async function minimize_win() {
+  return get_agent(local_agent, "/agent/api/minimize", {
+    "x-agent-key": AGENT_KEY
+  });
+}
+
+// --- GET báo agnet đóng cửa sổ kiosk ---
+export async function close_win() {
+  return get_agent(local_agent, "/agent/api/close_window", {
+    "x-agent-key": AGENT_KEY
+  });
+}
+
+// --- GET báo agnet mở trang đăng nhập BHYT ---
+export async function openWebBHYT() {
+  return get_agent(local_agent, "/agent/api/run_driver", {
+    "x-agent-key": AGENT_KEY
+  });
+}
+
+// --- GET báo agent lấy cookie ---
+export async function getCookiesWebBHYT() {
+  return get_agent(local_agent, "/agent/api/get_cookies", {
+    "x-agent-key": AGENT_KEY
+  });
+}
+
+// --- POST lấy thông tin bảo hiểm y tế ---
+export async function get_bhyt(patientIDCard, patientName, patientDOB) {
+  return post_agent(local_agent, "/agent/api/get_bhyt", {
+    MA_CCCD: patientIDCard,
+    HO_TEN: patientName,
+    NGAY_SINH: patientDOB,
+  }, {
+    "x-agent-key": AGENT_KEY
   });
 }

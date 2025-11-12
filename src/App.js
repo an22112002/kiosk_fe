@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route} from "react-router-dom"
 import Layout from "./components/layout/Layout";
+import Access from "./components/layout/Access";
 import HomePage from "./page/Home";
 import SelectMER from "./components/layout/SelectMER";
 import InsurLayout from "./components/layout/Insur";
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />}></Route>
+          <Route path="access" element={<Access />}></Route>
           {/* <Route path="search" element={<SearchPage />}></Route> */}
         </Route>
         {/* đăng ký khám */}

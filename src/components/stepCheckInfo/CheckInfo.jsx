@@ -7,7 +7,7 @@ import { useGlobal } from '../../context/GlobalContext';
 import { LoadingOutlined } from '@ant-design/icons'
 import { CAMERA_WS_URL } from '../../api/config'
 import { openNotification } from '../../utils/helpers';
-import { getPatientInfo, getPatientInsurance } from '../../api/call_API';
+import { getPatientInfo, get_bhyt } from '../../api/call_API';
 import InsertPatient from '../registerNewPatient/InsertPatient';
 import PatientInfoDisplay from './PatientInfoDisplay';
 import ScanFace from './ScanFace';
@@ -242,15 +242,12 @@ export default function CheckInfo() {
 
             // const b = await getOccupations()
 
-            const respone = await getPatientInsurance(idCard, name, dob);
-            if (respone.code === "000") {
+            const respone = await get_bhyt(idCard, name, dob);
+            if (respone) {
                 setPatientInfo(prev => ({ ...prev, insuranceInfo: respone.data }));
                 toggleStatus(4);
                 setGetHIS(true)
             } else {
-                if (respone?.code !== "000") {
-                    openNotification("Lỗi", respone?.message)
-                }
                 setNonInserCase(true);
             }
         } catch (error) {
@@ -380,7 +377,7 @@ export default function CheckInfo() {
                     <div className='mb-3 text-colorOne font-bold text-[18px] lg:text-[25px]'>
                         <h1 className='text-[2rem]' >XÁC THỰC CÔNG DÂN</h1>
                     </div>
-                    <PatientInfoDisplay patientInfo={patientInfo} npInfo={npInfo}></PatientInfoDisplay>
+                    <PatientInfoDisplay patientInfo={patientInfo} npInfo={npInfo} flow={flow}></PatientInfoDisplay>
                 </div>
             </div>
             {/* Nút dưới cùng */}

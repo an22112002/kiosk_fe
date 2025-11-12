@@ -1,4 +1,4 @@
-export default function PatientInfoDisplay({ patientInfo, npInfo }) {
+export default function PatientInfoDisplay({ patientInfo, npInfo, flow }) {
   return (
     <div className="flex justify-center">
       <div className="w-full sm:w-[80%] lg:w-[50vw] border-4 border-blue-500 rounded-xl p-4 inline-block">
@@ -73,6 +73,34 @@ export default function PatientInfoDisplay({ patientInfo, npInfo }) {
             </tr>
           </tbody>
         </table>
+        {flow === "insur" ? 
+        (<div className="w-full">
+          <br></br>
+          <div><strong>Thông tin bảo hiểm</strong></div>
+          <table className="w-full border-collapse">
+            <tbody>
+              <tr>
+                <td className="font-semibold text-gray-700 p-2 text-left w-[50%]">Mã thẻ BHYT:</td>
+                <td className="text-gray-800 p-2 text-right">
+                  {patientInfo?.insuranceInfo?.MA_THE_BHYT || "?"}
+                </td>
+              </tr>
+              <tr>
+                <td className="font-semibold text-gray-700 p-2 text-left">Thời hạn:</td>
+                <td className="text-gray-800 p-2 text-right">
+                  {patientInfo?.insuranceInfo?.GT_THE_TU || "?"} - {patientInfo?.insuranceInfo?.GT_THE_DEN || "?"}
+                </td>
+              </tr>
+              <tr>
+                <td className="font-semibold text-gray-700 p-2 text-left">Mã nơi đăng ký ban đầu:</td>
+                <td className="text-gray-800 p-2 text-right">
+                  {patientInfo?.insuranceInfo?.MA_DKBD || "?"}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>)
+        : null}
       </div>
     </div>
   )
