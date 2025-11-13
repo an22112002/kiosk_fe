@@ -13,7 +13,7 @@ export default function Access() {
         if (!success) return;
 
         if (countDown === 0) {
-            navigate("/");
+            navigate("/homepage");
             return;
         }
 
