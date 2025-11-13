@@ -4,26 +4,28 @@
     <title>Test Clipboard</title>
   </head>
   <body>
-    <input type="text" id="hiddenInput" style="opacity:0; position:absolute; left:-9999px;" >
+    <input type="text" id="hiddenInput" style="opacity:0; position:absolute; left:-9999px;">
     <!-- <button id="btn1">Get Clipboard</button>
     <button id="btn2">Split Clipboard</button> -->
-    <button id="btnShow">Hiện clipboard</button>
+    <div>Quét QR thông tin sẽ hiện phía dưới</div>
     <div id="display"></div>
 
     <script type="module">
-      function split(text) {
-        const parts = text.split("|")
-      }
+      const hiddenInput = document.getElementById("hiddenInput");
 
-      document.getElementById("btnShow").addEventListener("click", async () => {
-        try {
-          const v = document.getElementById("hiddenInput").value
-          document.getElementById("display").innerText = v
-        } catch (err) {
-          document.getElementById("display").innerText = "Lỗi: " + err;
-        }
+      // Tự focus input sau khi trang load
+      window.addEventListener("load", () => {
+        hiddenInput.focus();
       });
 
+      // Khi người dùng nhấn Enter
+      hiddenInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          document.getElementById("display").innerText = hiddenInput.value
+        }
+      });
+    </script>
+    <script>
       // document.getElementById("btn1").addEventListener("click", async () => {
       //   try {
       //     await navigator.clipboard.writeText("037202007890|---|Nguyễn Ngô An|22112000|Nam|Phúc Nam, Phúc Thành, Thành phố Ninh Bình, Ninh Bình|13052021");
