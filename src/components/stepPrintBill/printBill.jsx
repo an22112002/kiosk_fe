@@ -34,7 +34,7 @@ export default function PrintBill() {
     // Countdown
     useEffect(() => {
         if (countDown <= 0) {
-            navigate("/")
+            navigate("/homepage")
             return
         }
         const timer = setTimeout(() => setCountDown(prev => prev - 1), 1000)
@@ -59,7 +59,7 @@ export default function PrintBill() {
 
                 <button
                     className="text-[25px] p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200"
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/homepage")}
                 >
                     Trở lại trang chủ
                 </button>

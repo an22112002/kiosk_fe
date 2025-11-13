@@ -15,7 +15,7 @@ export default function Header() {
 
     const handleBackHomepage = () => {
         setGoBack(false)
-        navigate("/")
+        navigate("/homepage")
     }
 
     const openEditBox = () => {

@@ -125,7 +125,7 @@ export default function ChoosePayment({ onNext }) {
                 <div className='flex justify-center'>
                     <div className='flex w-full gap-1 sm:w-[90%] lg:w-[45vw]'>
                         <div className='w-full bg-gradient-to-r from-colorBtnBack to-colorOneDark text-white rounded-xl hover:from-gray-500 hover:to-gray-600 w-[60%]'
-                        onClick={() => navigate("/")}>
+                        onClick={() => navigate("/homepage")}>
                             <button className='cursor-pointer p-2 text-[20px] sm:text-[25px] font-semibold lg:text-[30px]'>
                                 <ArrowLeftOutlined /> QUAY LẠI MÀN HÌNH CHÍNH
                             </button>
