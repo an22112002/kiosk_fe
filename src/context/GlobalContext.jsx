@@ -9,6 +9,8 @@ export const GlobalProvider = ({ children }) => {
  // Các state
   const [stateStep, setStateStep] = useState(1);
   const [flow, setFlow] = useState("");
+  const [identifyType, setIdentifyType] = useState("");
+  const [paper, setPaper] = useState("");
   const [selectedService, setSelectedService] = useState(null);
   const [patientInfo, setPatientInfo] = useState(INITIAL_INFO);
   const [npInfo, setNpInfo] = useState(null);
@@ -18,6 +20,13 @@ export const GlobalProvider = ({ children }) => {
   const setFlowAsync = (value) => {
     return new Promise((resolve) => {
         setFlow(value);
+        setTimeout(() => resolve(value), 0);
+    });
+  };
+
+  const setIdentifyTypeAsync = (value) => {
+    return new Promise((resolve) => {
+        setIdentifyType(value);
         setTimeout(() => resolve(value), 0);
     });
   };
@@ -32,6 +41,8 @@ export const GlobalProvider = ({ children }) => {
   const resetGlobal = () => {
     setStateStep(1);
     setFlow("");
+    setIdentifyType("");
+    setPaper("");
     setSelectedService("");
     setPatientInfo(INITIAL_INFO);
     setNpInfo(null);
@@ -42,6 +53,8 @@ export const GlobalProvider = ({ children }) => {
   const logGlobal = () => {
     console.log("stateStep", stateStep);
     console.log("flow", flow);
+    console.log("identify type", identifyType);
+    console.log("paper", paper);
     console.log("selectedService", selectedService);
     console.log("patientInfo", patientInfo);
     console.log("npInfo", npInfo);
@@ -59,6 +72,11 @@ export const GlobalProvider = ({ children }) => {
         flow, 
         setFlow,
         setFlowAsync,
+        identifyType, 
+        setIdentifyType,
+        setIdentifyTypeAsync,
+        paper,
+        setPaper,
         selectedService,
         setSelectedService,
         npInfo, 

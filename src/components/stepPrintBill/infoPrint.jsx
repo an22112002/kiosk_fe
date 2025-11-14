@@ -2,7 +2,7 @@ import { useGlobal } from "../../context/GlobalContext";
 import { calculateAge, formatCurrency } from "../../utils/helpers";
 
 export default function InfoPrint() {
-    const { flow, selectedService, patientInfo, npInfo, paymentInfo, paymentState} = useGlobal()
+    const { flow, selectedService, patientInfo, npInfo, paymentInfo, paymentState, paper} = useGlobal()
     // payemntState đang mất
     const dataInfo = patientInfo.personalInfo.data
     const patientHISInfo = patientInfo.patientHISInfo
@@ -42,6 +42,9 @@ export default function InfoPrint() {
 
                     <div className="text-left font-medium">Mã thẻ bảo hiểm:</div>
                     <div className="text-right">{insurInfo?.MA_THE_BHYT || "N/A"}</div>
+
+					<div className="text-left font-medium">Giấy tờ:</div>
+                    <div className="text-right">{paper || "N/A"}</div>
                     </>
                 ) 
                 : null

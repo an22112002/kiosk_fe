@@ -48,6 +48,7 @@ export const splitName = (fullName) => {
 };
 
 export const parseDateFromDDMMYYYY = (dateString) => {
+  // 01/12/2000 -> 2000/12/01
 	const [day, month, year] = dateString.split("/").map(Number);
 	return new Date(year, month - 1, day);
 };
@@ -65,6 +66,42 @@ export const calculateAge = (birthday) => {
 		return Math.abs(ageDate.getUTCFullYear() - 1970);
 	}
 };
+
+export const parseDate = (dateString) => {
+  // 01122000 -> 01/12/2000
+  try {
+    if (dateString.length === 8) {
+      const day = dateString.slice(0, 2)
+      const month = dateString.slice(2, 4)
+      const year = dateString.slice(4, 8)
+
+      return `${day}/${month}/${year}`
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+export const splitVNeIDInfo = (infoStr) => {
+  const parts = infoStr.split("|")
+  if (parts.length !== 7) {
+    openNotification("Lỗi xử lý!", `Không thể đọc thông tin (${infoStr})`)
+    return null
+  }
+  const dateOfBirth = parseDate(parts[3])
+  if (dateOfBirth === null) {
+    openNotification("Lỗi xử lý!", `Không thể đọc thông tin (${infoStr})`)
+    return null
+  }
+  const result = { "data" : {"idCode" : parts[0],
+                "personName" : parts[2],
+                "dateOfBirth" : dateOfBirth,
+                "gender" : parts[4],
+                "residencePlace" : parts[5]
+  }}
+  return result
+}
 
 export const isValidJSON = (data) => {
 	try {

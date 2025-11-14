@@ -141,7 +141,7 @@ export default function ScanFace({ setImage }) {
           ></div>
         </div>
       ) : (
-        <div className="relative border rounded-lg overflow-hidden w-[360px] h-[360px]">
+        <div className="flex justify-center w-[360px] h-[360px]">
           <img
             src="/image/guild2.png"
             alt="Lấy ra"
@@ -153,9 +153,9 @@ export default function ScanFace({ setImage }) {
       <canvas ref={canvasRef} style={{ display: "none" }} />
 
       {/* Trạng thái hiển thị */}
-      {isStarting && <div className="text-blue-600 font-semibold">Đang khởi động camera...</div>}
+      {isStarting && <div className="text-blue-600 font-semibold loading-dots">Đang khởi động camera</div>}
       {isCapturing && countdown !== null && (
-        <div className="text-xl font-bold text-green-600">Chụp sau {countdown}s...</div>
+        <div className="text-xl font-bold text-green-600">Chụp sau {countdown}s</div>
       )}
 
       {/* Nút hành động */}

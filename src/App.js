@@ -22,6 +22,7 @@ function App() {
         {/* đăng ký khám */}
         <Route path="/mer" element={<Layout />}>
           <Route index element={<SelectMER />}></Route>
+          <Route path="" element={<SelectMER />}></Route>
           {/* luồng có bảo hiểm */}
           <Route path="insur" element={<InsurLayout />}>
             <Route path="checkPatient" element={<CheckInfo />}></Route>
