@@ -69,7 +69,7 @@ export default function Access() {
                     <div className='mt-10px'>Tài khoản</div>
                     <Input.Password value={username} onChange={(e) => setUsername(e.target.value)} style={{ fontSize: "1.5rem" }}></Input.Password>
                     <div className='mt-10px'>Mật khẩu</div>
-                    <Input.Password value={password} onChange={(e) => setPassword(e.target.value)} style={{ fontSize: "1.5rem" }}></Input.Password>
+                    <Input.Password value={password} onChange={(e) => setPassword(e.target.value)} style={{ fontSize: "1.5rem" }} iconRender={() => null}></Input.Password>
                     <div
                         onClick={() => handleBtn("Lưu")}
                         className="flex justify-center"
