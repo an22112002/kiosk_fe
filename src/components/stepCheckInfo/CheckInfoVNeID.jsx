@@ -172,10 +172,15 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
         const allChecked = fields.every(f => f.status === true);
         if (allChecked) {
             setTimeout(() => {
-                const residencePlace = getResidencePlace(provinces, communes, 
-                    npInfo?.province || patientInfo?.patientHISInfo?.MATINH_CUTRU,
-                    npInfo?.commune || patientInfo?.patientHISInfo?.MAXA_CUTRU,
-                )
+                let residencePlace = ""
+                if (npInfo != null) {
+                    residencePlace = getResidencePlace(provinces, communes, 
+                        npInfo?.province,
+                        npInfo?.commune,
+                    )
+                } else {
+                    residencePlace = patientInfo?.patientHISInfo?.DIA_CHI || ""
+                }
                 setPatientInfo(prev => ({
                     ...prev,
                     personalInfo: {

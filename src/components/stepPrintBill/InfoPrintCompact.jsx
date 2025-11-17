@@ -44,7 +44,7 @@ export default function InfoPrintCompact() {
             <div>Thanh toán: {paymentState || "N/A"}</div>
           </>
         ) : (
-          <div>Bảo hiểm thanh toán: {formatCurrency(parseInt(selectedService?.price)) || "N/A"}</div>
+          <div>Bảo hiểm chi trả: {formatCurrency(parseInt(selectedService?.price)) || "N/A"}</div>
         )}
 
         <div><span className="font-bold text-xl">{selectedService?.clinic || "N/A"}</span></div>

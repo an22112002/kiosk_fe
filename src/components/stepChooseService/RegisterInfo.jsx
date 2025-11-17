@@ -45,12 +45,21 @@ export default function RegisterInfo({patientInfo, npInfo, selectedService, flow
                 {flow === "insur" ? "Bảo hiểm" : "Dịch vụ"}
                 </td>
             </tr>
-            <tr>
-                <td className="font-semibold text-gray-700 text-left pr-4 py-1">Cần thanh toán:</td>
-                <td className="text-gray-800 text-right py-1">
-                {formatCurrency(parseInt(selectedService?.price)) || "N/A"}
-                </td>
-            </tr>
+            {flow === "insur" ? (
+                <tr>
+                    <td className="font-semibold text-gray-700 text-left pr-4 py-1">Bảo hiểm chi trả:</td>
+                    <td className="text-gray-800 text-right py-1">
+                    {formatCurrency(parseInt(selectedService?.price)) || "N/A"}
+                    </td>
+                </tr>
+            ) : (
+                <tr>
+                    <td className="font-semibold text-gray-700 text-left pr-4 py-1">Cần thanh toán:</td>
+                    <td className="text-gray-800 text-right py-1">
+                    {formatCurrency(parseInt(selectedService?.price)) || "N/A"}
+                    </td>
+                </tr>
+            )}
             </tbody>
         </table>
         </div>
