@@ -97,13 +97,13 @@ export default function Access() {
                     <span><strong className='text-[1.7rem]'>Bước 3:</strong> Thu nhỏ trang BHYT (không đóng), rồi quay lại trang này và bấm <strong className='text-[1.6rem] text-emerald-500'>"Lấy cookies"</strong></span>
                     <span><strong className='text-[1.7rem]'>Bước 4:</strong> Trở lại trang chủ</span>
                 </div>
-                <div className="w-[70%] bg-blue-300 my-[50px] py-[25px] rounded-xl">
+                <div className="w-[85%] bg-blue-300 my-[50px] py-[25px] rounded-xl">
                     <div className='flex justify-around'>
                         {button.map((text, i) => (
                         <div
                             key={i}
                             onClick={() => handleBtn(text)}
-                            className="flex justify-center"
+                            className="flex justify-center w-[20%]"
                         >
                             <div className="flex flex-col items-center justify-center 
                                             w-full min-w-[250px] lg:min-w-[300px] bg-emerald-500
