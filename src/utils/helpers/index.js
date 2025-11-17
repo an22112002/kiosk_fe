@@ -41,10 +41,19 @@ export const openNotification = (
 };
 
 export const splitName = (fullName) => {
-	const parts = fullName.trim().split(/\s+/);
-	const lastName = parts[0];
-	const firstName = parts.slice(1).join(" ");
-	return { firstName, lastName };
+    if (!fullName || typeof fullName !== "string") {
+        return { firstName: "", lastName: "" };
+    }
+
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length === 1) {
+        return { firstName: parts[0], lastName: "" };
+    }
+
+    const firstName = parts.pop();        // Tên
+    const lastName = parts.join(" ");     // Họ + tên đệm
+    
+    return { firstName, lastName };
 };
 
 export const parseDateFromDDMMYYYY = (dateString) => {

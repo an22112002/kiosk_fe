@@ -140,7 +140,7 @@ export default function ClinicRoom() {
                     DIEN_THOAI: dataInfo?.phone ? dataInfo.phone : npInfo.phone,
                     GIOI_TINH: dataInfo?.gender ? dataInfo.gender === "Nữ" ? 1 : 2 : 3,
                     MA_BN: "",
-                    NGAY_SINH: convertDateFormat(dataInfo?.dateOfBirth ?? ""),
+                    NGAY_SINH: convertDateFormat(dataInfo?.dateOfBirth),
                     SO_GTTT: dataInfo?.idCode ?? "",
                     MA_DANTOC: npInfo?.ethnic || "",
                     MA_NGHE_NGHIEP: npInfo?.job || "",
@@ -148,10 +148,10 @@ export default function ClinicRoom() {
                     MATINH_CUTRU: npInfo?.commune || "",
                     MAXA_CU_TRU: npInfo?.province || "",
                 };
-                patientData["MA_THE_BHYT"] = patientData?.["MA_THE_BHYT"] ?? insuranceInfo?.["MA_THE_BHYT"] ?? "";
-                patientData["GT_THE_TU"] = convertDateFormat(patientData?.["GT_THE_TU"] ?? insuranceInfo?.["GT_THE_TU"] ?? "");
-                patientData["GT_THE_DEN"] = convertDateFormat(patientData?.["GT_THE_DEN"] ?? insuranceInfo?.["GT_THE_DEN"] ?? "");
-                patientData["MA_DKBD"] = patientData?.["MA_DKBD"] ?? insuranceInfo?.["MA_DKBD"] ?? "";
+                patientData["MA_THE_BHYT"] = insuranceInfo?.["MA_THE_BHYT"];
+                patientData["GT_THE_TU"] = convertDateFormat(insuranceInfo?.["GT_THE_TU"]);
+                patientData["GT_THE_DEN"] = convertDateFormat(insuranceInfo?.["GT_THE_DEN"]);
+                patientData["MA_DKBD"] = insuranceInfo?.["MA_DKBD"];
     
                 const data = {
                     BN_UU_TIEN: 0,
