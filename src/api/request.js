@@ -81,6 +81,9 @@ export async function get_agent(client, url, headers = {}) {
 export async function post_agent(client, url, body = {}, headers = {}) {
   try {
     const resp = await client.post(url, body, { headers });
+    if (resp.status === 201) {
+      openNotification("Thông báo", "Lưu thành công", "success");
+    }
     return resp.data;
   } catch (err) {
     if (err.response) {

@@ -50,8 +50,8 @@ export const splitName = (fullName) => {
         return { firstName: parts[0], lastName: "" };
     }
 
-    const firstName = parts.pop();        // Tên
-    const lastName = parts.join(" ");     // Họ + tên đệm
+    const firstName = parts.pop();
+    const lastName = parts.join(" ");
     
     return { firstName, lastName };
 };
@@ -363,4 +363,18 @@ export const processVietnameseBuffer = (buffer) => {
     .join(" ");
 
   return vietnamese;
+};
+
+export const getResidencePlace = (provinces, communes, codeProvince, codeCommune) => {
+  const provinceObj = provinces.find(p => p.MA_TINH === codeProvince);
+  const communeObj = communes.find(c => c.MA_XA === codeCommune);
+
+  const province = provinceObj ? provinceObj.TEN_TINH : "";
+  const commune = communeObj ? communeObj.TEN_XA : "";
+
+  if (!province && !commune) return "";
+  if (!province) return commune;
+  if (!commune) return province;
+
+  return `${commune}, ${province}`;
 };

@@ -5,12 +5,12 @@ import { Helmet } from "react-helmet-async"
 import { Modal } from 'antd'
 import { useGlobal } from '../../context/GlobalContext';
 import { LoadingOutlined } from '@ant-design/icons'
-import { openNotification, splitVNeIDInfo } from '../../utils/helpers';
+import { openNotification, splitVNeIDInfo, getResidencePlace } from '../../utils/helpers';
 import { getPatientInfo, get_bhyt } from '../../api/call_API';
 import InsertPatient from '../registerNewPatient/InsertPatient';
 import PatientInfoDisplay from './PatientInfoDisplay';
 
-export default function CheckInfoVNeID() {
+export default function CheckInfoVNeID( {provinces, communes} ) {
     const [localLoading, setLocalLoading] = useState(true)
     const [focusInput, setFocusInput] = useState(true)
     const [nonInserCase, setNonInserCase] = useState(false)
@@ -172,8 +172,21 @@ export default function CheckInfoVNeID() {
         const allChecked = fields.every(f => f.status === true);
         if (allChecked) {
             setTimeout(() => {
-            setLocalLoading(false)
-            setFocusInput(false)
+                const residencePlace = getResidencePlace(provinces, communes, 
+                    npInfo?.province || patientInfo?.patientHISInfo?.MATINH_CUTRU,
+                    npInfo?.commune || patientInfo?.patientHISInfo?.MAXA_CUTRU,
+                )
+                setPatientInfo(prev => ({
+                    ...prev,
+                    personalInfo: {
+                        ...prev.personalInfo,
+                        data: {
+                            ...prev.personalInfo.data,
+                            residencePlace, // chỉ cập nhật field này, giữ nguyên các field khác
+                        }
+                    }
+                }));
+                setLocalLoading(false)
             }, 1000)
         }
     }, [fields])

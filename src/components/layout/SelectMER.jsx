@@ -129,7 +129,8 @@ export default function SelectMER() {
       <Modal
         open={openInsertForm}
         footer={null}
-        closable={false}
+        closable={true}
+        onCancel={() => {setOpenInsertForm(false)}}
         centered
         width={1000}
       >

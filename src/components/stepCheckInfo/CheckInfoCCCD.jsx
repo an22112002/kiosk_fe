@@ -6,13 +6,13 @@ import { Modal } from 'antd'
 import { useGlobal } from '../../context/GlobalContext';
 import { LoadingOutlined } from '@ant-design/icons'
 import { CAMERA_WS_URL } from '../../api/config'
-import { openNotification } from '../../utils/helpers';
+import { openNotification, getResidencePlace } from '../../utils/helpers';
 import { getPatientInfo, get_bhyt } from '../../api/call_API';
 import InsertPatient from '../registerNewPatient/InsertPatient';
 import PatientInfoDisplay from './PatientInfoDisplay';
 import ScanFace from './ScanFace';
 
-export default function CheckInfoCCCD() {
+export default function CheckInfoCCCD( {provinces, communes} ) {
     const correctLimit = 60
     const [localLoading, setLocalLoading] = useState(true)
     const [nonInserCase, setNonInserCase] = useState(false)
@@ -157,11 +157,6 @@ export default function CheckInfoCCCD() {
                                 personalInfo: receivedData,
                             };
                         });
-                        // if (flow === "insur") {
-                        //     setGetInsur(true)
-                        // } else {
-                        //     setGetHIS(true)
-                        // }
                     } else if (receivedData.id === "4") {
                         toggleStatus(1)
                         await setPatientInfo((prev) => {
@@ -269,7 +264,21 @@ export default function CheckInfoCCCD() {
         const allChecked = fields.every(f => f.status === true);
         if (allChecked) {
             setTimeout(() => {
-            setLocalLoading(false)
+                const residencePlace = getResidencePlace(provinces, communes, 
+                    npInfo?.province || patientInfo?.patientHISInfo?.MATINH_CUTRU,
+                    npInfo?.commune || patientInfo?.patientHISInfo?.MAXA_CUTRU,
+                )
+                setPatientInfo(prev => ({
+                    ...prev,
+                    personalInfo: {
+                        ...prev.personalInfo,
+                        data: {
+                            ...prev.personalInfo.data,
+                            residencePlace, // chỉ cập nhật field này, giữ nguyên các field khác
+                        }
+                    }
+                }));
+                setLocalLoading(false)
             }, 1000)
         }
     }, [fields])

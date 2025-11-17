@@ -1,13 +1,18 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { openWebBHYT, getCookiesWebBHYT } from '../../api/call_API';
+import { openWebBHYT, getCookiesWebBHYT, getUserPIS, saveUserPIS } from '../../api/call_API';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import Modal from 'antd/es/modal/Modal';
+import Input from 'antd/es/input/Input';
 
 export default function Access() {
     const navigate = useNavigate()
     const [countDown, setCountDown] = useState(5)
+    const [openSetUser, setOpenSetUser] = useState(false)
     const [success, setSuccess] = useState(false)
-    const button = ["Truy cập Web BHYT", "Lấy cookies"]
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+    const button = ["Thông tin đăng nhập", "Truy cập Web BHYT", "Lấy cookies"]
 
     useEffect(() => {
         if (!success) return;
@@ -27,16 +32,59 @@ export default function Access() {
     const handleBtn = async (text) => {
         if (text === "Truy cập Web BHYT") {
             await openWebBHYT()
-        } else {
+            return
+        } 
+        if (text === "Thông tin đăng nhập") {
+            setOpenSetUser(true)
+            const data = await getUserPIS()
+            setUsername(data.username)
+            setPassword(data.password)
+            return
+        }
+        if (text === "Lưu") {
+            await saveUserPIS(username, password)
+            setOpenSetUser(false)
+            return
+        } 
+        if (text === "Lấy cookies") {
             const result = await getCookiesWebBHYT()
             if (result) {
                 setSuccess(true)
             }
+            return
         }
     }
 
     return (
         <>
+            <Modal
+                open={openSetUser}
+                footer={null}
+                closable={true}
+                centered
+                onCancel={() => {setOpenSetUser(false)}}
+            >
+                <div className='w-[100%] gap-[10px] flex flex-col text-[1.5rem]' >
+                    <h1 className='text-[1.5rem] text-blue-700 text-center mt-[10%] mb-[5%]'><strong>Tài khoản dùng đăng nhập PIS</strong></h1>
+                    <div className='mt-10px'>Tài khoản</div>
+                    <Input.Password value={username} onChange={(e) => setUsername(e.target.value)} style={{ fontSize: "1.5rem" }}></Input.Password>
+                    <div className='mt-10px'>Mật khẩu</div>
+                    <Input.Password value={password} onChange={(e) => setPassword(e.target.value)} style={{ fontSize: "1.5rem" }}></Input.Password>
+                    <div
+                        onClick={() => handleBtn("Lưu")}
+                        className="flex justify-center"
+                    >
+                        <div className="flex flex-col items-center justify-center 
+                                            w-full bg-emerald-500 text-white rounded-xl shadow-lg cursor-pointer
+                                            hover:from-green-600 hover:to-emerald-700 
+                                            hover:scale-105 transition-all duration-500 ease-in-out">
+                        <button className="flex flex-col items-center justify-center gap-2 text-[20px] sm:text-[22px] lg:text-[26px] font-semibold">
+                            Lưu
+                        </button>
+                        </div>
+                    </div>
+                </div>
+            </Modal>
             <div className="w-100% h-20px text-center text-[1.5rem] text-red-700 bg-yellow-200 p-[30px] mt-[20px] mb-[10vh]">
                 <strong>
                     <ExclamationCircleOutlined></ExclamationCircleOutlined> Trang này chỉ xuất hiện khi khởi động ứng dụng kiosk và sẽ không xuất hiện lại trong quá trình sử dụng

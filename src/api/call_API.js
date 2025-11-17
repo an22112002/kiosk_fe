@@ -140,6 +140,23 @@ export async function getCookiesWebBHYT() {
   });
 }
 
+// --- GET lấy thông tin tài khoản PIS ---
+export async function getUserPIS() {
+  return get_agent(local_agent, "/agent/api/getData", {
+    "x-agent-key": AGENT_KEY
+  });
+}
+
+// --- POST lấy thông tin bảo hiểm y tế ---
+export async function saveUserPIS(username, password) {
+  return post_agent(local_agent, "/agent/api/saveData", {
+    USERNAME: username,
+    PASSWORD: password,
+  }, {
+    "x-agent-key": AGENT_KEY
+  });
+}
+
 // --- POST lấy thông tin bảo hiểm y tế ---
 export async function get_bhyt(patientIDCard, patientName, patientDOB) {
   return post_agent(local_agent, "/agent/api/get_bhyt", {

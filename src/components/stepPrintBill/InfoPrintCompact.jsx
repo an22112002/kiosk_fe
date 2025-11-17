@@ -37,10 +37,14 @@ export default function InfoPrintCompact() {
       <div className="space-y-2">
         <div>Dịch vụ: {selectedService?.name || "N/A"}</div>
         <div>Ngày đăng ký: {new Date().toLocaleDateString("vi-VN")}</div>
-        <div>Đơn giá: {formatCurrency(parseInt(selectedService?.price)) || "N/A"}</div>
 
-        {flow === "non-insur" && (
-          <div>Thanh toán: {paymentState || "N/A"}</div>
+        {flow === "non-insur" ? (
+          <>
+            <div>Đơn giá: {formatCurrency(parseInt(selectedService?.price)) || "N/A"}</div>
+            <div>Thanh toán: {paymentState || "N/A"}</div>
+          </>
+        ) : (
+          <div>Bảo hiểm thanh toán: {formatCurrency(parseInt(selectedService?.price)) || "N/A"}</div>
         )}
 
         <div><span className="font-bold text-xl">{selectedService?.clinic || "N/A"}</span></div>
