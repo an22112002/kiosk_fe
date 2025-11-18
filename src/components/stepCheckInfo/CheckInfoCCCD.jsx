@@ -59,7 +59,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
         if (patientInfo.facePass) {
             toggleStatus(2);
         }
-        if (patientInfo?.patientHISInfo || npInfo) {
+        if (patientInfo?.patientHISInfo || npInfo?.province) {
             toggleStatus(3);
         }
         if (patientInfo?.insuranceInfo) {
@@ -131,9 +131,23 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
     };
 
     // đóng thêm modal thông tin
-    const closeAddPatient = () => {
+    const closeAddPatient = async () => {
         toggleStatus(3)
         setAddPatient(false)
+        const residencePlace = getResidencePlace(provinces, communes, 
+                npInfo?.province,
+                npInfo?.commune,
+        )
+        setPatientInfo(prev => ({
+            ...prev,
+            personalInfo: {
+                ...prev.personalInfo,
+                data: {
+                    ...prev.personalInfo.data,
+                    residencePlace,
+                }
+            }
+        }));
     }
 
     // Liên kết đầu đọc lấy dữ liệu CCCD
@@ -204,6 +218,17 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
                     setPatientInfo((prev) => { 
                         return { ...prev, patientHISInfo: respone.data}; 
                     }); 
+                    const dia_chi = respone.data.DIA_CHI
+                    setPatientInfo(prev => ({
+                        ...prev,
+                        personalInfo: {
+                            ...prev.personalInfo,
+                            data: {
+                                ...prev.personalInfo.data,
+                                dia_chi,
+                            }
+                        }
+                    }));
                     toggleStatus(3)
                 } 
             } else { 
@@ -264,25 +289,6 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
         const allChecked = fields.every(f => f.status === true);
         if (allChecked) {
             setTimeout(() => {
-                let residencePlace = ""
-                if (npInfo != null) {
-                    residencePlace = getResidencePlace(provinces, communes, 
-                        npInfo?.province,
-                        npInfo?.commune,
-                    )
-                } else {
-                    residencePlace = patientInfo?.patientHISInfo?.DIA_CHI || ""
-                }
-                setPatientInfo(prev => ({
-                    ...prev,
-                    personalInfo: {
-                        ...prev.personalInfo,
-                        data: {
-                            ...prev.personalInfo.data,
-                            residencePlace, // chỉ cập nhật field này, giữ nguyên các field khác
-                        }
-                    }
-                }));
                 setLocalLoading(false)
             }, 1000)
         }

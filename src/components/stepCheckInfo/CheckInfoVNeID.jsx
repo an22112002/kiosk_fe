@@ -93,10 +93,24 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
         }
     };
 
-    // đóng modal thêm thông tin
-    const closeAddPatient = () => {
+    // đóng thêm modal thông tin
+    const closeAddPatient = async () => {
         toggleStatus(1)
         setAddPatient(false)
+        const residencePlace = getResidencePlace(provinces, communes, 
+                npInfo?.province,
+                npInfo?.commune,
+        )
+        setPatientInfo(prev => ({
+            ...prev,
+            personalInfo: {
+                ...prev.personalInfo,
+                data: {
+                    ...prev.personalInfo.data,
+                    residencePlace,
+                }
+            }
+        }));
     }
 
     // Lấy dữ liệu bệnh nhân từ HIS 
@@ -112,6 +126,17 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
                     setPatientInfo((prev) => { 
                         return { ...prev, patientHISInfo: respone.data}; 
                     }); 
+                    const dia_chi = respone.data.DIA_CHI
+                    setPatientInfo(prev => ({
+                        ...prev,
+                        personalInfo: {
+                            ...prev.personalInfo,
+                            data: {
+                                ...prev.personalInfo.data,
+                                dia_chi,
+                            }
+                        }
+                    }));
                     toggleStatus(1)
                 } 
             } else { 

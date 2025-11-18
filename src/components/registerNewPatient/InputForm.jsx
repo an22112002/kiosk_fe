@@ -26,7 +26,7 @@ export default function InputForm({ patientInfo, onBack }) {
     province: "",
     commune: "",
     job: "",
-    ethnic: "",
+    ethnic: "01",
     national: "000",
     phone: patientInfo?.personalInfo?.data?.phone || "",
   });
@@ -63,8 +63,8 @@ export default function InputForm({ patientInfo, onBack }) {
     setFormData((prev) => ({ ...prev, province: maTinh, commune: maXa }));
 
     const maDantoc = getDanTocCode(race, ETHIC);
-    setFormData((prev) => ({ ...prev, ethnic: maDantoc }));
-  }, [XA, TINH, ETHIC, patientInfo]);
+    if (maDantoc !== "") setFormData((prev) => ({ ...prev, ethnic: maDantoc }));
+  }, [XA, TINH, ETHIC]);
 
   // Khi focus field khác → reset buffer
   useEffect(() => {
@@ -283,8 +283,6 @@ const handleLoadJob = async () => {
 
   // Kiểm tra dữ liệu khi nhấn "Tiếp tục"
   const checkNewPatientInfo = () => {
-    console.log(formData);
-
     const requiredFields = ["province", "commune", "ethnic", "national", "phone"];
     const missing = requiredFields.filter((key) => !formData[key]);
 
@@ -307,7 +305,7 @@ const handleLoadJob = async () => {
     const validCommune = XA.some((item) => item.MA_XA === formData.commune);
     const validEthnic = ETHIC.some((item) => item.MA_DT === formData.ethnic);
     const validNational = NAL.some((item) => item.MA_QT === formData.national);
-    const validJob = formData.job === "" ? true : JOB.some((item) => item.MA_NN === formData.job);
+    const validJob = JOB.some((item) => item.MA_NN === formData.job);
 
     if (!validProvince) {
       openNotification("Thông báo", "Tỉnh/Thành phố không hợp lệ! Không có trong cơ sở dữ liệu!", "warning");
@@ -339,21 +337,6 @@ const handleLoadJob = async () => {
   return (
     <div className="text-[25px] flex flex-col items-center w-full">
       <div className="flex flex-col gap-4 w-full">
-        {/* Phone */}
-        <div className="flex items-center justify-between gap-3 w-full">
-          <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
-            Số điện thoại (*):
-          </label>
-          <Input
-            value={formData.phone}
-            maxLength={10}
-            onFocus={() => setActiveField("phone")}
-            onChange={(e) => handleInputChange("phone", e.target.value)}
-            placeholder="Nhập số điện thoại"
-            className="w-[65%] h-[120%]"
-          />
-        </div>
-
         {/* Province */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
           <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
@@ -399,7 +382,7 @@ const handleLoadJob = async () => {
           </label>
           <Select
             showSearch
-            value={formData.ethnic}
+            value={formData.ethnic || "01"}
             placeholder="Chọn hoặc nhập dân tộc"
             onFocus={() => setActiveField("ethnic")}
             onChange={(value) => handleInputChange("ethnic", value)}
@@ -425,10 +408,25 @@ const handleLoadJob = async () => {
           />
         </div>
 
+        {/* Phone */}
+        <div className="flex items-center justify-between gap-3 w-full">
+          <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
+            Số điện thoại (*):
+          </label>
+          <Input
+            value={formData.phone}
+            maxLength={10}
+            onFocus={() => setActiveField("phone")}
+            onChange={(e) => handleInputChange("phone", e.target.value)}
+            placeholder="Nhập số điện thoại"
+            className="w-[65%] h-[120%]"
+          />
+        </div>
+
         {/* Job */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
           <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
-            Nghề nghiệp:
+            Nghề nghiệp (*):
           </label>
           <Select
             showSearch

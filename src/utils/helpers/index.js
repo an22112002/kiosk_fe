@@ -93,8 +93,10 @@ export const parseDate = (dateString) => {
 }
 
 export const splitVNeIDInfo = (infoStr) => {
-  const parts = infoStr.split("|")
-  if (parts.length !== 7) {
+  let parts = []
+  try {
+    parts = infoStr.split("|").slice(0, 7)
+  } catch (error) {
     openNotification("Lỗi xử lý!", `Không thể đọc thông tin (${infoStr})`)
     return null
   }
@@ -190,7 +192,10 @@ const findCodeByName = (str, list) => {
   const keyCode = isXa ? "MA_XA" : "MA_TINH";
 
   const target = normalizeName(str);
-  const found = list.find(item => normalizeName(item[keyName]) === target);
+  const found = list.find(item => {
+    const name = normalizeName(item[keyName]);
+    return target.includes(name) || name.includes(target);
+  });
   return found ? found[keyCode] : null;
 };
 
@@ -204,15 +209,19 @@ export const getXaTinhCode = (addressStr, XA, TINH) => {
   const tinhStr = parts[parts.length - 1]; // phần cuối là tỉnh
   const maTinh = findCodeByName(tinhStr, TINH) || "";
 
-  // thử từng phần còn lại (trừ phần tỉnh) để tìm xã
   let maXa = "";
-  for (let i = 0; i < parts.length - 1; i++) {
-    const code = findCodeByName(parts[i], XA);
-    if (code) {
-      maXa = code;
-      break; // tìm thấy thì dừng
+  if (maTinh) {
+    // chỉ xét những xã thuộc tỉnh đã tìm được
+    const xaList = XA.filter(x => x.MA_TINH === maTinh);
+    for (let i = 0; i < parts.length - 1; i++) {
+      const code = findCodeByName(parts[i], xaList);
+      if (code) {
+        maXa = code;
+        break;
+      }
     }
   }
+
   return [maXa, maTinh];
 };
 
