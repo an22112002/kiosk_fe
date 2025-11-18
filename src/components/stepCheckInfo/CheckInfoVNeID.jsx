@@ -197,25 +197,6 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
         const allChecked = fields.every(f => f.status === true);
         if (allChecked) {
             setTimeout(() => {
-                let residencePlace = ""
-                if (npInfo != null) {
-                    residencePlace = getResidencePlace(provinces, communes, 
-                        npInfo?.province,
-                        npInfo?.commune,
-                    )
-                } else {
-                    residencePlace = patientInfo?.patientHISInfo?.DIA_CHI || ""
-                }
-                setPatientInfo(prev => ({
-                    ...prev,
-                    personalInfo: {
-                        ...prev.personalInfo,
-                        data: {
-                            ...prev.personalInfo.data,
-                            residencePlace, // chỉ cập nhật field này, giữ nguyên các field khác
-                        }
-                    }
-                }));
                 setLocalLoading(false)
             }, 1000)
         }
