@@ -147,7 +147,7 @@ export async function getUserPIS() {
   });
 }
 
-// --- POST lấy thông tin bảo hiểm y tế ---
+// --- POST lưu tài khoản PIS ---
 export async function saveUserPIS(username, password) {
   return post_agent(local_agent, "/agent/api/saveData", {
     USERNAME: username,

@@ -71,7 +71,7 @@ export async function get_agent(client, url, headers = {}) {
       return null;
     } else {
       // Lỗi network, timeout,...
-      openNotification("Lỗi mạng", err.message);
+      openNotification("Lỗi kết nối agent", err.message);
       return null;
     }
   }
@@ -94,8 +94,7 @@ export async function post_agent(client, url, body = {}, headers = {}) {
 
       return null;
     } else {
-      // Lỗi network, timeout,...
-      openNotification("Lỗi mạng", err.message);
+      openNotification("Lỗi kết nối agent", err.message);
       return null;
     }
   }

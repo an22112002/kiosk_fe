@@ -18,11 +18,12 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
     const [getInsur, setGetInsur] = useState(false)
     const [addPatient, setAddPatient] = useState(false)
     const hiddenInputRef = useRef(null);
-    const { setStateStep, patientInfo, setPatientInfo, flow, npInfo, logGlobal} = useGlobal();
+    const { setStateStep, patientInfo, setPatientInfo, setSelectedService, flow, npInfo, logGlobal} = useGlobal();
     const navigate = useNavigate()
 
     // Chỉnh bước 1
     useEffect(() => {
+        setSelectedService(null)
         setStateStep(1)
     }, [])
 

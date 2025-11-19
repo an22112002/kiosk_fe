@@ -21,7 +21,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
     const [addPatient, setAddPatient] = useState(false)
     const [imgCapture, setImgCapture] = useState(false)
     const [image, setImage] = useState(null)
-    const { setStateStep, patientInfo, setPatientInfo, flow, npInfo, logGlobal} = useGlobal();
+    const { setStateStep, patientInfo, setPatientInfo, setSelectedService, flow, npInfo, logGlobal} = useGlobal();
     const navigate = useNavigate()
 
     const isInteger = (value) => {
@@ -31,6 +31,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
 
     // Chỉnh bước 1
     useEffect(() => {
+        setSelectedService(null)
         setStateStep(1)
     }, [])
 
@@ -232,7 +233,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
                     toggleStatus(3)
                 } 
             } else { 
-                openNotification("Không có dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu") 
+                openNotification("Thiếu dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu") 
                 setAddPatient(true) 
             } 
         } catch (error) {
