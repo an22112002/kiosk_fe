@@ -337,6 +337,23 @@ const handleLoadJob = async () => {
   return (
     <div className="text-[25px] flex flex-col items-center w-full">
       <div className="flex flex-col gap-4 w-full">
+        
+        {/* Phone */}
+        <div className="flex items-center justify-between gap-3 w-full">
+          <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
+            Số điện thoại (*):
+          </label>
+          <Input
+            value={formData.phone}
+            maxLength={10}
+            onFocus={() => setActiveField("phone")}
+            onChange={(e) => handleInputChange("phone", e.target.value)}
+            placeholder="Nhập số điện thoại"
+            className="w-[65%] h-[120%]"
+            readOnly
+          />
+        </div>
+
         {/* Province */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
           <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
@@ -408,21 +425,6 @@ const handleLoadJob = async () => {
           />
         </div>
 
-        {/* Phone */}
-        <div className="flex items-center justify-between gap-3 w-full">
-          <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
-            Số điện thoại (*):
-          </label>
-          <Input
-            value={formData.phone}
-            maxLength={10}
-            onFocus={() => setActiveField("phone")}
-            onChange={(e) => handleInputChange("phone", e.target.value)}
-            placeholder="Nhập số điện thoại"
-            className="w-[65%] h-[120%]"
-          />
-        </div>
-
         {/* Job */}
         <div className="flex items-center justify-between gap-3 w-full mb-2">
           <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
@@ -462,27 +464,30 @@ const handleLoadJob = async () => {
       
       {/* Bàn phím ảo */}
       {activeField && (
-        <div className="mt-6 w-full max-w-[600px]">
+        <div className="mt-6 w-full max-w-[100%]">
           <p className="text-gray-600 text-center mb-2">
             Đang nhập cho trường:{" "}
             <span className="font-semibold text-colorOne">{getFieldName(activeField)}</span>
           </p>
-          <Keyboard
-            layout={{
-              default: [
-                "1 2 3 4 5 6 7 8 9 0",
-                "q w e r t y u i o p",
-                "a s d f g h j k l",
-                "z x c v b n m {bksp}",
-                "{space}",
-              ],
-            }}
-            display={{
-              "{bksp}": "⌫",
-              "{space}": "␣",
-            }}
-            onKeyPress={handleKeyboardInput}
-          />
+          <div className="w-full h-[600px]">
+            <Keyboard
+              layout={{
+                default: [
+                  "1 2 3 4 5 6 7 8 9 0",
+                  "q w e r t y u i o p",
+                  "a s d f g h j k l",
+                  "z x c v b n m {bksp}",
+                  "{space}",
+                ],
+              }}
+              display={{
+                "{bksp}": "⌫",
+                "{space}": "␣",
+              }}
+              onKeyPress={handleKeyboardInput}
+              className="w-full h-[600px]"
+            />
+          </div>
         </div>
       )}
 

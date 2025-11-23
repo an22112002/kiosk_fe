@@ -14,6 +14,7 @@ import ScanFace from './ScanFace';
 
 export default function CheckInfoCCCD( {provinces, communes} ) {
     const correctLimit = 60
+    const [reason, setReason] = useState("")
     const [localLoading, setLocalLoading] = useState(true)
     const [nonInserCase, setNonInserCase] = useState(false)
     const [getHIS, setGetHIS] = useState(false)
@@ -21,7 +22,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
     const [addPatient, setAddPatient] = useState(false)
     const [imgCapture, setImgCapture] = useState(false)
     const [image, setImage] = useState(null)
-    const { setStateStep, patientInfo, setPatientInfo, setSelectedService, flow, npInfo, logGlobal} = useGlobal();
+    const { setStateStep, patientInfo, patientID, setPatientInfo, setSelectedService, isNewInsurPatient, flow, npInfo, logGlobal} = useGlobal();
     const navigate = useNavigate()
 
     const isInteger = (value) => {
@@ -212,29 +213,37 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             const patientIDCard = await patientInfo?.personalInfo?.data.idCode 
             const respone = await getPatientInfo(patientIDCard) 
             if (respone.code === "000") { 
-                // Dữ liệu trả về chống -> ko có dữ liệu -> Thêm bệnh nhân 
-                if (respone.data == null) { 
-                    setAddPatient(true) 
-                } else { 
-                    setPatientInfo((prev) => { 
-                        return { ...prev, patientHISInfo: respone.data}; 
-                    }); 
-                    const dia_chi = respone.data.DIA_CHI
-                    setPatientInfo(prev => ({
-                        ...prev,
-                        personalInfo: {
-                            ...prev.personalInfo,
-                            data: {
-                                ...prev.personalInfo.data,
-                                dia_chi,
-                            }
+                if (respone.data.MA_BN !== patientID && flow === "insur" && !isNewInsurPatient) {
+                    setReason(`Mã bệnh nhân bạn nhập ${patientID} không trùng với mã bệnh nhân tương ứng với CCCD ${patientIDCard}. Vui lòng liên hệ nhân viên y tế để được hỗ trợ.`)
+                    setNonInserCase(true)
+                    return
+                }
+                if (isNewInsurPatient) {
+                    openNotification("Thông báo", "Tìm thấy thông tin của bạn trong CSDL bệnh viện", "info")
+                }
+                setPatientInfo((prev) => { 
+                    return { ...prev, patientHISInfo: respone.data}; 
+                }); 
+                const dia_chi = respone.data.DIA_CHI
+                setPatientInfo(prev => ({
+                    ...prev,
+                    personalInfo: {
+                        ...prev.personalInfo,
+                        data: {
+                            ...prev.personalInfo.data,
+                            dia_chi,
                         }
-                    }));
-                    toggleStatus(3)
-                } 
+                    }
+                }));
+                toggleStatus(3) 
             } else { 
-                openNotification("Thiếu dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu") 
-                setAddPatient(true) 
+                if (flow == "insur" && !isNewInsurPatient) {
+                    setReason(`Không tìm thấy thông tin bệnh nhân ứng với mã CCCD ${patientIDCard}. Vui lòng liên hệ nhân viên y tế để được hỗ trợ.`)
+                    setNonInserCase(true)
+                } else {
+                    openNotification("Thiếu dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu") 
+                    setAddPatient(true) 
+                }
             } 
         } catch (error) {
             console.log(error); 
@@ -260,14 +269,13 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             const name = await patientInfo?.personalInfo?.data.personName;
             const dob = await patientInfo?.personalInfo?.data.dateOfBirth;
 
-            // const b = await getOccupations()
-
-            const respone = await get_bhyt(idCard, name, dob);
-            if (respone) {
-                setPatientInfo(prev => ({ ...prev, insuranceInfo: respone.data }));
+            const response = await get_bhyt(idCard, name, dob);
+            if (response) {
+                setPatientInfo(prev => ({ ...prev, insuranceInfo: response.data }));
                 toggleStatus(4);
                 setGetHIS(true)
             } else {
+                setReason("Bạn không có bảo hiểm hoặc bảo hiểm đã hết hạn. Chỉ có thể chọn khám dịch vụ")
                 setNonInserCase(true);
             }
         } catch (error) {
@@ -349,7 +357,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
                 </div>
             </Modal>
 
-            {/* Báo không bảo hiểm */}
+            {/* Báo không thể khám bảo hiểm */}
             <Modal
                 open={nonInserCase}
                 footer={null}
@@ -357,7 +365,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
                 centered
                 styles={{ body: { textAlign: "center" } }}
             >
-                <div className="text-lg text-red-700 font-semibold">Bạn không có bảo hiểm, chỉ có thể chọn khám dịch vụ</div>
+                <div className="text-lg text-red-700 font-semibold">{reason}</div>
                 <br></br>
                 <div className="flex px-10 items-center justify-center bg-gradient-to-r from-colorTwo to-colorFive text-black rounded-xl 
                                             hover:from-green-500 hover:to-emerald-600 hover:scale-105 
@@ -372,7 +380,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             <Modal
                 open={addPatient && !nonInserCase}
                 footer={null}
-                width={1000}
+                width={1500}
                 closable={false}
                 centered
                 styles={{ body: { textAlign: "center" } }}

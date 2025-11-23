@@ -4,14 +4,14 @@ import Keyboard from "react-simple-keyboard";
 import Input from "antd/es/input/Input";
 import { openNotification } from "../../utils/helpers";
 
-export default function MedicalAppointmentForm({ onBack }) {
+export default function MedicalAppointmentForm({ onBack, paperType }) {
     const [ inputText, setInputText ] = useState("")
 
     const handleDone = () => {
         if (inputText.length < 10 ) {
             openNotification("Lỗi nhập liệu", "Bạn phải nhập đủ thông tin", "warning")
         } else {
-            onBack(`Giấy khám lại - Mã BN: ${inputText}`)
+            onBack(`${inputText}`)
         }
     }
 
@@ -30,8 +30,8 @@ export default function MedicalAppointmentForm({ onBack }) {
     return (
         <>
             <div className="flex flex-col items-center gap-[10px] mt-6 mb-6 w-full">
-            <h1 className="text-[1.5rem] text-blue-700"><strong>XIN NHẬP MÃ BỆNH NHÂN TRÊN GIẤY HẸN KHÁM LẠI</strong></h1>
-            <Input value={inputText} placeholder="VD: 002498329838" className="w-[65%] text-[1.7rem] text-center"></Input>
+            <h1 className="text-[1.5rem] text-blue-700"><strong>XIN NHẬP MÃ BỆNH NHÂN TRÊN {paperType}</strong></h1>
+            <Input value={inputText} placeholder="VD: 002498329838" className="w-[65%] text-[1.7rem] text-center" readOnly></Input>
             <div className="w-[65%]">
                 <Keyboard className="h-[1000px]"
                     layout={{
