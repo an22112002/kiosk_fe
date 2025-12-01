@@ -20,7 +20,7 @@ export default function ShowQR() {
             openNotification("Lỗi", "Không có thông tin thanh toán")
             return;
         }
-        const respone = await getCheckStatusPayment(paymentInfo.THONG_TIN_THANH_TOAN.SO_PHIEU, paymentInfo.THONG_TIN_TIEP_NHAN.MA_LK)
+        const respone = await getCheckStatusPayment(paymentInfo?.THONG_TIN_THANH_TOAN?.SO_PHIEU, paymentInfo?.THONG_TIN_TIEP_NHAN?.MA_LK)
         if (respone.data.TRANG_THAI === "Đã thanh toán") {
             openNotification("Thông báo", "Thanh toán thành công", "success")
             await setPaymentStateAsync("Đã thanh toán")
@@ -33,7 +33,7 @@ export default function ShowQR() {
         if (!paymentInfo?.THONG_TIN_THANH_TOAN && !paymentInfo?.THONG_TIN_TIEP_NHAN) {
             return;
         }
-        const respone = await getCheckStatusPayment(paymentInfo.THONG_TIN_THANH_TOAN.SO_PHIEU, paymentInfo.THONG_TIN_TIEP_NHAN.MA_LK)
+        const respone = await getCheckStatusPayment(paymentInfo?.THONG_TIN_THANH_TOAN?.SO_PHIEU, paymentInfo?.THONG_TIN_TIEP_NHAN?.MA_LK)
         if (respone.data.TRANG_THAI === "Đã thanh toán") {
             await setPaymentStateAsync("Đã thanh toán")
             setSuccess(true)
@@ -103,11 +103,11 @@ export default function ShowQR() {
         </Modal>
         <div className="mt-auto min-h-20 w-full mb-[7px] flex flex-col items-center justify-center px-12 py-4 gap-4">
             <div className='w-[100%] h-[10vh]'></div>
-            {paymentInfo?.THONG_TIN_THANH_TOAN?.QR_CODE && (
+            {paymentInfo?.THONG_TIN_THANH_TOAN?.QR_CODE ? (
                 <div className="mt-10 flex flex-col items-center">
                     <div className="border-4 border-colorOneLighter rounded-2xl px-6 py-4 mb-10 inline-block bg-white/10 text-colorOne font-bold shadow-md" >
                         <QRCodeSVG
-                            value={paymentInfo.THONG_TIN_THANH_TOAN?.QR_CODE}
+                            value={paymentInfo?.THONG_TIN_THANH_TOAN?.QR_CODE}
                             level="H"
                             size={300}
                         />
@@ -123,6 +123,10 @@ export default function ShowQR() {
                     <div className="text-[2rem] mt-6 mb-6">
                         Thanh toán cho: <span className="text-gray-500 font-semibold">{patientInfo?.personalInfo?.data?.personName || "N/A"} - {formatCurrency(selectedService?.price) || "N/A"}</span>
                     </div>
+                </div>
+            ) : (
+                <div className="text-[2rem] mt-6 mb-6 text-red-700 text-center">
+                    Không hiển thị được QR. Yêu cầu quay lại màn hình chính. ({JSON.stringify(paymentInfo)})
                 </div>
             )}
 

@@ -285,7 +285,7 @@ export default function ClinicRoom() {
                 </div>
 
                 <div className="flex flex-col justify-center text-[25px] md:text-[28px] lg:text-[30px] mb-3">
-                    <p className="text-colorOne my-4 font-semibold px-4 py-2 bg-white rounded-xl ">{selectedService ? `Dịch vụ đã chọn: ${selectedService.clinic} - ${selectedService.name} - ${flow === "insur" ? "Bảo hiểm chi trả: " : ""} ${selectedService.price} VNĐ` : "" }</p>
+                    <p className="text-colorOne my-4 font-semibold px-4 py-2 bg-white rounded-xl text-center">{selectedService ? `Dịch vụ đã chọn: ${selectedService.clinic} - ${selectedService.name} - ${flow === "insur" ? "Bảo hiểm chi trả: " : ""} ${selectedService.price} VNĐ` : "" }</p>
                     
                         <div className="grid grid-cols-2 gap-[30px]">
                             {/* Nút điều khiển */}

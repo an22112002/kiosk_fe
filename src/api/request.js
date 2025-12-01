@@ -5,21 +5,21 @@ import { openNotification } from "../utils/helpers";
 // Cấu hình mặc định
 export const client_HIS_API_URL = axios.create({
   baseURL: HIS_API_URL,
-  timeout: 30000,
+  timeout: 60000,
   headers: { "Content-Type": "application/json" },
   responseType: "json",
 });
 
 export const client_HIS_API_URL_1 = axios.create({
   baseURL: HIS_API_URL_1,
-  timeout: 30000,
+  timeout: 60000,
   headers: { "Content-Type": "application/json" },
   responseType: "json",
 });
 
 export const local_agent = axios.create({
   baseURL: AGENT_URL,
-  timeout: 30000,
+  timeout: 60000,
   headers: { "Accept": "application/json" },
   responseType: "json",
 });

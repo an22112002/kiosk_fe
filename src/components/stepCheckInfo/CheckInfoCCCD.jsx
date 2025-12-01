@@ -365,7 +365,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
                 centered
                 styles={{ body: { textAlign: "center" } }}
             >
-                <div className="text-lg text-red-700 font-semibold">{reason}</div>
+                <div className="text-[1.5rem] text-red-700 font-semibold">{reason}</div>
                 <br></br>
                 <div className="flex px-10 items-center justify-center bg-gradient-to-r from-colorTwo to-colorFive text-black rounded-xl 
                                             hover:from-green-500 hover:to-emerald-600 hover:scale-105 
