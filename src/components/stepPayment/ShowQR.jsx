@@ -15,6 +15,8 @@ export default function ShowQR() {
     const [ success, setSuccess ] = useState(false)
     const [ openConfirm, setOpenConfirm ] = useState(false)
 
+    console.log(paymentInfo)
+
     const handleCheckPayment = async () => {
         if (!paymentInfo?.THONG_TIN_THANH_TOAN && !paymentInfo?.THONG_TIN_TIEP_NHAN) {
             openNotification("Lỗi", "Không có thông tin thanh toán")
