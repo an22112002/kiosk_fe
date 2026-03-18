@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route} from "react-router-dom"
 import Layout from "./components/layout/Layout";
-import Access from "./components/layout/Access";
 import HomePage from "./page/Home";
 import SelectMER from "./components/layout/SelectMER";
 import InsurLayout from "./components/layout/Insur";
@@ -15,7 +14,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Access />}></Route>
           <Route path="homepage" element={<HomePage />}></Route>
           {/* <Route path="search" element={<SearchPage />}></Route> */}
         </Route>

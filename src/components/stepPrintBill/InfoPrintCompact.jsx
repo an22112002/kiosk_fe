@@ -1,5 +1,6 @@
 import { useGlobal } from "../../context/GlobalContext";
 import { formatCurrency } from "../../utils/helpers";
+import { QRCodeSVG } from "qrcode.react";
 
 export default function InfoPrintCompact() {
   const { flow, selectedService, patientInfo, npInfo, paymentInfo, paymentState } = useGlobal();
@@ -53,6 +54,14 @@ export default function InfoPrintCompact() {
         <div><span className="font-bold text-xl">{selectedService?.clinic || "N/A"}</span></div>
         <div>Số thứ tự: <span className="font-bold text-xl">{paymentInfo?.THONG_TIN_TIEP_NHAN.STT_LK || "N/A"}</span></div>
       </div>
+      {flow === "non-insur" ? (
+				<div className="w-full flex justify-center mt-4">
+					<QRCodeSVG
+						value={paymentInfo?.THONG_TIN_THANH_TOAN?.QR_CODE}
+						level="H"
+					/>
+				</div>
+			) : null}
     </div>
   );
 }

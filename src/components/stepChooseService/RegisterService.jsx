@@ -148,11 +148,11 @@ export default function ClinicRoom() {
                     MATINH_CUTRU: npInfo?.commune || "",
                     MAXA_CU_TRU: npInfo?.province || "",
                 };
-                patientData["MA_THE_BHYT"] = insuranceInfo?.["MA_THE_BHYT"];
-                patientData["GT_THE_TU"] = convertDateFormat(insuranceInfo?.["GT_THE_TU"]);
-                patientData["GT_THE_DEN"] = convertDateFormat(insuranceInfo?.["GT_THE_DEN"]);
-                patientData["MA_DKBD"] = insuranceInfo?.["MA_DKBD"];
-    
+                patientData["MA_THE_BHYT"] = insuranceInfo?.["MA_THE_BHYT"] || "";
+                patientData["GT_THE_TU"] = convertDateFormat(insuranceInfo?.["GT_THE_TU"]) || "";
+                patientData["GT_THE_DEN"] = convertDateFormat(insuranceInfo?.["GT_THE_DEN"]) || "";
+                patientData["MA_DKBD"] = insuranceInfo?.["MA_DKBD"] || "";
+
                 const data = {
                     BN_UU_TIEN: 0,
                     ID_LOAI_KHAM: "01",

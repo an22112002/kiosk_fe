@@ -77,6 +77,7 @@ export default function InfoPrint() {
 
 				<div className="text-left font-medium">Số thứ tự:</div>
 				<div className="text-right text-2xl font-bold">{paymentInfo?.THONG_TIN_TIEP_NHAN.STT_LK || "N/A"}</div>
+				
 			</div>
 		</div>
 	);

@@ -7,7 +7,7 @@ import { useGlobal } from '../../context/GlobalContext';
 import { LoadingOutlined } from '@ant-design/icons'
 import { CAMERA_WS_URL } from '../../api/config'
 import { openNotification, getResidencePlace } from '../../utils/helpers';
-import { getPatientInfo, get_bhyt } from '../../api/call_API';
+import { getPatientInfo, getPatientInsurance } from '../../api/call_API';
 import InsertPatient from '../registerNewPatient/InsertPatient';
 import PatientInfoDisplay from './PatientInfoDisplay';
 import ScanFace from './ScanFace';
@@ -22,7 +22,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
     const [addPatient, setAddPatient] = useState(false)
     const [imgCapture, setImgCapture] = useState(false)
     const [image, setImage] = useState(null)
-    const { setStateStep, patientInfo, patientID, setPatientInfo, setSelectedService, isNewInsurPatient, flow, npInfo, logGlobal} = useGlobal();
+    const { setStateStep, patientInfo, setPatientInfo, setSelectedService, flow, npInfo, logGlobal} = useGlobal();
     const navigate = useNavigate()
 
     const isInteger = (value) => {
@@ -213,14 +213,6 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             const patientIDCard = await patientInfo?.personalInfo?.data.idCode 
             const respone = await getPatientInfo(patientIDCard) 
             if (respone.code === "000") { 
-                if (respone.data.MA_BN !== patientID && flow === "insur" && !isNewInsurPatient) {
-                    setReason(`Mã bệnh nhân bạn nhập ${patientID} không trùng với mã bệnh nhân tương ứng với CCCD ${patientIDCard}. Vui lòng liên hệ nhân viên y tế để được hỗ trợ.`)
-                    setNonInserCase(true)
-                    return
-                }
-                if (isNewInsurPatient) {
-                    openNotification("Thông báo", "Tìm thấy thông tin của bạn trong CSDL bệnh viện", "info")
-                }
                 setPatientInfo((prev) => { 
                     return { ...prev, patientHISInfo: respone.data}; 
                 }); 
@@ -236,15 +228,12 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
                     }
                 }));
                 toggleStatus(3) 
-            } else { 
-                if (flow == "insur" && !isNewInsurPatient) {
-                    setReason(`Không tìm thấy thông tin bệnh nhân ứng với mã CCCD ${patientIDCard}. Vui lòng liên hệ nhân viên y tế để được hỗ trợ.`)
-                    setNonInserCase(true)
-                } else {
-                    openNotification("Thiếu dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu") 
-                    setAddPatient(true) 
-                }
-            } 
+            } else if (respone.code === "404") { 
+                openNotification("Thiếu dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu") 
+                setAddPatient(true)
+            } else {
+                openNotification("Lỗi", "Lỗi không kiểm tra được dữ liệu bệnh nhân") 
+            }
         } catch (error) {
             console.log(error); 
             openNotification("Lỗi", "Lỗi lấy dữ liệu bệnh nhân"); 
@@ -269,14 +258,22 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             const name = await patientInfo?.personalInfo?.data.personName;
             const dob = await patientInfo?.personalInfo?.data.dateOfBirth;
 
-            const response = await get_bhyt(idCard, name, dob);
-            if (response) {
+            const response = await getPatientInsurance(idCard, name, dob);
+            console.log("Insurance response: ", response);
+
+            if (response.code === "000") {
+                if (response.data.PHAN_TUYEN === 2) {
+                    setReason("Bảo hiểm trái tuyến không thể khám bảo hiểm y tế. Chỉ có thể chọn khám dịch vụ")
+                    setNonInserCase(true);
+                }
                 setPatientInfo(prev => ({ ...prev, insuranceInfo: response.data }));
                 toggleStatus(4);
                 setGetHIS(true)
-            } else {
+            } else if (response.code === "404") {
                 setReason("Bạn không có bảo hiểm hoặc bảo hiểm đã hết hạn. Chỉ có thể chọn khám dịch vụ")
                 setNonInserCase(true);
+            } else {
+                openNotification("Lỗi", "Lỗi không kiểm tra được dữ liệu bảo hiểm y tế")
             }
         } catch (error) {
             console.log("Lỗi lấy dữ liệu bhyt", error);

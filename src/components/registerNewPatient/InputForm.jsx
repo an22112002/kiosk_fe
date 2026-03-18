@@ -27,7 +27,7 @@ export default function InputForm({ patientInfo, onBack }) {
     commune: "",
     job: "",
     ethnic: "01",
-    national: "000",
+    national: "01",
     phone: patientInfo?.personalInfo?.data?.phone || "",
   });
 

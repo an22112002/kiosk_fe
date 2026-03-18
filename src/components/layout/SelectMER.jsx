@@ -4,24 +4,17 @@ import { Helmet } from "react-helmet-async"
 import { Modal } from 'antd'
 import { LoadingOutlined, ArrowLeftOutlined, QrcodeOutlined, IdcardOutlined } from '@ant-design/icons'
 import { useGlobal } from '../../context/GlobalContext';
-import MedicalAppointmentForm from '../paperInsert/medicalAppointment'
+// import MedicalAppointmentForm from '../paperInsert/medicalAppointment'
 
 // MER: medical examination register
 
 export default function SelectMER() {
   const typeRegisterBtn = ['BẢO HIỂM Y TẾ', 'DỊCH VỤ']
-  const typePapertBtn = ['GIẤY HẸN KHÁM LẠI', 'GIẤY CHUYỂN BHYT', 'GIẤY KHÁM KẾT QUẢ SUY THẬN GIAI ĐOẠN 3 ĐẾN 5', 'KHÔNG CÓ CÁC LOẠI GIẤY TỜ TRÊN']
   const typeIdentifyBtn = ['QUÉT VNeID', 'QUÉT CCCD']
   const navigate = useNavigate()
   const [localLoading, setLocalLoading] = useState(false)
-  const [openTypePaper, setOpenTypePaper] = useState(false)
   const [openTypeIdentifyBtn, setOpenTypeIdentifyBtn] = useState(false)
-  const [openNoPaper, setOpenNoPaper] = useState(false)
-  const [open3to5Paper, setOpen3to5Paper] = useState(false)
-  const [info, setInfo] = useState("")
-  const [paperType, setPaperType] = useState("")
-  const [openInsertForm, setOpenInsertForm] = useState(false)
-  const { setFlowAsync, setIdentifyTypeAsync, setPatientID, setIsNewInsurPatient, resetGlobal, flow } = useGlobal()
+  const { setFlowAsync, setIdentifyTypeAsync, resetGlobal, flow } = useGlobal()
 
   useEffect(() => {
     resetGlobal()
@@ -31,7 +24,7 @@ export default function SelectMER() {
     // Chọn loại dịch vụ
     if (text === "BẢO HIỂM Y TẾ") {
       await setFlowAsync("insur")
-      setOpenTypePaper(true)
+      setOpenTypeIdentifyBtn(true)
       return
     }
     if (text === "DỊCH VỤ") {
@@ -52,50 +45,6 @@ export default function SelectMER() {
       goNext()
       return
     }
-    // Chọn loại giấy tờ
-    if (text === "GIẤY HẸN KHÁM LẠI") {
-      setOpenTypePaper(false)
-      // mở nhập mã giấy khám
-      setPaperType("GIẤY HẸN KHÁM LẠI")
-      setOpenInsertForm(true)
-      return
-    }
-    if (text === "GIẤY CHUYỂN BHYT") {
-      setInfo("VỚI GIẤY CHUYỂN BHYT THÌ BẠN ĐƯỢC HƯỞNG BẢO HIỂM KHI THĂM KHÁM TẠI ĐÂY. TUY NHIÊN VIỆC XÁC THỰC GIẤY TỜ CẦN CÓ SỰ KIỂM TRA CỦA NHÂN VIÊN Y TẾ. MỜI BẠN ĐẾN QUẦY 1 ĐỂ ĐƯỢC PHỤC VỤ.")
-      setOpenTypePaper(false)
-      setOpenNoPaper(true)
-      return
-    }
-    if (text === "GIẤY KHÁM KẾT QUẢ SUY THẬN GIAI ĐOẠN 3 ĐẾN 5") {
-      setOpenTypePaper(false)
-      setOpen3to5Paper(true)
-      return
-    }
-    if (text === "KHÔNG CÓ CÁC LOẠI GIẤY TỜ TRÊN") {
-      setInfo("XIN LỖI NHƯNG BẠN KHÔNG THUỘC ĐỐI TƯỢNG CÓ THỂ HƯỞNG CHÍNH SÁCH BẢO HIỂM CỦA BỆNH VIỆN. BẠN CHỈ CÓ THỂ CHỌN KHÁM DỊCH VỤ")
-      setOpenTypePaper(false)
-      setOpenNoPaper(true)
-      return
-    }
-    // đơn vị cấp giấy suy thận
-    if (text === "BỆNH VIỆN THẬN HÀ NỘI") {
-      setOpen3to5Paper(false)
-      setPaperType("GIẤY KHÁM")
-      setOpenInsertForm(true)
-      return
-    }
-    if (text === "ĐƠN VỊ KHÁM CHỮA BỆNH KHÁC") {
-      setOpen3to5Paper(false)
-      setIsNewInsurPatient(true)
-      setOpenTypeIdentifyBtn(true)
-      return
-    }
-  }
-
-  const handleDoneInsertForm = (s) => {
-    setPatientID(s)
-    setOpenInsertForm(false)
-    setOpenTypeIdentifyBtn(true)
   }
 
   const goNext = async () => {
@@ -142,18 +91,6 @@ export default function SelectMER() {
         </div>
       </Modal>
 
-      {/* Nhập thông tin giấy khám */}
-      <Modal
-        open={openInsertForm}
-        footer={null}
-        closable={true}
-        onCancel={() => {setOpenInsertForm(false)}}
-        centered
-        width={1000}
-      >
-        <MedicalAppointmentForm onBack={ handleDoneInsertForm } paperType={ paperType }></MedicalAppointmentForm>
-      </Modal>
-
       {/* Xác thực danh tính bằng? */}
       <Modal
         open={openTypeIdentifyBtn}
@@ -178,90 +115,6 @@ export default function SelectMER() {
               </button>
             })}
           </div>
-      </Modal>
-
-      {/* Giấy tờ có? */}
-      <Modal
-        open={openTypePaper}
-        footer={null}
-        centered
-        closable={true}
-        maskClosable={true}
-        onCancel={() => {setOpenTypePaper(false)}}
-        width={1000}
-      >
-          <h1 className='text-[1.5rem] text-blue-700 text-center mt-[10%] mb-[5%]'><strong>BẠN ĐANG CÓ NHỮNG GIẤY TỜ GÌ?</strong></h1>
-          <div className='w-[100%] flex flex-col gap-[12px] mb-[5%] items-center justify-around'>
-            {typePapertBtn.map((text, i) => {
-              return i === 3 ? (
-                <button key={i} className='w-[80%] text-[1.4rem] p-3 rounded-lg shadow text-white bg-gradient-to-r from-gray-400 to-gray-500 
-                              text-white border-gray-200 transition-colors cursor-pointer
-                            hover:from-gray-500 hover:to-gray-600 
-                            hover:scale-105 transition-all duration-500 ease-in-out'
-                onClick={() => {handleButtonChange(text)}}>
-                {text}
-                </button>
-              ) : (
-                <button key={i} className='w-[80%] text-[1.4rem] p-3 rounded-lg shadow text-white bg-gradient-to-r from-colorTwo to-colorFive 
-                              text-white border-gray-200 transition-colors cursor-pointer
-                            hover:from-green-500 hover:to-emerald-600 
-                            hover:scale-105 transition-all duration-500 ease-in-out'
-                onClick={() => {handleButtonChange(text)}}>
-                {text}
-                </button>
-              )
-            })}
-          </div>
-      </Modal>
-
-      {/* Giấy suy thận cấp bởi? */}
-      <Modal
-        open={open3to5Paper}
-        footer={null}
-        centered
-        closable={true}
-        maskClosable={true}
-        onCancel={() => {setOpen3to5Paper(false)}}
-        width={1000}
-      >
-          <h1 className='text-[1.5rem] text-blue-700 text-center mt-[10%] mb-[5%]'><strong>GIẤY CHẨN ĐOÁN SUY THẬN CỦA BẠN ĐƯỢC CẤP BỞI?</strong></h1>
-          <div className='w-[100%] flex flex-col gap-[12px] mb-[5%] items-center justify-around'>
-              <button className='w-[80%] text-[1.4rem] p-3 rounded-lg shadow text-white bg-gradient-to-r from-colorTwo to-colorFive 
-                              text-white border-gray-200 transition-colors cursor-pointer
-                            hover:from-green-500 hover:to-emerald-600 
-                            hover:scale-105 transition-all duration-500 ease-in-out'
-                onClick={() => {handleButtonChange("BỆNH VIỆN THẬN HÀ NỘI")}}>
-                BỆNH VIỆN THẬN HÀ NỘI
-              </button>
-
-              <button className='w-[80%] text-[1.4rem] p-3 rounded-lg shadow text-white bg-gradient-to-r from-colorTwo to-colorFive 
-                              text-white border-gray-200 transition-colors cursor-pointer
-                            hover:from-green-500 hover:to-emerald-600 
-                            hover:scale-105 transition-all duration-500 ease-in-out'
-                onClick={() => {handleButtonChange("ĐƠN VỊ KHÁM CHỮA BỆNH KHÁC")}}>
-                ĐƠN VỊ KHÁM CHỮA BỆNH KHÁC
-              </button>
-          </div>
-      </Modal>
-
-      {/* Báo ko phải người hưởng chính sách bảo hiểm */}
-      <Modal
-        open={openNoPaper}
-        footer={null}
-        centered
-        closable={false}
-        width={1000}
-      >
-        <h1 className='text-[1.5rem] text-red-700 text-center mt-[10%] mb-[10%]'><strong>{info}</strong></h1>
-        <div className='w-[100%] flex items-center justify-around'>
-          <button className='w-[90%] text-[25px] p-3 rounded-lg shadow text-white bg-gradient-to-r from-gray-400 to-gray-500 
-                                text-white border-gray-200 transition-colors cursor-pointer
-                              hover:from-gray-500 hover:to-gray-600 
-                              hover:scale-105 transition-all duration-500 ease-in-out'
-            onClick={() => {setOpenNoPaper(false)}}>
-            OK
-          </button>
-        </div>
       </Modal>
 
       {/* Container chính */}
