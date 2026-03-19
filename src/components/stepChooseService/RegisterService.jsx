@@ -244,17 +244,22 @@ export default function ClinicRoom() {
                             <h2 className="text-xl font-bold mb-4 text-center text-green-600 text-[28px]">
                                 {selectedClinic.name}
                             </h2>
-                            <div className="grid grid-cols-2 gap-[20px]">
-                            {selectedClinic.services.map((service, idx) => (
-                                <button
-                                key={idx}
-                                className="p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200 text-[25px]"
-                                onClick={() => handleChooseService(service)}
-                                >
-                                <div className="font-semibold">{service.label}</div>
-                                </button>
-                            ))}
-                            </div>
+                            {selectedClinic.services.length === 0 ? (
+                                <div className="text-center">Không có dịch vụ nào</div>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-[20px]">
+                                {selectedClinic.services.map((service, idx) => (
+                                    <button
+                                    key={idx}
+                                    className="p-3 rounded-lg shadow text-white bg-blue-500 hover:bg-blue-400 border border-gray-200 transition-colors duration-200 text-[25px]"
+                                    onClick={() => handleChooseService(service)}
+                                    >
+                                    <div className="font-semibold">{service.label}</div>
+                                    </button>
+                                ))}
+                                </div>
+                            )}
+                            
                         </div>
                         )}
                     </Modal>

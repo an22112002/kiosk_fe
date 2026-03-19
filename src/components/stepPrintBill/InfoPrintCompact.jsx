@@ -20,10 +20,6 @@ export default function InfoPrintCompact() {
           <div><span className="font-bold text-xl">Bệnh nhân mới</span></div>
         )}
         <div>Họ tên: {dataInfo?.personName || "N/A"}</div>
-        <div>Giới tính: {dataInfo?.gender || "N/A"}</div>
-        <div>Ngày sinh: {dataInfo?.dateOfBirth || "N/A"}</div>
-        <div>Điện thoại: {patientHISInfo?.DIEN_THOAI || npInfo?.phone || "N/A"}</div>
-        <div>Địa chỉ: {dataInfo?.residencePlace || "N/A"}</div>
         <div>Đối tượng khám: {flow === "insur" ? "Bảo hiểm y tế" : "Dịch vụ"}</div>
 
         {flow === "insur" && (
@@ -31,6 +27,7 @@ export default function InfoPrintCompact() {
             <div>Bảo hiểm y tế:</div>
             <div>Giá trị từ {insurInfo?.GT_THE_TU || "N/A"} đến {insurInfo?.GT_THE_DEN || "N/A"}</div>
             <div>Mã thẻ bảo hiểm: {insurInfo?.MA_THE_BHYT || "N/A"}</div>
+            <div>Bảo hiểm: {patientInfo?.insuranceInfo?.PHAN_TUYEN === 2 ? "Trái tuyến" : patientInfo?.insuranceInfo?.PHAN_TUYEN === 1 ? "Đúng tuyến" : "Thông tuyến"}</div>
           </>
         )}
       </div>
@@ -54,7 +51,7 @@ export default function InfoPrintCompact() {
         <div><span className="font-bold text-xl">{selectedService?.clinic || "N/A"}</span></div>
         <div>Số thứ tự: <span className="font-bold text-xl">{paymentInfo?.THONG_TIN_TIEP_NHAN.STT_LK || "N/A"}</span></div>
       </div>
-      {flow === "non-insur" ? (
+      {flow === "non-insur" && paymentState !== "Đã thanh toán" ? (
 				<div className="w-full flex justify-center mt-4">
 					<QRCodeSVG
 						value={paymentInfo?.THONG_TIN_THANH_TOAN?.QR_CODE}

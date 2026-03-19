@@ -46,7 +46,7 @@ export default function ShowQR() {
     const handleChangePayment = async () => {
         setOpenConfirm(false)
         openNotification("Thông báo", "Đã đổi sang thanh toán tiền mặt", "info")
-        await setPaymentStateAsync("Thanh toán tại quầy")
+        await setPaymentStateAsync("Chưa thanh toán")
         setSuccess(true)
         setCountDown(5)
     }
@@ -91,7 +91,7 @@ export default function ShowQR() {
         >
             <div className="flex items-center flex-col gap-2 w-[100%] h-[100%]">
                 <div className="w-[100%] m-4 text-center text-[1.2rem]">
-                    <strong>BẠN CÓ CHẮC CHẮN MUỐN ĐỔI SANG THANH TOÁN TIỀN MẶT KO?</strong>
+                    <strong>BẠN CÓ CHẮC CHẮN MUỐN ĐỔI SANG THANH TOÁN TIỀN MẶT KHÔNG?</strong>
                 </div>
                 <div className="flex justify-around w-[100%]">
                     <button className='w-[40%] text-[25px] p-3 rounded-lg shadow text-white bg-gray-500 hover:bg-gray-400 border border-gray-200 transition-colors duration-200'
