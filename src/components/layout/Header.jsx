@@ -13,7 +13,7 @@ export default function Header() {
 
     const handleBackHomepage = () => {
         setGoBack(false)
-        navigate("/homepage")
+        navigate("/")
     }
 
     return (

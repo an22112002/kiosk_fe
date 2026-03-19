@@ -158,7 +158,7 @@ export default function SelectMER() {
 
           {/* Nút quay lại */}
           <button
-            onClick={() => navigate("/homepage")}
+            onClick={() => navigate("/")}
             className="flex items-center justify-center gap-2 
                         w-[80%] min-w-[300px] lg:min-w-[400px]
                         px-8 py-4 rounded-2xl font-semibold text-white 

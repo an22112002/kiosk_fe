@@ -14,7 +14,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route path="homepage" element={<HomePage />}></Route>
+          <Route index element={<HomePage />}></Route>
           {/* <Route path="search" element={<SearchPage />}></Route> */}
         </Route>
         {/* đăng ký khám */}
