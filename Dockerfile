@@ -14,8 +14,8 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # Set environment variables trực tiếp trong Dockerfile
-ENV REACT_APP_HIS_API_URL=http://192.168.1.44:1410/api/Kiosk
-ENV REACT_APP_HIS_API_URL_1=http://192.168.1.44:1408/api/Kiosk
+ENV REACT_APP_HIS_API_URL=http://192.168.2.223:1410/api/Kiosk
+ENV REACT_APP_HIS_API_URL_1=http://192.168.2.223:1408/api/Kiosk
 ENV REACT_APP_CAMERA_NAME=brio
 
 # Build React
