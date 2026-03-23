@@ -50,6 +50,12 @@ export default function VNeIDInfoDisplay({ patientInfo, npInfo, flow }) {
           <table className="w-full border-collapse">
             <tbody>
               <tr>
+                <td className="font-semibold text-gray-700 p-2 text-left w-[50%]">Tuyến:</td>
+                <td className="text-gray-800 p-2 text-right">
+                  {patientInfo?.insuranceInfo?.PHAN_TUYEN === 2 ? "Trái tuyến" : patientInfo?.insuranceInfo?.PHAN_TUYEN === 1 ? "Đúng tuyến" : "Thông tuyến"}
+                </td>
+              </tr>
+              <tr>
                 <td className="font-semibold text-gray-700 p-2 text-left w-[50%]">Mã thẻ BHYT:</td>
                 <td className="text-gray-800 p-2 text-right">
                   {patientInfo?.insuranceInfo?.MA_THE_BHYT || "?"}
