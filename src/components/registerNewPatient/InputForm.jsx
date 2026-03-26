@@ -27,7 +27,7 @@ export default function InputForm({ patientInfo, onBack }) {
     commune: "",
     job: "",
     ethnic: "01",
-    national: "01",
+    national: "000",
     phone: patientInfo?.personalInfo?.data?.phone || "",
   });
 
@@ -413,7 +413,16 @@ const handleLoadJob = async () => {
           <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
             Quốc tịch (*):
           </label>
-          <Input className="w-[65%] h-[120%] text-center" value={"Việt Nam"} disabled></Input>
+          <Select
+            showSearch
+            value={formData.national || "000"}
+            placeholder="Chọn hoặc nhập quốc tịch"
+            onFocus={() => setActiveField("national")}
+            onChange={(value) => handleInputChange("national", value)}
+            className="w-[65%] h-[120%]"
+            options={NAL.map((n) => ({ value: n.MA_QT, label: n.TEN_QT }))}
+            disabled={formData.national === "000"} // khóa 000 - Việt Nam
+          />
         </div>
 
         {/* Job */}
