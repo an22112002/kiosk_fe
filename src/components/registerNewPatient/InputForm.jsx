@@ -153,8 +153,6 @@ const handleLoadJob = async () => {
   const checkPhoneInput = (value) => /^[0-9]*$/.test(value) && value.length <= 10;
 
   const handleInputChange = (key, value) => {
-    if (key === "national") return;
-
     if (key === "phone") {
       if (!checkPhoneInput(value)) return;
     } else if (key === "province") {
@@ -250,8 +248,6 @@ const handleLoadJob = async () => {
   const handleKeyboardInput = (input) => {
     if (!activeField) return;
 
-    if (activeField === "national") return;
-
     if (activeField === "phone") {
       let newBuffer = keyboardInput;
       if (input === "{bksp}") newBuffer = newBuffer.slice(0, -1);
@@ -308,7 +304,7 @@ const handleLoadJob = async () => {
     const validProvince = TINH.some((item) => item.MA_TINH === formData.province);
     const validCommune = XA.some((item) => item.MA_XA === formData.commune);
     const validEthnic = ETHIC.some((item) => item.MA_DT === formData.ethnic);
-    const validNational = true;
+    const validNational = NAL.some((item) => item.MA_QT === formData.national);
     const validJob = JOB.some((item) => item.MA_NN === formData.job);
 
     if (!validProvince) {
@@ -402,13 +398,13 @@ const handleLoadJob = async () => {
             Dân tộc (*):
           </label>
           <Select
-            value="01"
+            showSearch
+            value={formData.ethnic || "01"}
+            placeholder="Chọn hoặc nhập dân tộc"
+            onFocus={() => setActiveField("ethnic")}
+            onChange={(value) => handleInputChange("ethnic", value)}
             className="w-[65%] h-[120%]"
-            options={NAL.map((n) => ({
-              value: String(n.MA_QT),
-              label: n.TEN_QT
-            }))}
-            disabled
+            options={ETHIC.map((e) => ({ value: e.MA_DT, label: e.TEN_DT }))}
           />
         </div>
 
@@ -417,16 +413,7 @@ const handleLoadJob = async () => {
           <label className="font-medium text-[20px] text-gray-700 w-[35%] text-right">
             Quốc tịch (*):
           </label>
-          <Select
-            showSearch
-            value={formData.national || "01"}
-            placeholder="Chọn hoặc nhập quốc tịch"
-            onFocus={() => setActiveField("national")}
-            onChange={(value) => handleInputChange("national", value)}
-            className="w-[65%] h-[120%]"
-            options={NAL.map((n) => ({ value: n.MA_QT, label: n.TEN_QT }))}
-            disabled={formData.national === "01"} // khóa 000 - Việt Nam
-          />
+          <Input className="w-[65%] h-[120%] text-center" value={"Việt Nam"} disabled></Input>
         </div>
 
         {/* Job */}
