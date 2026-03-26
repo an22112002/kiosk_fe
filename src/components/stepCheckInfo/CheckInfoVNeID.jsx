@@ -135,7 +135,7 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
                         }
                     }
                 }));
-                toggleStatus(3) 
+                toggleStatus(1);
             } else if (respone.code === "404") { 
                 openNotification("Thiếu dữ liệu bệnh nhân", "Vui lòng nhập thêm dữ liệu") 
                 setAddPatient(true)
@@ -174,7 +174,7 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
                     setNonInserCase(true);
                 }
                 setPatientInfo(prev => ({ ...prev, insuranceInfo: response.data }));
-                toggleStatus(4);
+                toggleStatus(2);
                 setGetHIS(true)
             } else if (response.code === "404") {
                 setReason("Bạn không có bảo hiểm hoặc bảo hiểm đã hết hạn. Chỉ có thể chọn khám dịch vụ")
