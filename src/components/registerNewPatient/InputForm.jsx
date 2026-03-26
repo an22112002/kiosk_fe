@@ -415,13 +415,13 @@ const handleLoadJob = async () => {
           </label>
           <Select
             showSearch
-            value={formData.national || "01"}
+            value={formData?.national || "01"}
             placeholder="Chọn hoặc nhập quốc tịch"
             onFocus={() => setActiveField("national")}
             onChange={(value) => handleInputChange("national", value)}
             className="w-[65%] h-[120%]"
             options={NAL.map((n) => ({ value: n.MA_QT, label: n.TEN_QT }))}
-            disabled={formData.national === "01"} // khóa 000 - Việt Nam
+            disabled={formData?.national === "01"} // khóa 000 - Việt Nam
           />
         </div>
 
