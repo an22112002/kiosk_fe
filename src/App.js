@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route} from "react-router-dom"
 import Layout from "./components/layout/Layout";
 import HomePage from "./page/Home";
 import SelectMER from "./components/layout/SelectMER";
+import CheckPayment from "./components/layout/CheckPayment";
 import InsurLayout from "./components/layout/Insur";
 import CheckInfo from "./components/stepCheckInfo/CheckInfo";
 import NonInsurLayout from "./components/layout/NonInsur";
@@ -34,6 +35,9 @@ function App() {
             <Route path="payment" element={<PaymentLayout />}></Route>
             <Route path="print-bill" element={<PrintBill />}></Route>
           </Route>
+        </Route>
+        <Route path="/check-payment" element={<Layout />}>
+          <Route index element={<CheckPayment />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -102,6 +102,21 @@ export async function getCheckStatusPayment(soPhieu, maHoSo) {
   });
 }
 
+// --- POST kiểm tra thanh toán ---
+export async function postCheckPayment(soPhieu, soTien, maHoSo) {
+  const timestamp = Date.now().toString();
+  const sign = await encodeHMACSHA265(`${HIS_MERCHANT_ID}|${timestamp}|${soPhieu}|${soTien}|${maHoSo}`);
+  return post(client_HIS_API_URL_1, "/QrPayment", {
+    SO_PHIEU: soPhieu,
+    MA_HO_SO: maHoSo,
+    SO_TIEN: parseInt(soTien),
+  }, {
+    "x-sign": sign,
+    "x-merchant-id": HIS_MERCHANT_ID,
+    "x-timestamp": timestamp,
+  });
+}
+
 // --- POST đăng ký khám ---
 export async function postMedicalRegister(data) {
   const timestamp = Date.now().toString();

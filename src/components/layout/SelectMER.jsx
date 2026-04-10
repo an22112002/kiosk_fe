@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from "react-helmet-async"
 import { Modal } from 'antd'
 import { LoadingOutlined, ArrowLeftOutlined, QrcodeOutlined, IdcardOutlined } from '@ant-design/icons'
 import { useGlobal } from '../../context/GlobalContext';
+import { INSUR_PASS_QR_CODE } from '../../api/config'
 // import MedicalAppointmentForm from '../paperInsert/medicalAppointment'
 
 // MER: medical examination register
@@ -13,18 +14,43 @@ export default function SelectMER() {
   const typeIdentifyBtn = ['QUÉT VNeID', 'QUÉT CCCD']
   const navigate = useNavigate()
   const [localLoading, setLocalLoading] = useState(false)
+  const [openQRScan, setOpenQRScan] = useState(false)
   const [openTypeIdentifyBtn, setOpenTypeIdentifyBtn] = useState(false)
+  const hiddenInputRef = useRef(null);
   const { setFlowAsync, setIdentifyTypeAsync, resetGlobal, flow } = useGlobal()
 
   useEffect(() => {
     resetGlobal()
   }, [])
 
+  useEffect(() => {
+    if (openQRScan) {
+      setTimeout(() => {
+        hiddenInputRef.current.value = ""
+        hiddenInputRef.current?.focus();
+      }, 100);
+    }
+  }, [openQRScan]);
+
+  // nhận tín hiệu clipboard parse
+  const handleKeyDown = async (e) => {
+    if (e.key === "Enter") {
+      console.log("Input value:", e.target.value);
+      if (INSUR_PASS_QR_CODE === e.target.value) {
+        hiddenInputRef.current?.blur();
+        setOpenQRScan(false)
+        await setFlowAsync("insur")
+        setOpenTypeIdentifyBtn(true)
+      }
+    }
+  };
+
   const handleButtonChange = async (text) => {
     // Chọn loại dịch vụ
     if (text === "BẢO HIỂM Y TẾ") {
-      await setFlowAsync("insur")
-      setOpenTypeIdentifyBtn(true)
+      // await setFlowAsync("insur")
+      // setOpenTypeIdentifyBtn(true)
+      setOpenQRScan(true)
       return
     }
     if (text === "DỊCH VỤ") {
@@ -89,6 +115,25 @@ export default function SelectMER() {
         <div className="text-lg font-semibold loading-dots">
           Đang xử lý, vui lòng chờ
         </div>
+      </Modal>
+
+      {/* Nhân viên kiểm tra giấy tờ */}
+      <Modal
+        open={openQRScan}
+        footer={null}
+        closable={true}
+        onCancel={() => {hiddenInputRef.current?.blur();hiddenInputRef.current.value = "";setOpenQRScan(false)}}
+        styles={{ body: { textAlign: "center" } }}
+      >
+        <div className='w-[full] bg-yellow-500 text-red-500 text-center mt-5 text-[1.8rem] rounded-lg p-4'>Yêu cầu nhân viên kiểm tra giấy tờ</div>
+        <div className='w-[full] text-center mt-4 text-[1.5rem]'><strong>Nếu giấy tờ hợp lệ, vui lòng để nhân viên quét mã QR để tiếp tục</strong></div>
+        <input
+          type="text"
+          ref={hiddenInputRef}
+          disabled={!openQRScan}
+          style={{ opacity: 0, height: 0 }}
+          onKeyDown={handleKeyDown}
+        />
       </Modal>
 
       {/* Xác thực danh tính bằng? */}

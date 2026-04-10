@@ -262,10 +262,10 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             console.log("Insurance response: ", response);
 
             if (response.code === "000") {
-                if (response.data.PHAN_TUYEN === 2) {
-                    setReason("Bảo hiểm trái tuyến không thể khám bảo hiểm y tế. Chỉ có thể chọn khám dịch vụ")
-                    setNonInserCase(true);
-                }
+                // if (response.data.PHAN_TUYEN === 2) {
+                //     setReason("Bảo hiểm trái tuyến không thể khám bảo hiểm y tế. Chỉ có thể chọn khám dịch vụ")
+                //     setNonInserCase(true);
+                // }
                 setPatientInfo(prev => ({ ...prev, insuranceInfo: response.data }));
                 toggleStatus(4);
                 setGetHIS(true)

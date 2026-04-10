@@ -5,6 +5,7 @@ export const HIS_MERCHANT_ID = "2239141840762336";
 export const HIS_API_URL = process.env.REACT_APP_HIS_API_URL ?? "";
 export const HIS_API_URL_1 = process.env.REACT_APP_HIS_API_URL_1 ?? "";
 export const CAMERA_NAME = process.env.REACT_APP_CAMERA_NAME ?? "";
+export const INSUR_PASS_QR_CODE = process.env.REACT_APP_INSUR_PASS_QR_CODE ?? "123456789";
 
 // export const AGENT_URL = "http://127.0.0.1:5500";
 // export const AGENT_KEY = "489y3nnxt7r84785ym54ct5984xm9th";

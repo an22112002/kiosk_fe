@@ -3,12 +3,12 @@ import { useState } from 'react'
 
 import { Helmet } from "react-helmet-async"
 import { Modal } from "antd"
-import { CalendarOutlined, LoadingOutlined } from '@ant-design/icons'
+import { CalendarOutlined, LoadingOutlined, DollarCircleOutlined } from '@ant-design/icons'
 // import { QRCodeSVG } from 'qrcode.react'
 
 export default function HomePage() {
     const [localLoading, setLocalLoading] = useState(false)
-    const button = ['ĐĂNG KÝ KHÁM'] //, 'Lấy số', 'Đăng ký mở bảo hiểm', 'Ngân hàng số 24/7', 'Liên thông hồ sơ bệnh án (CCCD/VNEID)', 'Bản đồ', 'Tra cứu']
+    const button = ['ĐĂNG KÝ KHÁM', "KIỂM TRA THANH TOÁN"] //, 'Lấy số', 'Đăng ký mở bảo hiểm', 'Ngân hàng số 24/7', 'Liên thông hồ sơ bệnh án (CCCD/VNEID)', 'Bản đồ', 'Tra cứu']
     const navigate = useNavigate()
 
     const handleChange = (text) => {
@@ -17,6 +17,9 @@ export default function HomePage() {
         setTimeout(() => {
             if (text === "ĐĂNG KÝ KHÁM") {
                 navigate('/mer')
+            }
+            if (text === "KIỂM TRA THANH TOÁN") {
+                navigate('/check-payment')
             }
             setLocalLoading(false)
         }, delay[Math.floor(Math.random() * delay.length)])
@@ -52,7 +55,7 @@ export default function HomePage() {
                     </div> */}
                 </div>
 
-                <div className="flex flex-col item-center justify-center w-full h-full mt-[5%] p-[5%]">
+                <div className="flex flex-col gap-5 item-center justify-center w-full h-full mt-[5%] p-[5%]">
                     {button.map((text, i) => (
                         <div
                             key={i}
@@ -66,7 +69,11 @@ export default function HomePage() {
                                             hover:from-green-500 hover:to-emerald-600 
                                             hover:scale-105 transition-all duration-500 ease-in-out">
                             <button className="flex flex-col items-center justify-center gap-2 text-[20px] sm:text-[22px] lg:text-[26px] font-semibold">
-                                <CalendarOutlined className="text-[28px]" />
+                                {text === "KIỂM TRA THANH TOÁN" ? (
+                                    <DollarCircleOutlined className="text-[28px]" />
+                                ) : (
+                                    <CalendarOutlined className="text-[28px]" />
+                                )}
                                 {text}
                             </button>
                             </div>

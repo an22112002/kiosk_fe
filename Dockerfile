@@ -17,6 +17,7 @@ COPY . .
 ENV REACT_APP_HIS_API_URL=http://192.168.2.223:1410/api/Kiosk
 ENV REACT_APP_HIS_API_URL_1=http://192.168.2.223:1408/api/Kiosk
 ENV REACT_APP_CAMERA_NAME=brio
+ENV REACT_APP_INSUR_PASS_QR_CODE=insur_pass_qr_code_22112002_nna
 
 # Build React
 RUN yarn build
