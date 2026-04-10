@@ -46,7 +46,7 @@ export default function CheckPayment() {
                     <Input className="text-[1.5rem] text-center" placeholder="Mã hồ sơ" value={maHoSo} onChange={(e) => setMaHoSo(e.target.value)} />
                     <Input className="text-[1.5rem] text-center" type="number" placeholder="Số tiền" value={soTien} onChange={(e) => setSoTien(e.target.value)} />
 
-                    <div className="w-[30%] text-[1.5rem] p-3 rounded-lg shadow text-white text-center bg-gradient-to-r from-colorTwo to-colorFive 
+                    <div className="w-[50%] text-[1.5rem] p-3 rounded-lg shadow text-white text-center bg-gradient-to-r from-colorTwo to-colorFive 
                             text-white border-gray-200 transition-colors cursor-pointer
                             hover:from-green-500 hover:to-emerald-600 
                             hover:scale-105 transition-all duration-500 ease-in-out" onClick={() => {handleSearch()}}>

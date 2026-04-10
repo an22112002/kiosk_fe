@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async"
 import { Modal } from 'antd'
 import { LoadingOutlined, ArrowLeftOutlined, QrcodeOutlined, IdcardOutlined } from '@ant-design/icons'
 import { useGlobal } from '../../context/GlobalContext';
+import { openNotification } from '../../utils/helpers'
 import { INSUR_PASS_QR_CODE } from '../../api/config'
 // import MedicalAppointmentForm from '../paperInsert/medicalAppointment'
 
@@ -41,6 +42,9 @@ export default function SelectMER() {
         setOpenQRScan(false)
         await setFlowAsync("insur")
         setOpenTypeIdentifyBtn(true)
+      } else {
+        openNotification("Mã QR không hợp lệ", "Cảnh báo", "warning");
+        setOpenQRScan(false)
       }
     }
   };
@@ -127,6 +131,7 @@ export default function SelectMER() {
       >
         <div className='w-[full] bg-yellow-500 text-red-500 text-center mt-5 text-[1.8rem] rounded-lg p-4'>Yêu cầu nhân viên kiểm tra giấy tờ</div>
         <div className='w-[full] text-center mt-4 text-[1.5rem]'><strong>Nếu giấy tờ hợp lệ, vui lòng để nhân viên quét mã QR để tiếp tục</strong></div>
+        <QrcodeOutlined className='text-[1.5rem]'></QrcodeOutlined>
         <input
           type="text"
           ref={hiddenInputRef}
