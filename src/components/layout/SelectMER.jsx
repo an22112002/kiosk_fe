@@ -131,7 +131,9 @@ export default function SelectMER() {
       >
         <div className='w-[full] bg-yellow-500 text-red-500 text-center mt-5 text-[1.8rem] rounded-lg p-4'>Yêu cầu nhân viên kiểm tra giấy tờ</div>
         <div className='w-[full] text-center mt-4 text-[1.5rem]'><strong>Nếu giấy tờ hợp lệ, vui lòng để nhân viên quét mã QR để tiếp tục</strong></div>
-        <QrcodeOutlined className='text-[1.5rem]'></QrcodeOutlined>
+        <div className='flex flex-col items-center mt-4'>
+          <QrcodeOutlined className='text-[10rem]'></QrcodeOutlined>
+        </div>
         <input
           type="text"
           ref={hiddenInputRef}
