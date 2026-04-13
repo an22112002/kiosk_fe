@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Kiểm tra thanh toán</title>
+        <meta charset="UTF-8">
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script> -->
+        <script src="crypto-js.min.js"></script>
+    </head>
+    <body>
+        <h1>Kiểm tra thanh toán</h1>
+        <div>
+            <input type="text" placeholder="Mã phiếu">
+            <input type="text" placeholder="Mã hồ sơ">
+            <input type="number" placeholder="Số tiền">
+            <button onclick="checkPayment()">Kiểm tra thanh toán</button>
+        </div>
+        <table border="1" style="margin-top: 20px;">
+            <tbody>
+                <tr>
+                    <th>Số phiếu</th>
+                    <th>Trạng thái</th>
+                    <th>Thời điểm thanh toán</th>
+                </tr>
+                <!-- Dữ liệu thanh toán sẽ được hiển thị ở đây -->
+                 <tr>
+                    <td id="SO_PHIEU"></td>
+                    <td id="TRANG_THAI_THANH_TOAN"></td>
+                    <td id="NGAY_THANH_TOAN"></td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+
+    <script>
+        const url = 'http://localhost:1408/api/Kiosk/QrPayment'; 
+        const SECRET_KEY = '5akkssh27e4tiyglq8ooa0nzeve8x9pm';
+        const MERCHANT_ID = "2239141840762336";
+
+        function clearTable() {
+            document.getElementById('SO_PHIEU').innerText = '';
+            document.getElementById('TRANG_THAI_THANH_TOAN').innerText = '';
+            document.getElementById('NGAY_THANH_TOAN').innerText = '';
+        }
+
+        async function encodeHMACSHA265(message) {
+            const hash = CryptoJS.HmacSHA256(message, SECRET_KEY);
+            return hash.toString(CryptoJS.enc.Hex);
+        }
+
+        async function checkPayment() {
+            // Xóa dữ liệu cũ trước khi hiển thị kết quả mới
+                clearTable(); 
+            // Lấy giá trị từ các trường input
+            const receiptCode = document.querySelector('input[placeholder="Mã phiếu"]').value;
+            const recordCode = document.querySelector('input[placeholder="Mã hồ sơ"]').value;
+            const amount = document.querySelector('input[placeholder="Số tiền"]').value;
+
+            const timestamp = Date.now().toString();
+            const sign = await encodeHMACSHA265(`${MERCHANT_ID}|${timestamp}|${receiptCode}|${amount}|${recordCode}`);
+
+            // Kiểm tra nếu các trường không rỗng
+            if (receiptCode && recordCode && amount) {
+                // Gửi yêu cầu kiểm tra thanh toán (giả sử có API endpoint)
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-sign': sign,
+                        'x-merchant-id': MERCHANT_ID,
+                        'x-timestamp': timestamp
+                    },
+                    body: JSON.stringify({
+                        SO_PHIEU: receiptCode,
+                        MA_HO_SO: recordCode,
+                        SO_TIEN: parseInt(amount)
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code == "000") {
+                        // Cập nhật dữ liệu vào bảng
+                        document.getElementById('SO_PHIEU').innerText = data.data.SO_PHIEU;
+                        document.getElementById('TRANG_THAI_THANH_TOAN').innerText = data.data.TRANG_THAI_THANH_TOAN;
+                        if (data.data.NGAY_THANH_TOAN != undefined) {
+                            document.getElementById('NGAY_THANH_TOAN').innerText = data.data.NGAY_THANH_TOAN;
+                        }
+                    } else {
+                        alert('Thanh toán thất bại: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Đã xảy ra lỗi khi kiểm tra thanh toán.');
+                });
+            } else {
+                alert('Vui lòng điền đầy đủ thông tin.');
+            }
+        }
+    </script>
+</html>
