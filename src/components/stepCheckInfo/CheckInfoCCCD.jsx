@@ -22,7 +22,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
     const [addPatient, setAddPatient] = useState(false)
     const [imgCapture, setImgCapture] = useState(false)
     const [image, setImage] = useState(null)
-    const { setStateStep, patientInfo, setPatientInfo, setSelectedService, flow, npInfo, logGlobal} = useGlobal();
+    const { setStateStep, patientInfo, setPatientInfo, setSelectedService, flow, npInfo} = useGlobal();
     const navigate = useNavigate()
 
     const isInteger = (value) => {
@@ -76,7 +76,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             const socket = new WebSocket(CAMERA_WS_URL)
 
             socket.onopen = async () => {
-                console.log("WebSocket connected! Check image");
+                // console.log("WebSocket connected! Check image");
             };
 
             socket.onmessage = async (event) => {
@@ -91,7 +91,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
 
                     if (isInteger(event.data)) {
                         const correct = parseInt(event.data)
-                        console.log("correct: ", correct)
+                        // console.log("correct: ", correct)
                         if (correct >= correctLimit) {
                             toggleStatus(2)
                             setPatientInfo((prev) => { 
@@ -105,7 +105,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
                             socket.close()
                         } else {
                             openNotification("Thông báo", "Xác thực khuôn mặt không thành công", "warning")
-                            console.log("Xác thực khuôn mặt không thành công")
+                            // console.log("Xác thực khuôn mặt không thành công")
                             socket.close()
                         }
                     }
@@ -116,11 +116,11 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             };
 
             socket.onclose = async () => {
-                console.log("WebSocket connection closed");
+                // console.log("WebSocket connection closed");
             };
 
             socket.onerror = async (event) => {
-                console.log("WebSocket error:", event);
+                // console.log("WebSocket error:", event);
             };
         }
     }, [image])
@@ -158,7 +158,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             const socket = new WebSocket(CAMERA_WS_URL);
 
             socket.onopen = async () => {
-                console.log("WebSocket connected!");
+                // console.log("WebSocket connected!");
             };
 
             socket.onmessage = async (event) => {
@@ -190,20 +190,20 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             };
 
             socket.onclose = async () => {
-                console.log("WebSocket connection closed");
+                // console.log("WebSocket connection closed");
             };
 
             socket.onerror = async (event) => {
-                console.log("WebSocket error:", event);
+                // console.log("WebSocket error:", event);
             };
 
             return () => {
                 socket.close();
-                console.log("WebSocket disconnected");
+                // console.log("WebSocket disconnected");
             };
         }
 		return () => {
-            console.log("Đã có thông tin");
+            // console.log("Đã có thông tin");
         };
 	}, []);
 
@@ -259,7 +259,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             const dob = await patientInfo?.personalInfo?.data.dateOfBirth;
 
             const response = await getPatientInsurance(idCard, name, dob);
-            console.log("Insurance response: ", response);
+            // console.log("Insurance response: ", response);
 
             if (response.code === "000") {
                 // if (response.data.PHAN_TUYEN === 2) {
@@ -301,7 +301,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
     }, [fields])
 
     const handleNextStep = ( () => {
-        logGlobal()
+        // logGlobal()
         if (flow === "insur") {
             navigate("/mer/insur/register")
         } else {

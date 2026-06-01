@@ -163,7 +163,7 @@ export default function ClinicRoom() {
                         MA_DICH_VU: selectedService?.serviceID
                     },
                 };
-                console.log("post data", data)
+                // console.log("post data", data)
                 const respone = await postMedicalRegister(data);
     
                 if (respone.code === "000") {

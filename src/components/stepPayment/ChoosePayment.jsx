@@ -51,7 +51,7 @@ export default function ChoosePayment({ onNext }) {
                     },
                 };
 
-                console.log("post data", data)
+                // console.log("post data", data)
                 const respone = await postMedicalRegister(data);
     
                 if (respone.code === "000") {

@@ -36,7 +36,6 @@ export default function SelectMER() {
   // nhận tín hiệu clipboard parse
   const handleKeyDown = async (e) => {
     if (e.key === "Enter") {
-      console.log("Input value:", e.target.value);
       if (INSUR_PASS_QR_CODE === e.target.value) {
         hiddenInputRef.current?.blur();
         setOpenQRScan(false)
