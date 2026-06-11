@@ -15,7 +15,7 @@ export default function ClinicRoom() {
     const [selectedClinic, setSelectedClinic] = useState(null)
     const [clinicRooms, setClinicRooms] = useState([])
     const navigate = useNavigate()
-    const { setStateStep, flow, selectedService, setSelectedService, patientInfo, npInfo, setPaymentInfo } = useGlobal()
+    const { setStateStep, flow, selectedService, setSelectedService, patientInfo, npInfo, setPaymentInfo, insurPaper } = useGlobal()
     const [confirm, setConfirm] = useState(false)
     const [booking, setBooking] = useState(true)
     const [loading, setLoading] = useState(true)
@@ -129,6 +129,18 @@ export default function ClinicRoom() {
         if (flow !== "insur") {
             return true
         }
+        if (insurPaper) {
+            if (insurPaper.type === "GIẤY CHUYỂN TUYẾN") {
+                const { paperNumber, diseaseCode, from } = insurPaper
+                if (!paperNumber || !diseaseCode || !from) {
+                    openNotification("Lỗi", "Giấy chuyển tuyến không hợp lệ")
+                    return false
+                }
+            } else {
+                openNotification("Lỗi", "Giấy chuyển tuyến không hợp lệ")
+                return false
+            }
+        }
         try {
             const { firstName, lastName } = splitName(dataInfo?.personName ?? "");
             const patientData = patientInfo.patientHISInfo != null ? patientInfo.patientHISInfo
@@ -156,14 +168,18 @@ export default function ClinicRoom() {
                 const data = {
                     BN_UU_TIEN: 0,
                     ID_LOAI_KHAM: "01",
+                    BN_THU_SAU: 1,
                     THONG_TIN_BENH_NHAN: patientData,
                     THONG_TIN_DICH_VU: {
                         ID_KHOA: selectedService?.departmentID,
                         ID_PHONG_KHAM: selectedService?.clinicID,
                         MA_DICH_VU: selectedService?.serviceID
                     },
+                    SO_GIAY_CHUYEN_TUYEN: insurPaper?.type === "GIẤY CHUYỂN TUYẾN" ? insurPaper.paperNumber : null,
+                    MA_BENH_CHUYEN_TUYEN: insurPaper?.type === "GIẤY CHUYỂN TUYẾN" ? insurPaper.diseaseCode : null,
+                    DON_VI_CHUYEN_TUYEN: insurPaper?.type === "GIẤY CHUYỂN TUYẾN" ? insurPaper.from : null
                 };
-                // console.log("post data", data)
+                console.log("post data", data)
                 const respone = await postMedicalRegister(data);
     
                 if (respone.code === "000") {

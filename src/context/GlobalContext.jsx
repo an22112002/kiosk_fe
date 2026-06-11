@@ -15,6 +15,7 @@ export const GlobalProvider = ({ children }) => {
   const [npInfo, setNpInfo] = useState(null);
   const [paymentState, setPaymentState] = useState("");
   const [paymentInfo, setPaymentInfo] = useState(null);
+  const [insurPaper, setInsurPaper] = useState(null);
 
   const setFlowAsync = (value) => {
     return new Promise((resolve) => {
@@ -46,6 +47,7 @@ export const GlobalProvider = ({ children }) => {
     setNpInfo(null);
     setPaymentState("");
     setPaymentInfo(null);
+    setInsurPaper(null);
   };
 
   const logGlobal = () => {
@@ -57,6 +59,7 @@ export const GlobalProvider = ({ children }) => {
     console.log("npInfo", npInfo);
     console.log("paymentState", paymentState);
     console.log("paymentInfo", paymentInfo);
+    console.log("insurPaper", insurPaper);
   }
 
   return (
@@ -82,7 +85,9 @@ export const GlobalProvider = ({ children }) => {
         setPaymentState,
         setPaymentStateAsync,
         resetGlobal,
-        logGlobal
+        logGlobal,
+        insurPaper,
+        setInsurPaper
       }}
     >
       {children}

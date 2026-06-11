@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from "react-helmet-async"
 import { Modal } from 'antd'
 import { LoadingOutlined, ArrowLeftOutlined, QrcodeOutlined, IdcardOutlined } from '@ant-design/icons'
 import { useGlobal } from '../../context/GlobalContext';
 import { openNotification } from '../../utils/helpers'
-import { INSUR_PASS_QR_CODE } from '../../api/config'
+// import { INSUR_PASS_QR_CODE } from '../../api/config'
 // import MedicalAppointmentForm from '../paperInsert/medicalAppointment'
 
 // MER: medical examination register
@@ -15,45 +15,26 @@ export default function SelectMER() {
   const typeIdentifyBtn = ['QUÉT VNeID', 'QUÉT CCCD']
   const navigate = useNavigate()
   const [localLoading, setLocalLoading] = useState(false)
-  const [openQRScan, setOpenQRScan] = useState(false)
+  const [openPaperType, setOpenPaperType] = useState(false)
   const [openTypeIdentifyBtn, setOpenTypeIdentifyBtn] = useState(false)
-  const hiddenInputRef = useRef(null);
-  const { setFlowAsync, setIdentifyTypeAsync, resetGlobal, flow } = useGlobal()
+  const { setFlowAsync, setIdentifyTypeAsync, resetGlobal, flow, setInsurPaper } = useGlobal()
+
+  const [paperType, setPaperType] = useState("")
+
+  const [paperNumber, setPaperNumber] = useState("")
+  const [diseaseCode, setDiseaseCode] = useState("")
+  const [from, setFrom] = useState("")
 
   useEffect(() => {
     resetGlobal()
   }, [])
 
-  useEffect(() => {
-    if (openQRScan) {
-      setTimeout(() => {
-        hiddenInputRef.current.value = ""
-        hiddenInputRef.current?.focus();
-      }, 100);
-    }
-  }, [openQRScan]);
-
-  // nhận tín hiệu clipboard parse
-  const handleKeyDown = async (e) => {
-    if (e.key === "Enter") {
-      if (INSUR_PASS_QR_CODE === e.target.value) {
-        hiddenInputRef.current?.blur();
-        setOpenQRScan(false)
-        await setFlowAsync("insur")
-        setOpenTypeIdentifyBtn(true)
-      } else {
-        openNotification("Mã QR không hợp lệ", "Cảnh báo", "warning");
-        setOpenQRScan(false)
-      }
-    }
-  };
-
   const handleButtonChange = async (text) => {
     // Chọn loại dịch vụ
     if (text === "BẢO HIỂM Y TẾ") {
-      // await setFlowAsync("insur")
+      await setFlowAsync("insur")
       // setOpenTypeIdentifyBtn(true)
-      setOpenQRScan(true)
+      setOpenPaperType(true)
       return
     }
     if (text === "DỊCH VỤ") {
@@ -120,26 +101,67 @@ export default function SelectMER() {
         </div>
       </Modal>
 
-      {/* Nhân viên kiểm tra giấy tờ */}
+      {/* chọn loại giấy tờ */}
       <Modal
-        open={openQRScan}
+        open={openPaperType}
         footer={null}
         closable={true}
-        onCancel={() => {hiddenInputRef.current?.blur();hiddenInputRef.current.value = "";setOpenQRScan(false)}}
+        onCancel={() => {setOpenPaperType(false)}}
         styles={{ body: { textAlign: "center" } }}
       >
-        <div className='w-[full] bg-yellow-500 text-red-500 text-center mt-5 text-[1.8rem] rounded-lg p-4'>Yêu cầu nhân viên kiểm tra giấy tờ</div>
-        <div className='w-[full] text-center mt-4 text-[1.5rem]'><strong>Nếu giấy tờ hợp lệ, vui lòng để nhân viên quét mã QR để tiếp tục</strong></div>
-        <div className='flex flex-col items-center mt-4'>
-          <QrcodeOutlined className='text-[10rem]'></QrcodeOutlined>
-        </div>
-        <input
-          type="text"
-          ref={hiddenInputRef}
-          disabled={!openQRScan}
-          style={{ opacity: 0, height: 0 }}
-          onKeyDown={handleKeyDown}
-        />
+        <h1 className='text-[1.5rem] text-blue-700 text-center mt-[10%] mb-[5%]'><strong>GIẤY TỜ XÁC THỰC?</strong></h1>
+        {paperType === "" && (
+          <div className='w-[100%] mb-[5%] flex items-center justify-around'>
+            <button className='w-[80%] text-[1.5rem] p-3 rounded-lg shadow text-white bg-gradient-to-r from-colorTwo to-colorFive 
+                              text-white border-gray-200 transition-colors cursor-pointer
+                              hover:from-green-500 hover:to-emerald-600 
+                              hover:scale-105 transition-all duration-500 ease-in-out'
+              onClick={() => {
+                setPaperNumber("")
+                setDiseaseCode("")
+                setFrom("")
+                setPaperType("insurMovingPaper")
+              }} >
+              GIẤY CHUYỂN TUYẾN
+            </button>
+          </div>
+        )}
+        {paperType === "insurMovingPaper" && (
+          <div className='w-[100%] mb-[5%] flex flex-col items-center justify-around'>
+            <div className='grid grid-cols-2 gap-3'>
+              <label className='text-left text-[1.2rem] text-gray-500'>Số giấy chuyển tuyến</label>
+              <input className='p-2 rounded-lg text-[1.2rem] border w-full' value={paperNumber} onChange={(e) => setPaperNumber(e.target.value)} />
+              <label className='text-left text-[1.2rem] text-gray-500'>Mã bệnh chuyển tuyến</label>
+              <input className='p-2 rounded-lg text-[1.2rem] border w-full' value={diseaseCode} onChange={(e) => setDiseaseCode(e.target.value)} />
+              <label className='text-left text-[1.2rem] text-gray-500'>Đơn vị chuyển tuyến</label>
+              <input className='p-2 rounded-lg text-[1.2rem] border w-full' value={from} onChange={(e) => setFrom(e.target.value)} />
+            </div>
+            <div className='flex flex-col items-start gap-3 w-full'>
+              <button className='w-full mt-3 text-[1.5rem] p-3 rounded-lg shadow text-white bg-gradient-to-r from-colorTwo to-colorFive 
+                              text-white border-gray-200 transition-colors cursor-pointer
+                              hover:from-green-500 hover:to-emerald-600
+                              hover:scale-105 transition-all duration-500 ease-in-out'
+                onClick={() => {
+                  if (paperNumber === "" || diseaseCode === "" || from === "") {
+                    openNotification("Lỗi", "Vui lòng điền đầy đủ thông tin giấy chuyển tuyến")
+                    return
+                  }
+                  setInsurPaper({
+                    type: "GIẤY CHUYỂN TUYẾN",
+                    paperNumber,
+                    diseaseCode,
+                    from
+                  })
+                  setPaperType("")
+                  setOpenPaperType(false)
+                  setOpenTypeIdentifyBtn(true)
+                }} >
+                XÁC NHẬN
+              </button>
+            </div>
+          </div>
+        )}
+        
       </Modal>
 
       {/* Xác thực danh tính bằng? */}
@@ -149,7 +171,11 @@ export default function SelectMER() {
         centered
         closable={true}
         maskClosable={true}
-        onCancel={() => {setOpenTypeIdentifyBtn(false)}}
+        onCancel={() => {
+          setOpenTypeIdentifyBtn(false)
+          setPaperType("")
+          setInsurPaper(null)
+        }}
         width={1000}
       >
           <h1 className='text-[1.5rem] text-blue-700 text-center mt-[10%] mb-[5%]'><strong>BẠN XÁC THỰC DANH TÍNH BẰNG?</strong></h1>
