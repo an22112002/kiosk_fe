@@ -41,9 +41,9 @@ function App() {
         <Route path="/check-payment" element={<Layout />}>
           <Route index element={<CheckPayment />}></Route>
         </Route>
-        <Route path="/services" element={<Layout />}>
+        {/* <Route path="/services" element={<Layout />}>
           <Route index element={<ServicesInfo />}></Route>
-        </Route>
+        </Route> */}
         <Route path="/clinic-info" element={<Layout />}>
           <Route index element={<ClinicInfo />}></Route>
         </Route>

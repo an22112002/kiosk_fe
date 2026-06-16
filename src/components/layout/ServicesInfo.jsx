@@ -40,20 +40,6 @@ useEffect(() => {
                     }
                 }
 
-                // bỏ các dữ liệu trùng lặp dựa trên name và clinic
-                setServices((prevServices) => {
-                    const uniqueServices = [];
-                    const seen = new Set();
-                    prevServices.forEach((service) => {
-                        const key = `${service.name}-${service.clinic}`;
-                        if (!seen.has(key)) {
-                            seen.add(key);
-                            uniqueServices.push(service);
-                        }
-                    });
-                    return uniqueServices;
-                });
-
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách phòng khám:", error);
             }
@@ -98,6 +84,7 @@ useEffect(() => {
                     <table className="w-full border-collapse text-center body-font">
                         <thead className="bg-gray-500 border-b-2 border-gray-200">
                             <tr>
+                                <th rowSpan={2} className="border px-4 py-2 rounded-tl-lg w-[50%]">Phòng</th>
                                 <th rowSpan={2} className="border px-4 py-2 rounded-tl-lg w-[50%]">Tên dịch vụ</th>
                                 <th colSpan={2} className="border px-4 py-2 rounded-tr-lg text-center">Giá</th>
                             </tr>
@@ -109,7 +96,8 @@ useEffect(() => {
                         <tbody>
                             {filteredServices.map((service, index) => (
                                 <tr key={index} className="border-b hover:bg-gray-100">
-                                    <td className="border px-4 py-2">{service.name} - {service.clinic}</td>
+                                    <td className="border px-4 py-2">{service.clinic}</td>
+                                    <td className="border px-4 py-2">{service.name}</td>
                                     <td className="border px-4 py-2">{service?.servicePrice === "" || service?.servicePrice === null || service?.servicePrice === "0" || service?.servicePrice === "0.0" ? "Không có" : `${service?.servicePrice.toLocaleString()} VND`}</td>
                                     <td className="border px-4 py-2">{service?.insurancePrice === "" || service?.insurancePrice === null || service?.insurancePrice === "0" || service?.insurancePrice === "0.0" ? "Không có" : `${service?.insurancePrice.toLocaleString()} VND`}</td>
                                 </tr>

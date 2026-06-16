@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { Helmet } from "react-helmet-async"
 import { Modal } from "antd"
-import { CalendarOutlined, LoadingOutlined, DollarCircleOutlined, MedicineBoxOutlined, CiCircleOutlined } from '@ant-design/icons'
+import { CalendarOutlined, LoadingOutlined, DollarCircleOutlined, CiCircleOutlined } from '@ant-design/icons'
 // import { QRCodeSVG } from 'qrcode.react'
 
 export default function HomePage() {
@@ -15,11 +15,12 @@ export default function HomePage() {
         },
         {   
             text: "KIỂM TRA THANH TOÁN",
-            icon: <DollarCircleOutlined className="text-[28px]" />},
-        {   
-            text: "DANH SÁCH DỊCH VỤ",
-            icon: <MedicineBoxOutlined className="text-[28px]" />
+            icon: <DollarCircleOutlined className="text-[28px]" />
         },
+        // {   
+        //     text: "DANH SÁCH DỊCH VỤ",
+        //     icon: <MedicineBoxOutlined className="text-[28px]" />
+        // },
         {   
             text: "THÔNG TIN PHÒNG KHÁM",
             icon: <CiCircleOutlined className="text-[28px]" />
@@ -37,9 +38,9 @@ export default function HomePage() {
             if (text === "KIỂM TRA THANH TOÁN") {
                 navigate('/check-payment')
             }
-            if (text === "DANH SÁCH DỊCH VỤ") {
-                navigate('/services')
-            }
+            // if (text === "DANH SÁCH DỊCH VỤ") {
+            //     navigate('/services')
+            // }
             if (text === "THÔNG TIN PHÒNG KHÁM") {
                 navigate('/clinic-info')
             }
