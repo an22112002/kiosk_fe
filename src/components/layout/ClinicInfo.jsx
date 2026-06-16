@@ -57,7 +57,7 @@ export default function ClinicInfo() {
                     <button
                         onClick={() => navigate(-1)}
                         className="flex items-center justify-center gap-2 
-                                    w-[80%] min-w-[300px] lg:min-w-[400px]
+                                    w-full min-w-[300px] lg:min-w-[400px]
                                     px-8 py-4 rounded-2xl font-semibold text-white 
                                     text-[25px] sm:text-[27px] lg:text-[30px]
                                     bg-gradient-to-r from-colorBtnBack to-colorOneDark shadow-md

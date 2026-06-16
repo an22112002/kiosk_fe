@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async"
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
-import { getServicePrices } from "../../api/call_API"
+import { getClinicServices } from "../../api/call_API"
 import { openNotification } from "../../utils/helpers"
 import { Input } from "antd"
 import { ArrowLeftOutlined } from '@ant-design/icons'
@@ -11,28 +11,59 @@ export default function ServicesInfo() {
     const [searchTerm, setSearchTerm] = useState("")
     const [services, setServices] = useState([])
 
-    const fetchServices = async () => {
-        // Gọi API để lấy danh sách dịch vụ
-        try {
-            const response = await getServicePrices();
-            if (response.code === "000") {
-                setServices(response.data);
-            } else {
-                // Xử lý lỗi nếu có
-                openNotification("Lỗi", response.message || "Không thể tải danh sách dịch vụ", "error");
-            }
-        } catch (error) {
-            // Xử lý lỗi kết nối hoặc lỗi khác
-            openNotification("Lỗi", "Có lỗi xảy ra khi tải danh sách dịch vụ", "error");
-        }
-    }
+useEffect(() => {
+        const fetchClinicData = async () => {
+            try {
+                const response = await getClinicServices();
+                const data = response?.data || [];
 
-    useEffect(() => {
-        fetchServices();
-    }, [])
+                // Duyệt từng tầng: LOAI_KHAM → KHOA → PHONG_KHAM → DICH_VU
+                for (const loaiKham of data) {
+                    const khoaList = loaiKham?.KHOA || [];
+                    for (const khoa of khoaList) {
+                        const phongList = khoa?.PHONG_KHAM || [];
+                        for (const phong of phongList) {
+                            const services = (phong?.DICH_VU || [])
+                                .map((dichVu) => {
+                                    return {
+                                        code: dichVu.MA_DICH_VU || dichVu.ID_DICH_VU,
+                                        clinic: phong.TEN_PHONG_KHAM,
+                                        name: dichVu.TEN_DICH_VU,
+                                        insurancePrice: dichVu.DON_GIA_BHYT || null,
+                                        servicePrice: dichVu.DON_GIA_DICH_VU || null,
+                                    };
+                                })
+
+                            // Thêm phòng khám vào danh sách
+                            setServices((prevServices) => [...prevServices, ...services]);
+                        }
+                    }
+                }
+
+                // bỏ các dữ liệu trùng lặp dựa trên name và clinic
+                setServices((prevServices) => {
+                    const uniqueServices = [];
+                    const seen = new Set();
+                    prevServices.forEach((service) => {
+                        const key = `${service.name}-${service.clinic}`;
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            uniqueServices.push(service);
+                        }
+                    });
+                    return uniqueServices;
+                });
+
+            } catch (error) {
+                console.error("Lỗi khi lấy danh sách phòng khám:", error);
+            }
+        };
+
+        fetchClinicData();
+    }, []);
 
     const filteredServices = services.filter(service =>
-        service?.TEN_DICH_VU?.toLowerCase()
+        service?.name?.toLowerCase()
         ?.includes(searchTerm.toLowerCase())
 );
     return (
@@ -52,7 +83,7 @@ export default function ServicesInfo() {
                     <button
                         onClick={() => navigate(-1)}
                         className="flex items-center justify-center gap-2 
-                                    w-[80%] min-w-[300px] lg:min-w-[400px]
+                                    w-full min-w-[300px] lg:min-w-[400px]
                                     px-8 py-4 rounded-2xl font-semibold text-white 
                                     text-[25px] sm:text-[27px] lg:text-[30px]
                                     bg-gradient-to-r from-colorBtnBack to-colorOneDark shadow-md
@@ -78,9 +109,9 @@ export default function ServicesInfo() {
                         <tbody>
                             {filteredServices.map((service, index) => (
                                 <tr key={index} className="border-b hover:bg-gray-100">
-                                    <td className="border px-4 py-2">{service.TEN_DICH_VU}</td>
-                                    <td className="border px-4 py-2">{service?.DON_GIA_PHONG_KHAM === "" || service?.DON_GIA_PHONG_KHAM === null || service?.DON_GIA_PHONG_KHAM === "0" || service?.DON_GIA_PHONG_KHAM === "0.0" ? "Không có" : `${service?.DON_GIA_PHONG_KHAM.toLocaleString()} VND`}</td>
-                                    <td className="border px-4 py-2">{service?.DON_GIA_BHYT === "" || service?.DON_GIA_BHYT === null || service?.DON_GIA_BHYT === "0" || service?.DON_GIA_BHYT === "0.0" ? "Không có" : `${service?.DON_GIA_BHYT.toLocaleString()} VND`}</td>
+                                    <td className="border px-4 py-2">{service.name} - {service.clinic}</td>
+                                    <td className="border px-4 py-2">{service?.servicePrice === "" || service?.servicePrice === null || service?.servicePrice === "0" || service?.servicePrice === "0.0" ? "Không có" : `${service?.servicePrice.toLocaleString()} VND`}</td>
+                                    <td className="border px-4 py-2">{service?.insurancePrice === "" || service?.insurancePrice === null || service?.insurancePrice === "0" || service?.insurancePrice === "0.0" ? "Không có" : `${service?.insurancePrice.toLocaleString()} VND`}</td>
                                 </tr>
                             ))}
                         </tbody>
