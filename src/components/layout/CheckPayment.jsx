@@ -85,7 +85,7 @@ export default function CheckPayment() {
 
                 {/* Nút quay lại */}
                 <button
-                    onClick={() => {setPaymentInfo(null);navigate("/")}}
+                    onClick={() => {setPaymentInfo(null);navigate(-1)}}
                     className="flex items-center justify-center gap-2 
                                 w-[80%] min-w-[300px] lg:min-w-[400px]
                                 px-8 py-4 rounded-2xl font-semibold text-white 

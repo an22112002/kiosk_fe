@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from "react-helmet-async"
-import { Modal } from 'antd'
+import { Input, Modal } from 'antd'
 import { LoadingOutlined, ArrowLeftOutlined, QrcodeOutlined, IdcardOutlined } from '@ant-design/icons'
 import { useGlobal } from '../../context/GlobalContext';
 import { openNotification } from '../../utils/helpers'
-// import { INSUR_PASS_QR_CODE } from '../../api/config'
+import { getInitialExaminationPlaces } from '../../api/call_API'
 // import MedicalAppointmentForm from '../paperInsert/medicalAppointment'
 
 // MER: medical examination register
@@ -25,9 +25,32 @@ export default function SelectMER() {
   const [diseaseCode, setDiseaseCode] = useState("")
   const [from, setFrom] = useState("")
 
+  const [initPlaceInput, setInitPlaceInput] = useState("")
+  const [selectedLocation, setSelectedLocation] = useState([])
+
+  const [initPlace, setInitPlace] = useState([])
+
   useEffect(() => {
     resetGlobal()
   }, [])
+
+  useEffect(() => {
+    // load danh sách nơi khám chữa bệnh
+    handleLoadInitialPlace()
+  }, [])
+
+  const handleLoadInitialPlace = async () => {
+    try {
+      const response = await getInitialExaminationPlaces();
+      if (response.code === "000") {
+        setInitPlace(response.data);
+      } else {
+        openNotification("Lỗi", response.message || "Không tải được danh sách nơi khám chữa bệnh", "error");
+      }
+    } catch (error) {
+      openNotification("Lỗi", "Có lỗi xảy ra khi tải danh sách nơi khám chữa bệnh", "error");
+    }
+  };
 
   const handleButtonChange = async (text) => {
     // Chọn loại dịch vụ
@@ -81,6 +104,29 @@ export default function SelectMER() {
     }, 1000)
   }
 
+  useEffect(() => {
+    const working = () => {
+      if (paperType === "insurMovingPaper") {
+        for (let i = 0; i < initPlace.length; i++) {
+          if (initPlace[i].TEN_DK_KCB.toLowerCase() === initPlaceInput.toLowerCase()) {
+            setFrom(initPlace[i].MA_DK_KCB)
+            setSelectedLocation([])
+            break
+          }
+        }
+      }
+    };
+    working();
+  }, [initPlaceInput, initPlace, paperType]);
+
+  useEffect(() => {
+    if (paperType === "insurMovingPaper") {
+      if (initPlaceInput !== "") {
+        setSelectedLocation(initPlace.filter(place => place.TEN_DK_KCB.toLowerCase().includes(initPlaceInput.toLowerCase())))
+      }
+    }
+  }, [paperType, initPlaceInput, initPlace])
+
   return (
     <>
       <Helmet>
@@ -130,11 +176,24 @@ export default function SelectMER() {
           <div className='w-[100%] mb-[5%] flex flex-col items-center justify-around'>
             <div className='grid grid-cols-2 gap-3'>
               <label className='text-left text-[1.2rem] text-gray-500'>Số giấy chuyển tuyến</label>
-              <input className='p-2 rounded-lg text-[1.2rem] border w-full' value={paperNumber} onChange={(e) => setPaperNumber(e.target.value)} />
+              <Input className='p-2 rounded-lg text-[1.2rem] border w-full' placeholder="Nhập số giấy chuyển tuyến" value={paperNumber} onChange={(e) => setPaperNumber(e.target.value)} />
+
               <label className='text-left text-[1.2rem] text-gray-500'>Mã bệnh chuyển tuyến</label>
-              <input className='p-2 rounded-lg text-[1.2rem] border w-full' value={diseaseCode} onChange={(e) => setDiseaseCode(e.target.value)} />
+              <Input className='p-2 rounded-lg text-[1.2rem] border w-full' placeholder="Nhập mã bệnh chuyển tuyến" value={diseaseCode} onChange={(e) => setDiseaseCode(e.target.value)} />
+
               <label className='text-left text-[1.2rem] text-gray-500'>Đơn vị chuyển tuyến</label>
-              <input className='p-2 rounded-lg text-[1.2rem] border w-full' value={from} onChange={(e) => setFrom(e.target.value)} />
+              <Input className='p-2 rounded-lg text-[1.2rem] border w-full' placeholder="Nhập đơn vị chuyển tuyến" value={initPlaceInput} onChange={(e) => setInitPlaceInput(e.target.value)} />
+              
+              {selectedLocation.length > 0 && (
+                <div className='col-span-2 mt-2 max-h-40 overflow-y-auto border rounded-lg'>
+                  {selectedLocation.map((place, index) => (
+                    <div key={index} className='p-2 hover:bg-gray-100 cursor-pointer' onClick={() => {setFrom(place.MA_DK_KCB); setInitPlaceInput(place.TEN_DK_KCB); setSelectedLocation([])}}>
+                      {place.TEN_DK_KCB}
+                    </div>
+                  ))}
+                </div>
+              )}
+              
             </div>
             <div className='flex flex-col items-start gap-3 w-full'>
               <button className='w-full mt-3 text-[1.5rem] p-3 rounded-lg shadow text-white bg-gradient-to-r from-colorTwo to-colorFive 
@@ -142,7 +201,7 @@ export default function SelectMER() {
                               hover:from-green-500 hover:to-emerald-600
                               hover:scale-105 transition-all duration-500 ease-in-out'
                 onClick={() => {
-                  if (paperNumber === "" || diseaseCode === "" || from === "") {
+                  if (paperNumber === "" || from === "") {
                     openNotification("Lỗi", "Vui lòng điền đầy đủ thông tin giấy chuyển tuyến")
                     return
                   }

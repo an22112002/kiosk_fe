@@ -128,6 +128,39 @@ export async function postMedicalRegister(data) {
   });
 }
 
+// --- GET lấy danh sách nơi khám ban đầu ---
+export async function getInitialExaminationPlaces() {
+  const timestamp = Date.now().toString();
+  const sign = await encodeHMACSHA265(`${HIS_MERCHANT_ID}|${timestamp}`);
+  return get(client_HIS_API_URL_1, "/kcb-bandau", {}, {
+    "x-sign": sign,
+    "x-merchant-id": HIS_MERCHANT_ID,
+    "x-timestamp": timestamp,
+  });
+}
+
+// --- GET lấy danh sách giá dịch vụ ---
+export async function getServicePrices() {
+  const timestamp = Date.now().toString();
+  const sign = await encodeHMACSHA265(`${HIS_MERCHANT_ID}|${timestamp}`);
+  return get(client_HIS_API_URL_1, "/gia-dichvu", {}, {
+    "x-sign": sign,
+    "x-merchant-id": HIS_MERCHANT_ID,
+    "x-timestamp": timestamp,
+  });
+}
+
+// --- GET lấy danh sách thông tin phòng khám ---
+export async function getMedicalRoomInfo() {
+  const MA_KHOA = "K01";
+  const timestamp = Date.now().toString();
+  const sign = await encodeHMACSHA265(`${HIS_MERCHANT_ID}|${timestamp}|${MA_KHOA}`);
+  return get(client_HIS_API_URL_1, `/phong-kham-counter?MA_KHOA=${MA_KHOA}`, {MA_KHOA: MA_KHOA}, {
+    "x-sign": sign,
+    "x-merchant-id": HIS_MERCHANT_ID,
+    "x-timestamp": timestamp,
+  });
+}
 
 // // --- GET báo agnet thu nhỏ cửa sổ kiosk ---
 // export async function minimize_win() {

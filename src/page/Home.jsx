@@ -3,12 +3,28 @@ import { useState } from 'react'
 
 import { Helmet } from "react-helmet-async"
 import { Modal } from "antd"
-import { CalendarOutlined, LoadingOutlined, DollarCircleOutlined } from '@ant-design/icons'
+import { CalendarOutlined, LoadingOutlined, DollarCircleOutlined, MedicineBoxOutlined, CiCircleOutlined } from '@ant-design/icons'
 // import { QRCodeSVG } from 'qrcode.react'
 
 export default function HomePage() {
     const [localLoading, setLocalLoading] = useState(false)
-    const button = ['ĐĂNG KÝ KHÁM', "KIỂM TRA THANH TOÁN"] //, 'Lấy số', 'Đăng ký mở bảo hiểm', 'Ngân hàng số 24/7', 'Liên thông hồ sơ bệnh án (CCCD/VNEID)', 'Bản đồ', 'Tra cứu']
+    const button = [
+        {   
+            text: "ĐĂNG KÝ KHÁM",
+            icon: <CalendarOutlined className="text-[28px]" />
+        },
+        {   
+            text: "KIỂM TRA THANH TOÁN",
+            icon: <DollarCircleOutlined className="text-[28px]" />},
+        {   
+            text: "DANH SÁCH DỊCH VỤ",
+            icon: <MedicineBoxOutlined className="text-[28px]" />
+        },
+        {   
+            text: "THÔNG TIN PHÒNG KHÁM",
+            icon: <CiCircleOutlined className="text-[28px]" />
+        }
+    ]
     const navigate = useNavigate()
 
     const handleChange = (text) => {
@@ -20,6 +36,12 @@ export default function HomePage() {
             }
             if (text === "KIỂM TRA THANH TOÁN") {
                 navigate('/check-payment')
+            }
+            if (text === "DANH SÁCH DỊCH VỤ") {
+                navigate('/services')
+            }
+            if (text === "THÔNG TIN PHÒNG KHÁM") {
+                navigate('/clinic-info')
             }
             setLocalLoading(false)
         }, delay[Math.floor(Math.random() * delay.length)])
@@ -56,10 +78,10 @@ export default function HomePage() {
                 </div>
 
                 <div className="flex flex-col gap-5 item-center justify-center w-full h-full mt-[5%] p-[5%]">
-                    {button.map((text, i) => (
+                    {button.map((btn, i) => (
                         <div
                             key={i}
-                            onClick={() => handleChange(text)}
+                            onClick={() => handleChange(btn.text)}
                             className="flex justify-center"
                         >
                             <div className="flex flex-col items-center justify-center 
@@ -69,12 +91,8 @@ export default function HomePage() {
                                             hover:from-green-500 hover:to-emerald-600 
                                             hover:scale-105 transition-all duration-500 ease-in-out">
                             <button className="flex flex-col items-center justify-center gap-2 text-[20px] sm:text-[22px] lg:text-[26px] font-semibold">
-                                {text === "KIỂM TRA THANH TOÁN" ? (
-                                    <DollarCircleOutlined className="text-[28px]" />
-                                ) : (
-                                    <CalendarOutlined className="text-[28px]" />
-                                )}
-                                {text}
+                                {btn.icon}
+                                {btn.text}
                             </button>
                             </div>
                         </div>

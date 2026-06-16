@@ -132,7 +132,7 @@ export default function ClinicRoom() {
         if (insurPaper) {
             if (insurPaper.type === "GIẤY CHUYỂN TUYẾN") {
                 const { paperNumber, diseaseCode, from } = insurPaper
-                if (!paperNumber || !diseaseCode || !from) {
+                if (!paperNumber || !from) {
                     openNotification("Lỗi", "Giấy chuyển tuyến không hợp lệ")
                     return false
                 }

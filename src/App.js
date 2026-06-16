@@ -3,6 +3,8 @@ import Layout from "./components/layout/Layout";
 import HomePage from "./page/Home";
 import SelectMER from "./components/layout/SelectMER";
 import CheckPayment from "./components/layout/CheckPayment";
+import ServicesInfo from "./components/layout/ServicesInfo";
+import ClinicInfo from "./components/layout/ClinicInfo";
 import InsurLayout from "./components/layout/Insur";
 import CheckInfo from "./components/stepCheckInfo/CheckInfo";
 import NonInsurLayout from "./components/layout/NonInsur";
@@ -38,6 +40,12 @@ function App() {
         </Route>
         <Route path="/check-payment" element={<Layout />}>
           <Route index element={<CheckPayment />}></Route>
+        </Route>
+        <Route path="/services" element={<Layout />}>
+          <Route index element={<ServicesInfo />}></Route>
+        </Route>
+        <Route path="/clinic-info" element={<Layout />}>
+          <Route index element={<ClinicInfo />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>
