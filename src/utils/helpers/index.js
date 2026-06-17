@@ -244,6 +244,22 @@ export const getDanTocCode = (race, ETHNIC) => {
   return found ? found[keyCode] : "";
 };
 
+// lẫy mã nghề nghiệp
+export const getJobCode = (job, JOB) => {
+  if (!job || !Array.isArray(JOB) || JOB.length === 0) return "";
+
+  const target = job.trim().toLowerCase();
+
+  const keyName = JOB[0].TEN_NN ? "TEN_NN" : null;
+  const keyCode = JOB[0].MA_NN ? "MA_NN" : null;
+
+  if (!keyName || !keyCode) return "";
+
+  const found = JOB.find(item => item[keyName].trim().toLowerCase() === target);
+
+  return found ? found[keyCode] : "";
+};
+
 export const convertTelexToVietnamese = (input) => {
 	if (input.length === 1) {
 		return input

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Select, Input } from "antd";
 import { useGlobal } from "../../context/GlobalContext";
-import Keyboard from "react-simple-keyboard";
-import { processVietnameseBuffer } from "../../utils/helpers";
+// import Keyboard from "react-simple-keyboard";
+// import { processVietnameseBuffer } from "../../utils/helpers";
 import "react-simple-keyboard/build/css/index.css";
 import { useNavigate } from "react-router-dom";
-import { openNotification, getXaTinhCode, getDanTocCode } from "../../utils/helpers";
+import { openNotification, getXaTinhCode, getDanTocCode, getJobCode } from "../../utils/helpers";
 
 import {
   getProvince,
@@ -18,9 +18,9 @@ export default function InputForm({ patientInfo, onBack }) {
   const { setNpInfo } = useGlobal();
   const navigate = useNavigate();
 
-  const [activeField, setActiveField] = useState("");
-  const [keyboardInput, setKeyboardInput] = useState("");
-  const [suggestions, setSuggestions] = useState([]); // danh sách gợi ý
+  // const [activeField, setActiveField] = useState("");
+  // const [keyboardInput, setKeyboardInput] = useState("");
+  // const [suggestions, setSuggestions] = useState([]); // danh sách gợi ý
 
   const [formData, setFormData] = useState({
     province: "",
@@ -53,7 +53,8 @@ export default function InputForm({ patientInfo, onBack }) {
       !patientInfo?.personalInfo?.data ||
       XA.length === 0 ||
       TINH.length === 0 ||
-      ETHIC.length === 0
+      ETHIC.length === 0 ||
+      JOB.length === 0
     ) return;
 
     const place = patientInfo?.personalInfo?.data?.residencePlace || "";
@@ -64,37 +65,44 @@ export default function InputForm({ patientInfo, onBack }) {
 
     const maDantoc = getDanTocCode(race, ETHIC);
     if (maDantoc !== "") setFormData((prev) => ({ ...prev, ethnic: maDantoc }));
-  }, [XA, TINH, ETHIC]);
+
+    const maNghenghiep = getJobCode(patientInfo?.personalInfo?.data?.job, JOB);
+    if (maNghenghiep !== "") {
+      setFormData((prev) => ({ ...prev, job: maNghenghiep }));
+    } else {
+      setFormData((prev) => ({ ...prev, job: "00000" }));
+    }
+  }, [XA, TINH, ETHIC, JOB, patientInfo?.personalInfo?.data]);
 
   // Khi focus field khác → reset buffer
-  useEffect(() => {
-    setKeyboardInput("");
-    setSuggestions([]);
-  }, [activeField]);
+  // useEffect(() => {
+  //   setKeyboardInput("");
+  //   setSuggestions([]);
+  // }, [activeField]);
 
   // Update global context khi formData thay đổi
   useEffect(() => {
     setNpInfo(formData);
-  }, [formData]);
+  }, [formData, setNpInfo]);
 
-  const getFieldName = (n) => {
-    switch (n) {
-      case "phone":
-        return "Điện thoại"
-      case "province":
-        return "Tỉnh / Thành phố"
-      case "commune":
-        return "Xã / Phường"
-      case "job":
-        return "Nghề nghiệp"
-      case "ethnic":
-        return "Dân tộc"
-      case "national":
-        return "Quốc gia"
-      default:
-        return ""
-    }
-  }
+  // const getFieldName = (n) => {
+  //   switch (n) {
+  //     case "phone":
+  //       return "Điện thoại"
+  //     case "province":
+  //       return "Tỉnh / Thành phố"
+  //     case "commune":
+  //       return "Xã / Phường"
+  //     case "job":
+  //       return "Nghề nghiệp"
+  //     case "ethnic":
+  //       return "Dân tộc"
+  //     case "national":
+  //       return "Quốc gia"
+  //     default:
+  //       return ""
+  //   }
+  // }
 
   // Load dữ liệu từ API
   const handleLoadProvince = async () => {
@@ -164,122 +172,122 @@ const handleLoadJob = async () => {
   };
 
   // Tạo danh sách gợi ý theo trường
-  const getSuggestionList = (key, text) => {
-    if (!text.trim()) return [];
+  // const getSuggestionList = (key, text) => {
+  //   if (!text.trim()) return [];
 
-    const lower = text.toLowerCase();
-    let data = [];
+  //   const lower = text.toLowerCase();
+  //   let data = [];
 
-    switch (key) {
-      case "province":
-        data = TINH.filter((t) => t.TEN_TINH.toLowerCase().includes(lower));
-        return data.map((t) => ({ value: t.MA_TINH, label: t.TEN_TINH }));
-      case "commune":
-        data = XA.filter(
-          (x) =>
-            x.MA_TINH === formData.province &&
-            x.TEN_XA.toLowerCase().includes(lower)
-        );
-        return data.map((x) => ({ value: x.MA_XA, label: x.TEN_XA }));
-      case "ethnic":
-        data = ETHIC.filter((e) => e.TEN_DT.toLowerCase().includes(lower));
-        return data.map((e) => ({ value: e.MA_DT, label: e.TEN_DT }));
-      case "national":
-        data = NAL.filter((n) => n.TEN_QT.toLowerCase().includes(lower));
-        return data.map((n) => ({ value: n.MA_QT, label: n.TEN_QT }));
-      case "job":
-        data = JOB.filter((j) => j.TEN_NN.toLowerCase().includes(lower));
-        return data.map((j) => ({ value: j.MA_NN, label: j.TEN_NN }));
-      default:
-        return [];
-    }
-  };
+  //   switch (key) {
+  //     case "province":
+  //       data = TINH.filter((t) => t.TEN_TINH.toLowerCase().includes(lower));
+  //       return data.map((t) => ({ value: t.MA_TINH, label: t.TEN_TINH }));
+  //     case "commune":
+  //       data = XA.filter(
+  //         (x) =>
+  //           x.MA_TINH === formData.province &&
+  //           x.TEN_XA.toLowerCase().includes(lower)
+  //       );
+  //       return data.map((x) => ({ value: x.MA_XA, label: x.TEN_XA }));
+  //     case "ethnic":
+  //       data = ETHIC.filter((e) => e.TEN_DT.toLowerCase().includes(lower));
+  //       return data.map((e) => ({ value: e.MA_DT, label: e.TEN_DT }));
+  //     case "national":
+  //       data = NAL.filter((n) => n.TEN_QT.toLowerCase().includes(lower));
+  //       return data.map((n) => ({ value: n.MA_QT, label: n.TEN_QT }));
+  //     case "job":
+  //       data = JOB.filter((j) => j.TEN_NN.toLowerCase().includes(lower));
+  //       return data.map((j) => ({ value: j.MA_NN, label: j.TEN_NN }));
+  //     default:
+  //       return [];
+  //   }
+  // };
 
   // Người dùng nhập đúng label thì set luôn value
-  const handleTypeFull = (processed) => {
-    if (processed.trim()) {
-    let matched = null;
+  // const handleTypeFull = (processed) => {
+  //   if (processed.trim()) {
+  //   let matched = null;
 
-    switch (activeField) {
-      case "province":
-        matched = TINH.find(
-          (t) => t.TEN_TINH.toLowerCase() === processed.trim().toLowerCase()
-        );
-        if (matched) handleInputChange("province", matched.MA_TINH);
-        break;
-      case "commune":
-        matched = XA.find(
-          (x) =>
-            x.MA_TINH === formData.province &&
-            x.TEN_XA.toLowerCase() === processed.trim().toLowerCase()
-        );
-        if (matched) handleInputChange("commune", matched.MA_XA);
-        break;
-      case "ethnic":
-        matched = ETHIC.find(
-          (e) => e.TEN_DT.toLowerCase() === processed.trim().toLowerCase()
-        );
-        if (matched) handleInputChange("ethnic", matched.MA_DT);
-        break;
-      case "national":
-        matched = NAL.find(
-          (n) => n.TEN_QT.toLowerCase() === processed.trim().toLowerCase()
-        );
-        if (matched) handleInputChange("national", matched.MA_QT);
-        break;
-      case "job":
-        matched = JOB.find(
-          (j) => j.TEN_NN.toLowerCase() === processed.trim().toLowerCase()
-        );
-        if (matched) handleInputChange("job", matched.MA_NN);
-        break;
-      default:
-        break;
-    }
+  //   switch (activeField) {
+  //     case "province":
+  //       matched = TINH.find(
+  //         (t) => t.TEN_TINH.toLowerCase() === processed.trim().toLowerCase()
+  //       );
+  //       if (matched) handleInputChange("province", matched.MA_TINH);
+  //       break;
+  //     case "commune":
+  //       matched = XA.find(
+  //         (x) =>
+  //           x.MA_TINH === formData.province &&
+  //           x.TEN_XA.toLowerCase() === processed.trim().toLowerCase()
+  //       );
+  //       if (matched) handleInputChange("commune", matched.MA_XA);
+  //       break;
+  //     case "ethnic":
+  //       matched = ETHIC.find(
+  //         (e) => e.TEN_DT.toLowerCase() === processed.trim().toLowerCase()
+  //       );
+  //       if (matched) handleInputChange("ethnic", matched.MA_DT);
+  //       break;
+  //     case "national":
+  //       matched = NAL.find(
+  //         (n) => n.TEN_QT.toLowerCase() === processed.trim().toLowerCase()
+  //       );
+  //       if (matched) handleInputChange("national", matched.MA_QT);
+  //       break;
+  //     case "job":
+  //       matched = JOB.find(
+  //         (j) => j.TEN_NN.toLowerCase() === processed.trim().toLowerCase()
+  //       );
+  //       if (matched) handleInputChange("job", matched.MA_NN);
+  //       break;
+  //     default:
+  //       break;
+  //   }
 
     // Nếu tìm thấy kết quả → reset keyboard buffer & gợi ý
-    if (matched) {
-      setKeyboardInput("");
-      setSuggestions([]);
-    }
-  }}
+  //   if (matched) {
+  //     setKeyboardInput("");
+  //     setSuggestions([]);
+  //   }
+  // }}
 
   // Xử lý nhập bàn phím ảo
-  const handleKeyboardInput = (input) => {
-    if (!activeField) return;
+  // const handleKeyboardInput = (input) => {
+  //   if (!activeField) return;
 
-    if (activeField === "phone") {
-      let newBuffer = keyboardInput;
-      if (input === "{bksp}") newBuffer = newBuffer.slice(0, -1);
-      else if (/^[0-9]$/.test(input)) newBuffer += input;
-      newBuffer = newBuffer.slice(0, 10);
-      setKeyboardInput(newBuffer);
-      handleInputChange("phone", newBuffer);
-      return;
-    }
+  //   if (activeField === "phone") {
+  //     let newBuffer = keyboardInput;
+  //     if (input === "{bksp}") newBuffer = newBuffer.slice(0, -1);
+  //     else if (/^[0-9]$/.test(input)) newBuffer += input;
+  //     newBuffer = newBuffer.slice(0, 10);
+  //     setKeyboardInput(newBuffer);
+  //     handleInputChange("phone", newBuffer);
+  //     return;
+  //   }
 
-    let buffer = keyboardInput;
-    if (input === "{bksp}") buffer = buffer.slice(0, -1);
-    else if (input.length === 1) buffer += input;
-    else if (input === "{space}") buffer += " ";
+  //   let buffer = keyboardInput;
+  //   if (input === "{bksp}") buffer = buffer.slice(0, -1);
+  //   else if (input.length === 1) buffer += input;
+  //   else if (input === "{space}") buffer += " ";
 
-    const processed = processVietnameseBuffer(buffer);
-    setKeyboardInput(buffer);
-    handleInputChange(activeField, processed);
+  //   const processed = processVietnameseBuffer(buffer);
+  //   setKeyboardInput(buffer);
+  //   handleInputChange(activeField, processed);
 
-    // cập nhật gợi ý
-    const sug = getSuggestionList(activeField, processed);
-    setSuggestions(sug);
+  //   // cập nhật gợi ý
+  //   const sug = getSuggestionList(activeField, processed);
+  //   setSuggestions(sug);
 
-    handleTypeFull(processed)
-  };
+  //   handleTypeFull(processed)
+  // };
 
   // Khi chọn gợi ý
-  const handleSuggestionClick = (option) => {
-    handleInputChange(activeField, option.value);
-    setKeyboardInput("");
-    setSuggestions([]);
-  };
+  // const handleSuggestionClick = (option) => {
+  //   handleInputChange(activeField, option.value);
+  //   setKeyboardInput("");
+  //   setSuggestions([]);
+  // };
 
   // Kiểm tra dữ liệu khi nhấn "Tiếp tục"
   const checkNewPatientInfo = () => {
@@ -346,11 +354,15 @@ const handleLoadJob = async () => {
           <Input
             value={formData.phone}
             maxLength={10}
-            onFocus={() => setActiveField("phone")}
+            // onFocus={() => setActiveField("phone")}
+            filterOption={(input, option) =>
+                option?.label
+                    ?.toLowerCase()
+                    .includes(input.toLowerCase())
+            }
             onChange={(e) => handleInputChange("phone", e.target.value)}
             placeholder="Nhập số điện thoại"
-            className="w-[65%] h-[120%]"
-            readOnly
+            className="w-[65%] h-[120%] text-center"
           />
         </div>
 
@@ -363,7 +375,12 @@ const handleLoadJob = async () => {
             showSearch
             value={formData.province}
             placeholder="Chọn hoặc nhập tỉnh / thành phố"
-            onFocus={() => setActiveField("province")}
+            // onFocus={() => setActiveField("province")}
+            filterOption={(input, option) =>
+                option?.label
+                    ?.toLowerCase()
+                    .includes(input.toLowerCase())
+            }
             onChange={(value) => handleInputChange("province", value)}
             className="w-[65%] h-[120%]"
             options={TINH.map((t) => ({ value: t.MA_TINH, label: t.TEN_TINH }))}
@@ -379,7 +396,12 @@ const handleLoadJob = async () => {
             showSearch
             value={formData.commune}
             placeholder="Chọn hoặc nhập xã / phường"
-            onFocus={() => setActiveField("commune")}
+            // onFocus={() => setActiveField("commune")}
+            filterOption={(input, option) =>
+                option?.label
+                    ?.toLowerCase()
+                    .includes(input.toLowerCase())
+            }
             onChange={(value) => handleInputChange("commune", value)}
             className="w-[65%] h-[120%]"
             options={
@@ -401,7 +423,12 @@ const handleLoadJob = async () => {
             showSearch
             value={formData.ethnic || "01"}
             placeholder="Chọn hoặc nhập dân tộc"
-            onFocus={() => setActiveField("ethnic")}
+            // onFocus={() => setActiveField("ethnic")}
+            filterOption={(input, option) =>
+                option?.label
+                    ?.toLowerCase()
+                    .includes(input.toLowerCase())
+            }
             onChange={(value) => handleInputChange("ethnic", value)}
             className="w-[65%] h-[120%]"
             options={ETHIC.map((e) => ({ value: e.MA_DT, label: e.TEN_DT }))}
@@ -417,7 +444,12 @@ const handleLoadJob = async () => {
             showSearch
             value={formData.national || "000"}
             placeholder="Chọn hoặc nhập quốc tịch"
-            onFocus={() => setActiveField("national")}
+            // onFocus={() => setActiveField("national")}
+            filterOption={(input, option) =>
+                option?.label
+                    ?.toLowerCase()
+                    .includes(input.toLowerCase())
+            }
             onChange={(value) => handleInputChange("national", value)}
             className="w-[65%] h-[120%]"
             options={NAL.map((n) => ({ value: n.MA_QT, label: n.TEN_QT }))}
@@ -434,7 +466,12 @@ const handleLoadJob = async () => {
             showSearch
             value={formData.job}
             placeholder="Chọn hoặc nhập nghề nghiệp"
-            onFocus={() => setActiveField("job")}
+            // onFocus={() => setActiveField("job")}
+            filterOption={(input, option) =>
+                option?.label
+                    ?.toLowerCase()
+                    .includes(input.toLowerCase())
+            }
             onChange={(value) => handleInputChange("job", value)}
             className="w-[65%] h-[120%]"
             options={JOB.map((j) => ({ value: j.MA_NN, label: j.TEN_NN }))}
@@ -443,13 +480,13 @@ const handleLoadJob = async () => {
       </div>
 
       {/* Gợi ý nhập từ bàn phím ảo */}
-      <div className="w-full max-w-[600px] mt-3 bg-white border rounded-lg shadow p-3 h-[200px] overflow-y-auto">
+      {/* <div className="w-full max-w-[600px] mt-3 bg-white border rounded-lg shadow p-3 h-[200px] overflow-y-auto">
       {suggestions.length > 0 && (
         <div className="w-full flex flex-col items-center">
           <p className="text-gray-600 text-center mb-2">Bạn đang nhập?</p>
 
           {/* Khung chứa có chiều cao cố định và scroll */}
-            {suggestions.map((opt) => (
+            {/* {suggestions.map((opt) => (
               <div
                 key={opt.value}
                 className="py-1 px-2 cursor-pointer hover:bg-gray-100 rounded"
@@ -460,10 +497,10 @@ const handleLoadJob = async () => {
             ))}
         </div>
       )}
-      </div>
+      </div> */}
       
       {/* Bàn phím ảo */}
-      {activeField && (
+      {/* {activeField && (
         <div className="mt-6 w-full max-w-[100%]">
           <p className="text-gray-600 text-center mb-2">
             Đang nhập cho trường:{" "}
@@ -489,7 +526,7 @@ const handleLoadJob = async () => {
             />
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Nhóm nút hành động */}
       <div className="flex justify-center gap-6 mt-8 w-full max-w-[700px] mx-auto">
