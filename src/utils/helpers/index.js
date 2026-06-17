@@ -183,7 +183,7 @@ const normalizeName = (name) => {
   return n.toLowerCase();
 };
 
-// Tìm mã tương ứng trong danh sách
+// Tìm mã tương ứng trong danh sách xã hoặc tỉnh dựa trên tên (có thể là substring)
 const findCodeByName = (str, list) => {
   if (!Array.isArray(list) || list.length === 0) return null;
 
