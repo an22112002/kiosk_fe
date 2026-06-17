@@ -11,13 +11,13 @@ import { getInitialExaminationPlaces } from '../../api/call_API'
 // MER: medical examination register
 
 export default function SelectMER() {
-  const typeRegisterBtn = ['DỊCH VỤ'] //['BẢO HIỂM Y TẾ', 'DỊCH VỤ']
+  const typeRegisterBtn = ['BẢO HIỂM Y TẾ', 'DỊCH VỤ']
   const typeIdentifyBtn = ['QUÉT VNeID', 'QUÉT CCCD']
   const navigate = useNavigate()
   const [localLoading, setLocalLoading] = useState(false)
   const [openPaperType, setOpenPaperType] = useState(false)
   const [openTypeIdentifyBtn, setOpenTypeIdentifyBtn] = useState(false)
-  const { setFlowAsync, setIdentifyTypeAsync, resetGlobal, setInsurPaper } = useGlobal()
+  const { setFlowAsync, setIdentifyTypeAsync, resetGlobal, flow, setInsurPaper } = useGlobal()
 
   const [paperType, setPaperType] = useState("")
 
@@ -54,12 +54,12 @@ export default function SelectMER() {
 
   const handleButtonChange = async (text) => {
     // Chọn loại dịch vụ
-    // if (text === "BẢO HIỂM Y TẾ") {
-    //   await setFlowAsync("insur")
-    //   // setOpenTypeIdentifyBtn(true)
-    //   setOpenPaperType(true)
-    //   return
-    // }
+    if (text === "BẢO HIỂM Y TẾ") {
+      await setFlowAsync("insur")
+      // setOpenTypeIdentifyBtn(true)
+      setOpenPaperType(true)
+      return
+    }
     if (text === "DỊCH VỤ") {
       await setFlowAsync("non-insur")
       setOpenTypeIdentifyBtn(true)
@@ -81,21 +81,21 @@ export default function SelectMER() {
   }
 
   const goNext = async () => {
-    // if (flow === "insur") {
-    //   goFlowInsur()
-    // } else {
-    //   goFlowNonInsur()
-    // }
-    goFlowNonInsur()
+    if (flow === "insur") {
+      goFlowInsur()
+    } else {
+      goFlowNonInsur()
+    }
+    // goFlowNonInsur()
   }
 
-  // const goFlowInsur = async () => {
-  //   setLocalLoading(true)
-  //   setTimeout(async () => {
-  //     navigate('/mer/insur/checkPatient')
-  //     setLocalLoading(false)
-  //   }, 1000)
-  // }
+  const goFlowInsur = async () => {
+    setLocalLoading(true)
+    setTimeout(async () => {
+      navigate('/mer/insur/checkPatient')
+      setLocalLoading(false)
+    }, 1000)
+  }
 
   const goFlowNonInsur = async () => {
     setLocalLoading(true)
@@ -176,13 +176,13 @@ export default function SelectMER() {
         {paperType === "insurMovingPaper" && (
           <div className='w-[100%] mb-[5%] flex flex-col items-center justify-around'>
             <div className='grid grid-cols-2 gap-3'>
-              <label className='text-left text-[1.2rem] text-gray-500'>Số giấy chuyển tuyến</label>
+              <label className='text-left text-[1.2rem] text-gray-500'>Số giấy chuyển tuyến <span className="text-red-500">*</span></label>
               <Input className='p-2 rounded-lg text-[1.2rem] border w-full' placeholder="Nhập số giấy chuyển tuyến" value={paperNumber} onChange={(e) => setPaperNumber(e.target.value)} />
 
               <label className='text-left text-[1.2rem] text-gray-500'>Mã bệnh chuyển tuyến</label>
               <Input className='p-2 rounded-lg text-[1.2rem] border w-full' placeholder="Nhập mã bệnh chuyển tuyến" value={diseaseCode} onChange={(e) => setDiseaseCode(e.target.value)} />
 
-              <label className='text-left text-[1.2rem] text-gray-500'>Đơn vị chuyển tuyến</label>
+              <label className='text-left text-[1.2rem] text-gray-500'>Chuyển từ đơn vị <span className="text-red-500">*</span></label>
               <Input className='p-2 rounded-lg text-[1.2rem] border w-full' placeholder="Nhập đơn vị chuyển tuyến" value={initPlaceInput} onChange={(e) => setInitPlaceInput(e.target.value)} />
               
               {selectedLocation.length > 0 && (

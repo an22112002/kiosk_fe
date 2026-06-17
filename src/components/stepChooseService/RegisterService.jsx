@@ -164,6 +164,8 @@ export default function ClinicRoom() {
                 patientData["GT_THE_TU"] = convertDateFormat(insuranceInfo?.["GT_THE_TU"]) || "";
                 patientData["GT_THE_DEN"] = convertDateFormat(insuranceInfo?.["GT_THE_DEN"]) || "";
                 patientData["MA_DKBD"] = insuranceInfo?.["MA_DKBD"] || "";
+                patientData["MA_DOITUONG_KCB"] = "1.3" // giới thiệu, chuyển tuyến
+                patientData["MA_LOAI_KCB"] = "01" // khám bệnh
 
                 const data = {
                     BN_UU_TIEN: 0,
