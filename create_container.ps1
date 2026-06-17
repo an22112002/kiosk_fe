@@ -14,9 +14,9 @@ docker build -t $image_name .
 
 $ban_file_path = "C:\ban.txt"
 
-if (-not (Test-Path $banFile)) {
-    Write-Host "Creating default ban file: $banFile"
-    New-Item -ItemType File -Path $banFile -Force
+if (-not (Test-Path $ban_file_path)) {
+    Write-Host "Creating default ban file: $ban_file_path"
+    New-Item -ItemType File -Path $ban_file_path -Force
 }
 
 if ($LASTEXITCODE -ne 0) {
@@ -26,7 +26,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "Running container '$container_name' from image '$image_name'..."
 
-docker run -d -v C:\ban.txt:/usr/share/nginx/html/file/ban.txt --restart=always --name $container_name -p 80:80 $image_name
+docker run -d -v $ban_file_path:/usr/share/nginx/html/file/ban.txt --restart=always --name $container_name -p 80:80 $image_name
 
 
 if ($LASTEXITCODE -ne 0) {
