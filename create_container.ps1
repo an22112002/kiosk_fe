@@ -14,11 +14,6 @@ docker build -t $image_name .
 
 $ban_file_path = "C:\ban.txt"
 
-if (-not (Test-Path $ban_file_path)) {
-    Write-Host "Creating default ban file: $ban_file_path"
-    New-Item -ItemType File -Path $ban_file_path -Force
-}
-
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Failed to build image '$image_name'. Stop install process."
     exit 1
