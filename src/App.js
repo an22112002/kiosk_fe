@@ -3,9 +3,9 @@ import Layout from "./components/layout/Layout";
 import HomePage from "./page/Home";
 import SelectMER from "./components/layout/SelectMER";
 import CheckPayment from "./components/layout/CheckPayment";
-import ServicesInfo from "./components/layout/ServicesInfo";
+// import ServicesInfo from "./components/layout/ServicesInfo";
 import ClinicInfo from "./components/layout/ClinicInfo";
-import InsurLayout from "./components/layout/Insur";
+// import InsurLayout from "./components/layout/Insur";
 import CheckInfo from "./components/stepCheckInfo/CheckInfo";
 import NonInsurLayout from "./components/layout/NonInsur";
 import RegisterService from "./components/stepChooseService/RegisterService";
@@ -25,11 +25,11 @@ function App() {
           <Route index element={<SelectMER />}></Route>
           <Route path="" element={<SelectMER />}></Route>
           {/* luồng có bảo hiểm */}
-          <Route path="insur" element={<InsurLayout />}>
+          {/* <Route path="insur" element={<InsurLayout />}>
             <Route path="checkPatient" element={<CheckInfo />}></Route>
             <Route path="register" element={<RegisterService />}></Route>
             <Route path="print-bill" element={<PrintBill />}></Route>
-          </Route>
+          </Route> */}
           {/* luồng không có bảo hiểm */}
           <Route path="non-insur" element={<NonInsurLayout />}>
             <Route path="checkPatient" element={<CheckInfo />}></Route>

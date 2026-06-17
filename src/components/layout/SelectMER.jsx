@@ -11,13 +11,13 @@ import { getInitialExaminationPlaces } from '../../api/call_API'
 // MER: medical examination register
 
 export default function SelectMER() {
-  const typeRegisterBtn = ['BẢO HIỂM Y TẾ', 'DỊCH VỤ']
+  const typeRegisterBtn = ['DỊCH VỤ'] //['BẢO HIỂM Y TẾ', 'DỊCH VỤ']
   const typeIdentifyBtn = ['QUÉT VNeID', 'QUÉT CCCD']
   const navigate = useNavigate()
   const [localLoading, setLocalLoading] = useState(false)
   const [openPaperType, setOpenPaperType] = useState(false)
   const [openTypeIdentifyBtn, setOpenTypeIdentifyBtn] = useState(false)
-  const { setFlowAsync, setIdentifyTypeAsync, resetGlobal, flow, setInsurPaper } = useGlobal()
+  const { setFlowAsync, setIdentifyTypeAsync, resetGlobal, setInsurPaper } = useGlobal()
 
   const [paperType, setPaperType] = useState("")
 
@@ -54,12 +54,12 @@ export default function SelectMER() {
 
   const handleButtonChange = async (text) => {
     // Chọn loại dịch vụ
-    if (text === "BẢO HIỂM Y TẾ") {
-      await setFlowAsync("insur")
-      // setOpenTypeIdentifyBtn(true)
-      setOpenPaperType(true)
-      return
-    }
+    // if (text === "BẢO HIỂM Y TẾ") {
+    //   await setFlowAsync("insur")
+    //   // setOpenTypeIdentifyBtn(true)
+    //   setOpenPaperType(true)
+    //   return
+    // }
     if (text === "DỊCH VỤ") {
       await setFlowAsync("non-insur")
       setOpenTypeIdentifyBtn(true)
@@ -81,20 +81,21 @@ export default function SelectMER() {
   }
 
   const goNext = async () => {
-    if (flow === "insur") {
-      goFlowInsur()
-    } else {
-      goFlowNonInsur()
-    }
+    // if (flow === "insur") {
+    //   goFlowInsur()
+    // } else {
+    //   goFlowNonInsur()
+    // }
+    goFlowNonInsur()
   }
 
-  const goFlowInsur = async () => {
-    setLocalLoading(true)
-    setTimeout(async () => {
-      navigate('/mer/insur/checkPatient')
-      setLocalLoading(false)
-    }, 1000)
-  }
+  // const goFlowInsur = async () => {
+  //   setLocalLoading(true)
+  //   setTimeout(async () => {
+  //     navigate('/mer/insur/checkPatient')
+  //     setLocalLoading(false)
+  //   }, 1000)
+  // }
 
   const goFlowNonInsur = async () => {
     setLocalLoading(true)
