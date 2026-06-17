@@ -19,6 +19,7 @@ export default function ClinicRoom() {
     const [confirm, setConfirm] = useState(false)
     const [booking, setBooking] = useState(true)
     const [loading, setLoading] = useState(true)
+    const [banServices, setBanServices] = useState([])
 
     const dataInfo = patientInfo.personalInfo.data
     const insuranceInfo = patientInfo.insuranceInfo
@@ -27,6 +28,24 @@ export default function ClinicRoom() {
         // bước 2
         setStateStep(2)
     }, [setStateStep])
+
+    useEffect(() => {
+        // load dữ liệu danh sách dịch vụ ko dùng từ file public//file/ban.txt
+        const loadBanServices = async () => {
+            try {
+                const response = await fetch("/file/ban.txt");
+                const text = await response.text();
+                const lines = text.split("\n");
+                const services = lines.map((line) => line.trim()).filter((line) => line !== "");
+                // console.log("Danh sách dịch vụ cấm:", services);
+                setBanServices(services);
+            } catch (error) {
+                console.error("Lỗi khi tải danh sách dịch vụ cấm:", error);
+            }
+        };
+
+        loadBanServices();
+    }, []);
 
     useEffect(() => {
         const fetchClinicData = async () => {
@@ -49,7 +68,6 @@ export default function ClinicRoom() {
                                         flow === "insur"
                                             ? dichVu.DON_GIA_BHYT ?? dichVu.DON_GIA_DICH_VU
                                             : dichVu.DON_GIA_PHONG_KHAM ?? dichVu.DON_GIA_DICH_VU;
-
                                     return {
                                         code: dichVu.MA_DICH_VU || dichVu.ID_DICH_VU,
                                         label: dichVu.TEN_DICH_VU,
@@ -59,6 +77,12 @@ export default function ClinicRoom() {
                                 // Bỏ các dịch vụ không có giá hoặc giá = 0
                                 .filter((d) => d.price && d.price > 0);
 
+                            // Bỏ các dịch vụ nằm trong danh sách cấm banServices
+                            const filteredServices = services.filter(
+                                // so sánh tên dịch vụ (label) với danh sách cấm, nếu lowercase trùng thì loại bỏ
+                                (s) => !banServices.some((ban) => ban.toLowerCase() === s.label.toLowerCase())
+                            );
+
                             // Thêm phòng khám vào danh sách
                             allRooms.push({
                                 code: phong.ID_PHONG_KHAM || phong.MA_PHONG_KHAM,
@@ -67,7 +91,7 @@ export default function ClinicRoom() {
                                 departmentName: khoa.TEN_KHOA,
                                 typeCode: loaiKham.ID_LOAI_KHAM,
                                 typeName: loaiKham.TEN_LOAI_KHAM,
-                                services,
+                                services: filteredServices,
                             });
                         }
                     }
@@ -100,7 +124,7 @@ export default function ClinicRoom() {
         };
 
         fetchClinicData();
-    }, [flow]);
+    }, [flow, banServices]);
 
     const handleChooseService = (service) => {
         const option = { 
