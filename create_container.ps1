@@ -19,7 +19,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "Running container '$container_name' from image '$image_name'..."
 
-docker run -d -v c:/kiosk_config/ban.txt:/usr/share/nginx/html/file/ban.txt --restart=always --name $container_name -p 80:80 $image_name
+docker run -d -v d:/kiosk_config/ban.txt:/usr/share/nginx/html/file/ban.txt --restart=always --name $container_name -p 80:80 $image_name
 
 
 if ($LASTEXITCODE -ne 0) {
