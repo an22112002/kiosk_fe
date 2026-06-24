@@ -190,6 +190,7 @@ export default function ClinicRoom() {
                 patientData["MA_DKBD"] = insuranceInfo?.["MA_DKBD"] || "";
                 patientData["MA_DOITUONG_KCB"] = "1.3" // giới thiệu, chuyển tuyến
                 patientData["MA_LOAI_KCB"] = "01" // khám bệnh
+                patientData["MA_CSKCB"] = "01918" // mã cơ sở khám chữa bệnh
 
                 const data = {
                     BN_UU_TIEN: 0,
