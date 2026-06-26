@@ -400,7 +400,7 @@ export default function CheckInfoCCCD( {provinces, communes} ) {
             <div className={`transition-all duration-300 ${localLoading ? 'blur-sm !bg-white/20' : ''}`}>
                 <div className='text-center px-7 py-8 rounded-lg'>
                     <div className='mb-3 text-colorOne font-bold text-[18px] lg:text-[25px]'>
-                        <h1 className='text-[2rem]' >XÁC THỰC CÔNG DÂN</h1>
+                        <h1 className='text-[2rem]'>XÁC THỰC CÔNG DÂN</h1>
                     </div>
                     <PatientInfoDisplay patientInfo={patientInfo} npInfo={npInfo} flow={flow}></PatientInfoDisplay>
                 </div>

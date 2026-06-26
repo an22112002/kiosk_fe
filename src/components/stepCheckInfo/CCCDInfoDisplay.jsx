@@ -79,12 +79,18 @@ export default function CCCDInfoDisplay({ patientInfo, npInfo, flow }) {
           <div><strong>Thông tin bảo hiểm</strong></div>
           <table className="w-full border-collapse">
             <tbody>
-              {/* <tr>
+              <tr>
                 <td className="font-semibold text-gray-700 p-2 text-left w-[50%]">Tuyến:</td>
                 <td className="text-gray-800 p-2 text-right">
-                  {patientInfo?.insuranceInfo?.PHAN_TUYEN === 2 ? "Trái tuyến" : patientInfo?.insuranceInfo?.PHAN_TUYEN === 1 ? "Đúng tuyến" : "Thông tuyến"}
+                  {patientInfo?.insuranceInfo?.PHAN_TUYEN === 1
+                  ? `Mã: ${patientInfo.insuranceInfo.PHAN_TUYEN} - Đúng tuyến`
+                  : patientInfo?.insuranceInfo?.PHAN_TUYEN === 2
+                  ? `Mã: ${patientInfo.insuranceInfo.PHAN_TUYEN} - Trái tuyến`
+                  : patientInfo?.insuranceInfo?.PHAN_TUYEN === 3
+                  ? `Mã: ${patientInfo.insuranceInfo.PHAN_TUYEN} - Thông tuyến`
+                  : ""}
                 </td>
-              </tr> */}
+              </tr>
               <tr>
                 <td className="font-semibold text-gray-700 p-2 text-left w-[50%]">Mã thẻ BHYT:</td>
                 <td className="text-gray-800 p-2 text-right">

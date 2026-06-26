@@ -184,13 +184,20 @@ export default function ClinicRoom() {
                     MATINH_CUTRU: npInfo?.commune || "",
                     MAXA_CU_TRU: npInfo?.province || "",
                 };
+                // Nếu có ảnh CCCD, thêm vào patientData
+                if (patientInfo?.faceImage?.data?.img_data) {
+                    const base64 = patientInfo.faceImage.data.img_data.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, "");
+                    patientData["ANH_BN_CCCD"] = base64;
+                }
                 patientData["MA_THE_BHYT"] = insuranceInfo?.["MA_THE_BHYT"] || "";
                 patientData["GT_THE_TU"] = convertDateFormat(insuranceInfo?.["GT_THE_TU"]) || "";
                 patientData["GT_THE_DEN"] = convertDateFormat(insuranceInfo?.["GT_THE_DEN"]) || "";
                 patientData["MA_DKBD"] = insuranceInfo?.["MA_DKBD"] || "";
+
                 patientData["MA_DOITUONG_KCB"] = "1.3" // giới thiệu, chuyển tuyến
                 patientData["MA_LOAI_KCB"] = "01" // khám bệnh
                 patientData["MA_CSKCB"] = "01918" // mã cơ sở khám chữa bệnh
+                patientData["NGAY_VAO"] = new Date().toLocaleString('sv-SE', {timeZone: "Asia/Ho_Chi_Minh", hour12: false}) // Datetime yyyy-MM-dd HH:mm:ss UTC +7
 
                 const data = {
                     BN_UU_TIEN: 0,
