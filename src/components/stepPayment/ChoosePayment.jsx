@@ -36,8 +36,8 @@ export default function ChoosePayment({ onNext }) {
                     MA_DANTOC: npInfo?.ethnic || "",
                     MA_NGHE_NGHIEP: npInfo?.job || "",
                     MA_QUOCTICH: npInfo?.national || "",
-                    MATINH_CUTRU: npInfo?.commune || "",
-                    MAXA_CU_TRU: npInfo?.province || "",
+                    MATINH_CUTRU: npInfo?.province || "",
+                    MAXA_CU_TRU: npInfo?.commune || "",
                 };
         
                 const data = {
@@ -47,7 +47,8 @@ export default function ChoosePayment({ onNext }) {
                     THONG_TIN_DICH_VU: {
                         ID_KHOA: selectedService?.departmentID,
                         ID_PHONG_KHAM: selectedService?.clinicID,
-                        MA_DICH_VU: selectedService?.serviceID
+                        MA_DICH_VU: selectedService?.serviceID,
+                        ID_LOAI_KHAM: "02"
                     },
                 };
 

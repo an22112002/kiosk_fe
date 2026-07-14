@@ -10,6 +10,9 @@ import { splitName, convertDateFormat, openNotification } from "../../utils/help
 import { postMedicalRegister } from "../../api/call_API";
 import { LoadingOutlined } from '@ant-design/icons'
 
+import { encodeHMACSHA265 } from "../../utils/helpers/encrypt";
+import { HIS_MERCHANT_ID } from "../../api/config";
+
 export default function ClinicRoom() {
     const [localLoading, setLocalLoading] = useState(false)
     const [selectedClinic, setSelectedClinic] = useState(null)
@@ -27,6 +30,14 @@ export default function ClinicRoom() {
     useEffect(() => {
         // bước 2
         setStateStep(2)
+        
+        const callSign = async () => {
+            const timestamp = Date.now().toString();
+            const sign = await encodeHMACSHA265(`${HIS_MERCHANT_ID}|${timestamp}|${""}`);
+            console.log("sign", sign, "timestamp", timestamp, "merchant-id", HIS_MERCHANT_ID);
+        }
+        callSign()
+          
     }, [setStateStep])
 
     useEffect(() => {
@@ -181,23 +192,35 @@ export default function ClinicRoom() {
                     MA_DANTOC: npInfo?.ethnic || "",
                     MA_NGHE_NGHIEP: npInfo?.job || "",
                     MA_QUOCTICH: npInfo?.national || "",
-                    MATINH_CUTRU: npInfo?.commune || "",
-                    MAXA_CU_TRU: npInfo?.province || "",
+                    MATINH_CUTRU: npInfo?.province || "",
+                    MAXA_CU_TRU: npInfo?.commune || "",
                 };
                 // Nếu có ảnh CCCD, thêm vào patientData
                 if (patientInfo?.faceImage?.data?.img_data) {
                     const base64 = patientInfo.faceImage.data.img_data.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, "");
                     patientData["ANH_BN_CCCD"] = base64;
                 }
-                patientData["MA_THE_BHYT"] = insuranceInfo?.["MA_THE_BHYT"] || "";
-                patientData["GT_THE_TU"] = convertDateFormat(insuranceInfo?.["GT_THE_TU"]) || "";
-                patientData["GT_THE_DEN"] = convertDateFormat(insuranceInfo?.["GT_THE_DEN"]) || "";
-                patientData["MA_DKBD"] = insuranceInfo?.["MA_DKBD"] || "";
+                patientData["EMAIL"] = ""
+                patientData["MA_QUOCTICH"] = "01" // mặc định là Việt Nam
+
+                patientData["MA_THE_BHYT"] = insuranceInfo?.["MA_THE_BHYT"] || "3720033488";
+                patientData["GT_THE_TU"] = convertDateFormat(insuranceInfo?.["GT_THE_TU"] || "24/11/2025");
+                patientData["GT_THE_DEN"] = convertDateFormat(insuranceInfo?.["GT_THE_DEN"] || "23/11/2026");
+                patientData["MA_DKBD"] = insuranceInfo?.["MA_DKBD"] || "37103";
 
                 patientData["MA_DOITUONG_KCB"] = "1.3" // giới thiệu, chuyển tuyến
                 patientData["MA_LOAI_KCB"] = "01" // khám bệnh
-                patientData["MA_CSKCB"] = "01918" // mã cơ sở khám chữa bệnh
+                patientData["MA_CSKCB"] = "00000" // mã cơ sở khám chữa bệnh
                 patientData["NGAY_VAO"] = new Date().toLocaleString('sv-SE', {timeZone: "Asia/Ho_Chi_Minh", hour12: false}) // Datetime yyyy-MM-dd HH:mm:ss UTC +7
+
+                // patientData["NGAY_VAO_NOI_TRU"] = new Date().toLocaleString('sv-SE', {timeZone: "Asia/Ho_Chi_Minh", hour12: false}) // Datetime yyyy-MM-dd HH:mm:ss UTC +7
+                // patientData["LY_DO_VNT"] = "0"
+                // patientData["MA_LY_DO_VNT"] = "0"
+                // patientData["NOI_LAM_VIEC"] = "0"
+                // patientData["DIA_CHI_LAM_VIEC"] = "0"
+                // patientData["CS_CAN_NANG"] = "0"
+                // patientData["CS_CHIEU_CAO"] = "0"
+                // patientData["CS_NHIET_DO"] = "0"
 
                 const data = {
                     BN_UU_TIEN: 0,
@@ -207,8 +230,10 @@ export default function ClinicRoom() {
                     THONG_TIN_DICH_VU: {
                         ID_KHOA: selectedService?.departmentID,
                         ID_PHONG_KHAM: selectedService?.clinicID,
-                        MA_DICH_VU: selectedService?.serviceID
+                        MA_DICH_VU: selectedService?.serviceID,
+                        ID_LOAI_KHAM: "01"
                     },
+                    // Thông tin giấy chuyển tuyến (nếu có)
                     SO_GIAY_CHUYEN_TUYEN: insurPaper?.type === "GIẤY CHUYỂN TUYẾN" ? insurPaper.paperNumber : null,
                     MA_BENH_CHUYEN_TUYEN: insurPaper?.type === "GIẤY CHUYỂN TUYẾN" ? insurPaper.diseaseCode : null,
                     DON_VI_CHUYEN_TUYEN: insurPaper?.type === "GIẤY CHUYỂN TUYẾN" ? insurPaper.from : null

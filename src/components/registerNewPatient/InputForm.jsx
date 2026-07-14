@@ -18,6 +18,8 @@ export default function InputForm({ patientInfo, onBack }) {
   const { setNpInfo } = useGlobal();
   const navigate = useNavigate();
 
+  const defaultNatinal = "01"; // mặc định là Việt Nam
+
   // const [activeField, setActiveField] = useState("");
   // const [keyboardInput, setKeyboardInput] = useState("");
   // const [suggestions, setSuggestions] = useState([]); // danh sách gợi ý
@@ -27,7 +29,7 @@ export default function InputForm({ patientInfo, onBack }) {
     commune: "",
     job: "",
     ethnic: "01",
-    national: "000",
+    national: defaultNatinal,
     phone: patientInfo?.personalInfo?.data?.phone || "",
   });
 
@@ -70,7 +72,7 @@ export default function InputForm({ patientInfo, onBack }) {
     if (maNghenghiep !== "") {
       setFormData((prev) => ({ ...prev, job: maNghenghiep }));
     } else {
-      setFormData((prev) => ({ ...prev, job: "00000" }));
+      setFormData((prev) => ({ ...prev, job: "00000" })); // mặc định là "không có nghề nghiệp"
     }
   }, [XA, TINH, ETHIC, JOB, patientInfo?.personalInfo?.data]);
 
@@ -442,7 +444,7 @@ const handleLoadJob = async () => {
           </label>
           <Select
             showSearch
-            value={formData.national || "000"}
+            value={formData.national || defaultNatinal}
             placeholder="Chọn hoặc nhập quốc tịch"
             // onFocus={() => setActiveField("national")}
             filterOption={(input, option) =>
@@ -453,7 +455,7 @@ const handleLoadJob = async () => {
             onChange={(value) => handleInputChange("national", value)}
             className="w-[65%] h-[120%]"
             options={NAL.map((n) => ({ value: n.MA_QT, label: n.TEN_QT }))}
-            disabled={formData.national === "000"} // khóa 000 - Việt Nam
+            disabled={formData.national === defaultNatinal} // khóa Việt Nam
           />
         </div>
 
