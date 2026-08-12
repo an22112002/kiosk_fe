@@ -18,7 +18,7 @@ export default function InputForm({ patientInfo, onBack }) {
   const { setNpInfo } = useGlobal();
   const navigate = useNavigate();
 
-  const defaultNatinal = "01"; // mặc định là Việt Nam
+  const defaultNatinal = "000"; // mặc định là Việt Nam
 
   // const [activeField, setActiveField] = useState("");
   // const [keyboardInput, setKeyboardInput] = useState("");
