@@ -1,5 +1,5 @@
-import { get, post, client_HIS_API_URL, client_HIS_API_URL_1 } from "./request";
-import { HIS_MERCHANT_ID } from "./config";
+import { get, post, client_HIS_API_URL, client_HIS_API_URL_1, local_agent, get_agent, put_agent } from "./request";
+import { HIS_MERCHANT_ID, AGENT_KEY } from "./config";
 import { encodeHMACSHA265 } from "../utils/helpers/encrypt";
 import { convertDateFormat2 } from "../utils/helpers/index";
 
@@ -159,6 +159,23 @@ export async function getMedicalRoomInfo() {
     "x-sign": sign,
     "x-merchant-id": HIS_MERCHANT_ID,
     "x-timestamp": timestamp,
+  });
+}
+
+// --- GET lấy thông tin từ vneid ---
+export async function getVNeIDProfile() {
+  return get_agent(local_agent, "/vneid/get_vneid_profile", {
+    "x-agent-key": AGENT_KEY
+  });
+}
+
+export async function count(cccd, amount) {
+  return put_agent(local_agent, "/count", {
+    "x-agent-key": AGENT_KEY
+  },
+  {
+    cccd: cccd,
+    amount: amount
   });
 }
 

@@ -30,11 +30,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <ErrorBoundary>
     <GlobalProvider>
-      <React.StrictMode>
-        <HelmetProvider>
-          <App />
-        </HelmetProvider>
-      </React.StrictMode>
+      <HelmetProvider>
+        <App />
+      </HelmetProvider>
     </GlobalProvider>
   </ErrorBoundary>
 )

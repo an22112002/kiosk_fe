@@ -1,5 +1,6 @@
 import axios from "axios";
-import { HIS_API_URL, HIS_API_URL_1 } from "./config";
+import { HIS_API_URL, HIS_API_URL_1, AGENT_URL } from "./config";
+import { openNotification } from "../utils/helpers";
 
 // Cấu hình mặc định
 export const client_HIS_API_URL = axios.create({
@@ -16,12 +17,12 @@ export const client_HIS_API_URL_1 = axios.create({
   responseType: "json",
 });
 
-// export const local_agent = axios.create({
-//   baseURL: AGENT_URL,
-//   timeout: 60000,
-//   headers: { "Accept": "application/json" },
-//   responseType: "json",
-// });
+export const local_agent = axios.create({
+  baseURL: AGENT_URL,
+  timeout: 3600000,
+  headers: { "Accept": "application/json" },
+  responseType: "json",
+});
 
 // --- GET ---
 export async function get(client, url, params = {}, headers = {}) {
@@ -48,35 +49,45 @@ export async function post(client, url, body = {}, headers = {}) {
 
 
 
-// // --- GET agent ---
-// export async function get_agent(client, url, headers = {}) {
-//   try {
-//     const resp = await client.get(url, { headers });
+// --- GET agent ---
+export async function get_agent(client, url, headers = {}) {
+  try {
+    const resp = await client.get(url, { headers });
 
-//     // Nếu status 2xx
-//     if (resp.status === 200) {
-//       openNotification("Thông báo", resp.data.detail, "success");
-//     }
-//     return resp.data;
+    // Nếu status 2xx
+    // if (resp.status === 200) {
+    //   openNotification("Thông báo", resp.data.detail, "success");
+    // }
+    return resp.data;
 
-//   } catch (err) {
-//     // Lỗi từ server (status >= 400)
-//     if (err.response) {
-//       const status = err.response.status;
-//       const detail = err.response.data?.detail || "Có lỗi xảy ra";
+  } catch (err) {
+    // Lỗi từ server (status >= 400)
+    if (err.response) {
+      const status = err.response.status;
+      const detail = err.response.data?.detail || "Có lỗi xảy ra";
 
-//       // Hiển thị notification
-//       openNotification(`Lỗi ${status}`, detail);
+      // Hiển thị notification
+      openNotification(`Lỗi ${status}`, detail);
 
-//       // Trả về null để caller xử lý tiếp
-//       return null;
-//     } else {
-//       // Lỗi network, timeout,...
-//       openNotification("Lỗi kết nối agent", err.message);
-//       return null;
-//     }
-//   }
-// }
+      // Trả về null để caller xử lý tiếp
+      return null;
+    } else {
+      // Lỗi network, timeout,...
+      openNotification("Lỗi kết nối agent", err.message);
+      return null;
+    }
+  }
+}
+
+// --- GET agent ---
+export async function put_agent(client, url, headers = {}, data = {}) {
+  try {
+    await client.put(url, data, { headers });
+
+  } catch (err) {
+    
+  }
+}
 
 // // --- POST agnet ---
 // export async function post_agent(client, url, body = {}, headers = {}) {

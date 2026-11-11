@@ -1,12 +1,22 @@
 import { useGlobal } from "../../context/GlobalContext";
 import { formatCurrency } from "../../utils/helpers";
 import { QRCodeSVG } from "qrcode.react";
+import { useEffect } from "react";
+import { count } from "../../api/call_API";
 
 export default function InfoPrintCompact() {
   const { flow, selectedService, patientInfo, npInfo, paymentInfo, paymentState } = useGlobal();
   const dataInfo = patientInfo.personalInfo.data;
   const patientHISInfo = patientInfo.patientHISInfo;
   const insurInfo = patientInfo.insuranceInfo;
+
+  useEffect(() => {
+    const sendCount = async () => {
+      await count(dataInfo?.idCode, selectedService?.price);
+    };
+
+    sendCount();
+  }, []);
 
   return (
     <div className="w-[80mm] mx-auto p-6 text-[16px] font-sans border border-gray-300 rounded-lg leading-relaxed">

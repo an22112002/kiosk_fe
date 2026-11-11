@@ -1,24 +1,22 @@
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { BsX, BsCheck } from "react-icons/bs";
 import { Helmet } from "react-helmet-async"
 import { Modal } from 'antd'
 import { useGlobal } from '../../context/GlobalContext';
 import { LoadingOutlined } from '@ant-design/icons'
-import { openNotification, splitVNeIDInfo, getResidencePlace } from '../../utils/helpers';
-import { getPatientInfo, getPatientInsurance } from '../../api/call_API';
+import { openNotification, getResidencePlace } from '../../utils/helpers';
+import { getPatientInfo, getPatientInsurance, getVNeIDProfile } from '../../api/call_API';
 import InsertPatient from '../registerNewPatient/InsertPatient';
 import PatientInfoDisplay from './PatientInfoDisplay';
 
 export default function CheckInfoVNeID( {provinces, communes} ) {
     const [reason, setReason] = useState("")
     const [localLoading, setLocalLoading] = useState(true)
-    const [focusInput, setFocusInput] = useState(true)
     const [nonInserCase, setNonInserCase] = useState(false)
     const [getHIS, setGetHIS] = useState(false)
     const [getInsur, setGetInsur] = useState(false)
     const [addPatient, setAddPatient] = useState(false)
-    const hiddenInputRef = useRef(null);
     const { setStateStep, patientInfo, setPatientInfo, setSelectedService, flow, npInfo} = useGlobal();
     const navigate = useNavigate()
 
@@ -60,40 +58,34 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
         setFields(newFields);
     };
 
-    // focus input nhận kết quả quét qr
+    // kích hoạt mở vneid
     useEffect(() => {
-        let interval = null;
-
-        if (focusInput) {
-            interval = setInterval(() => {
-                hiddenInputRef.current?.focus();
-            }, 200); // 5 lần/giây
-        }
-
-        return () => clearInterval(interval);
-    }, [focusInput]);
-
-    // nhận tín hiệu clipboard parse
-    const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
-            const data = splitVNeIDInfo(e.target.value);
-            if (data != null) {
-                setFocusInput(false)
-                toggleStatus(0)
+        const getVNeID_profile = async () => {
+            try {
+                const data = await getVNeIDProfile();
+                if (!data) {
+                    return;
+                }
                 setPatientInfo((prev) => {
                     return {
                         ...prev,
                         personalInfo: data,
                     };
                 });
+                toggleStatus(0);
                 if (flow === "insur") {
                     setGetInsur(true)
                 } else {
                     setGetHIS(true)
                 }
+            } catch (error) {
+                console.error("Lỗi getVNeIDProfile:", error);
             }
+        };
+        if (localLoading === true) {
+            getVNeID_profile();
         }
-    };
+    }, [localLoading]);
 
     // đóng thêm modal thông tin
     const closeAddPatient = async () => {
@@ -231,21 +223,7 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
                 width={900}
                 styles={{ body: { textAlign: "center" } }}
             >
-                <input
-                    type="text"
-                    ref={hiddenInputRef}
-                    style={{ opacity: 0, position: "absolute", left: "-9999px" }}
-                    onKeyDown={handleKeyDown}
-                />
                 <LoadingOutlined spin style={{ fontSize: 48, color: "#2563eb" }} className="mb-3" />
-                <div className="text-[25px] text-lg font-semibold text-[23px] loading-dots">VUI LÒNG MỞ VNeID RỒI CHỌN "Mã QR Thẻ CCCD" ĐỂ MÁY QUÉT BÊN DƯỚI QUÉT</div>
-                <br></br>
-                <div className='flex items-center justify-center'>
-                    <img src="/image/vneid.jpg"
-                        alt="vneid" className='w-[40vw]'>    
-                    </img>
-                </div>
-                <br></br>
                 <div className="text-[25px] flex flex-col space-y-2">
                 {fields.map((field, index) => (
                     <div
@@ -307,7 +285,7 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
             <div className={`transition-all duration-300 ${localLoading ? 'blur-sm !bg-white/20' : ''}`}>
                 <div className='text-center px-7 py-8 rounded-lg'>
                     <div className='mb-3 text-colorOne font-bold text-[18px] lg:text-[25px]'>
-                        <h1 className='text-[2rem]' >XÁC THỰC CÔNG DÂN</h1>
+                        <h1 className='text-[2rem]'>XÁC THỰC CÔNG DÂN</h1>
                     </div>
                     <PatientInfoDisplay patientInfo={patientInfo} npInfo={npInfo} flow={flow}></PatientInfoDisplay>
                 </div>
