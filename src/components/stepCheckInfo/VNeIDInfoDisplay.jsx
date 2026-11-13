@@ -17,21 +17,21 @@ export default function VNeIDInfoDisplay({ patientInfo, npInfo, flow }) {
             <tr>
               <td className="font-semibold text-gray-700 p-2 text-left">Ngày sinh:</td>
               <td className="text-gray-800 p-2 text-right">
-                {patientInfo?.personalInfo?.data?.dateOfBirth || "?"}
+                {patientInfo?.personalInfo?.data?.dateOfBirth || patientInfo?.patientHISInfo?.NGAY_SINH || "?"}
               </td>
             </tr>
 
             <tr>
               <td className="font-semibold text-gray-700 p-2 text-left">Giới tính:</td>
               <td className="text-gray-800 p-2 text-right">
-                {patientInfo?.personalInfo?.data?.gender || "?"}
+                {patientInfo?.personalInfo?.data?.gender || patientInfo?.patientHISInfo?.GIOI_TINH || "?"}
               </td>
             </tr>
 
             <tr>
               <td className="font-semibold text-gray-700 p-2 text-left">Địa chỉ thường trú:</td>
               <td className="text-gray-800 p-2 text-right">
-                {patientInfo?.personalInfo?.data?.residencePlace || "?"}
+                {patientInfo?.personalInfo?.data?.residencePlace || patientInfo?.patientHISInfo?.DIA_CHI ||"?"}
               </td>
             </tr>
 
