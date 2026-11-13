@@ -82,9 +82,11 @@ export default function CheckInfoVNeID( {provinces, communes} ) {
                 console.error("Lỗi getVNeIDProfile:", error);
             }
         };
-        if (localLoading === true) {
-            getVNeID_profile();
-        }
+        if (!localLoading) return;
+
+        if (patientInfo?.personalInfo?.data?.idCode) return;
+        
+        getVNeID_profile();
     }, [localLoading]);
 
     // đóng thêm modal thông tin
